@@ -1,18 +1,6 @@
-import moment from "moment-timezone";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-/**
- * @description
- * get current time in YYYY-MM-DD HH:mm:ss.SSS format
- *
- * @returns {string}
- */
-const getCurrentTime = (): string => {
-  return moment
-    .tz(new Date(), Intl.DateTimeFormat().resolvedOptions().timeZone)
-    .format("YYYY-MM-DD HH:mm:ss z/Z");
-};
+import getCurrentTime from "../functions/timeNow";
 
 type Props = {
   children: React.ReactNode;
@@ -27,13 +15,17 @@ type Props = {
  */
 const Navbar = ({ children }: Props) => {
   // get current time to state
-  const [currentTime, setCurrentTime] = useState(getCurrentTime());
+  const [currentTime, setCurrentTime] = useState(
+    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
+  );
 
   // set interval to update time
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(getCurrentTime());
-    }, 500);
+      setCurrentTime(
+        getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
+      );
+    }, 1000);
     return () => clearInterval(interval);
   }, []);
 
@@ -56,7 +48,7 @@ const Navbar = ({ children }: Props) => {
         </div>
       </div>
 
-      <div className='container p-10'>{children}</div>
+      <div className='container p-6 sm:p-10'>{children}</div>
     </div>
   );
 };
