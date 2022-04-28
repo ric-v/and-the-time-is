@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import getCurrentTime from "../repository/timeNow";
+import getCurrentTime from "../functions/timeNow";
 
 type Props = {
   children: React.ReactNode;
