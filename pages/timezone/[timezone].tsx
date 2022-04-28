@@ -1,7 +1,7 @@
 import { useRouter } from "next/router";
 import React, { useEffect, useState } from "react";
 import { timezoneList } from "../api/timezones";
-import getCurrentTime from "../repository/timeNow";
+import getCurrentTime from "../functions/timeNow";
 
 const TimeAtTimezone = () => {
   const router = useRouter();
