@@ -36,11 +36,11 @@ export default function timezones(req: NextApiRequest, res: NextApiResponse) {
   console.log('>>>>', searchKey);
 
   if (!searchKey) {
-    res.status(200).json([]);
+    return res.status(200).json([]);
   }
 
   const filteredTimezones = timezoneList.filter(timezone => {
-    return (timezone.name.toLowerCase().includes(searchKey.toLowerCase()) || timezone.code.toLowerCase().includes(searchKey.toLowerCase()));
+    return (timezone.name.includes(searchKey) || timezone.code.includes(searchKey));
   });
 
   res.status(200).json(filteredTimezones)
