@@ -52,7 +52,7 @@ const TimezoneSearch = (_props: Props) => {
           <div className='w-full px-5 bg-white rounded-lg shadow-lg'>
             {data &&
               data.map((item: { code: string; name: string }) => (
-                <Link href={`/timezone/${item.code}`} key={item.code}>
+                <Link href={`/timezone/${item.name}`} key={item.code}>
                   <a className='block px-4 py-2 text-sm m-3 text-gray-700 hover:bg-gray-100'>
                     {item.code} - {item.name}
                   </a>
