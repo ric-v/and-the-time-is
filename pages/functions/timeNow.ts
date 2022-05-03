@@ -8,7 +8,7 @@ import moment from "moment-timezone";
  */
 const getCurrentTime = (timezone: string): string => {
   return moment
-    .tz(new Date(), Intl.DateTimeFormat().resolvedOptions().timeZone)
+    .tz(new Date(), timezone)
     .format("YYYY-MM-DD HH:mm:ss z/Z");
 };
 
