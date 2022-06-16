@@ -25,7 +25,7 @@ const TimeAtTimezone = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(getCurrentTime(location));
-    }, 1000);
+    }, 100);
     return () => clearInterval(interval);
   }, [location]);
 
