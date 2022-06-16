@@ -4,9 +4,11 @@ import Navbar from './components/Navbar'
 
 function AndTheTimeIs({ Component, pageProps }: AppProps) {
   return (
-    <Navbar>
-      <Component {...pageProps} />
-    </Navbar>
+    <div className='bg-slate-200 h-full'>
+      <Navbar>
+        <Component {...pageProps} />
+      </Navbar>
+    </div>
   )
 }
 
