@@ -26,3 +26,9 @@ a {
 * {
   box-sizing: border-box;
 }
+
+.bg-gif {
+  background-image: url("../public/bg.gif");
+  background-size: cover;
+  background-position: center;
+}

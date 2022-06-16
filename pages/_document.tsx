@@ -13,6 +13,7 @@ class CustomHeaders extends Document {
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link href="https://fonts.googleapis.com/css2?family=Nova+Flat&display=swap" rel="stylesheet" />
+          {/* Video by Nico Becker: https://www.pexels.com/video/northern-lights-time-lapse-5700949/ */}
         </Head>
         {/* body {
           {innerHeight: '100%;'}
