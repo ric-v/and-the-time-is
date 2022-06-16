@@ -1,4 +1,4 @@
-import moment from "moment-timezone";
+import tz from 'timezone/loaded';
 
 /**
  * @description
@@ -7,9 +7,7 @@ import moment from "moment-timezone";
  * @returns {string}
  */
 const getCurrentTime = (timezone: string): string => {
-  return moment
-    .tz(new Date(), timezone as string)
-    .format("YYYY-MM-DD HH:mm:ss z/Z");
+  return tz(new Date(), "%B %0d %Y %H:%M:%S %Z (%:z)", timezone);
 };
 
 export default getCurrentTime;
