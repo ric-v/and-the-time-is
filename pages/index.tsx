@@ -1,5 +1,4 @@
 import type { NextPage } from "next";
-import Link from "next/link";
 import TimezoneSearch from "./components/TimezoneSearch";
 
 const Home: NextPage = () => {
