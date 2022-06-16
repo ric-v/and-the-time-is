@@ -25,12 +25,12 @@ const Navbar = ({ children }: Props) => {
       setCurrentTime(
         getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
       );
-    }, 1000);
+    }, 100);
     return () => clearInterval(interval);
   }, []);
 
   return (
-    <div className='bg-slate-200'>
+    <>
       <div
         className='h-64 shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
           text-center from-cyan-900 to-slate-800 text-slate-300
@@ -48,8 +48,8 @@ const Navbar = ({ children }: Props) => {
         </div>
       </div>
 
-      <div className='container p-6 sm:p-10'>{children}</div>
-    </div>
+      <div className="p-10 sm: p-14">{children}</div>
+    </>
   );
 };
 
