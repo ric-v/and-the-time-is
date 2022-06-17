@@ -27,8 +27,7 @@ a {
   box-sizing: border-box;
 }
 
-.bg-gif {
-  background-image: url("../public/bg.gif");
-  background-size: cover;
-  background-position: center;
+.curve {
+  border-bottom-right-radius: 100px 30px;
+  border-bottom-left-radius: 100px 30px;
 }

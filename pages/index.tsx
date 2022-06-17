@@ -6,14 +6,6 @@ const Home: NextPage = () => {
   return (
     <>
       <div className=''>
-        {/* search bar for timezones */}
-        <TimezoneSearch />
-
-        {/* <Modal /> */}
-        {/* container */}
-        {/* <div className='flex flex-col items-center'>
-          <div className='grid grid-flow-col-dense grid-cols-2 gap-10 sm:grid-cols-4'></div>
-        </div> */}
       </div>
     </>
   );
