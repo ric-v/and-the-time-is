@@ -22,7 +22,7 @@ function Modal({ timezone, setSelected }: Props) {
       );
     }, 100);
     return () => clearInterval(interval);
-  }, []);
+  }, [timezone.name]);
 
   return (
     <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
