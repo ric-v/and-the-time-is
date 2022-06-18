@@ -1,7 +1,7 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
 import { Timezones } from '../functions/timeNow';
-import store from '../store/store';
+import { store } from '../store/store';
 
 type Props = {}
 
