@@ -19,7 +19,7 @@ const tzReducer = createReducer(initState, (builder) => {
     });
 });
 
-const store = configureStore({
+export const store = configureStore({
   preloadedState: {
     timezones: initState,
   },
@@ -28,4 +28,3 @@ const store = configureStore({
   },
 });
 
-export default store;
