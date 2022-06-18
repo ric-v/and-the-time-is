@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Timezones } from "../functions/timeNow";
 import getCurrentTime from "../functions/timeNow";
-import store from '../store/store';
+import { store } from '../store/store';
 
 type Props = {
   timezone: Timezones,
