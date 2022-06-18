@@ -1,6 +1,7 @@
 import React, { useEffect } from "react";
-import Link from "next/link";
 import useSWR from "swr";
+import Modal from "./Modal";
+import { Timezones } from "../functions/timeNow";
 
 const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) =>
   fetch(input, init).then((res) => res.json());
@@ -9,6 +10,7 @@ type Props = {};
 
 const TimezoneSearch = (_props: Props) => {
   const [search, setSearch] = React.useState("");
+  const [selected, setSelected] = React.useState<Timezones | null>(null);
 
   const { data, error } = useSWR(`/api/timezones?search=${search}`, fetcher, {
     revalidateOnFocus: false,
@@ -18,9 +20,6 @@ const TimezoneSearch = (_props: Props) => {
     if (error) {
       console.error(error);
       alert(error);
-    }
-    if (data) {
-      console.log("-->", data);
     }
   }, [data, error]);
 
@@ -39,32 +38,29 @@ const TimezoneSearch = (_props: Props) => {
 
         {/* drop down list with data as content */}
         {data && (
-          <div className="w-full px-2 bg-slate-700 rounded-lg shadow-lg max-h-72 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-700">
+          <div className="w-full px-2 bg-slate-700 rounded-xl shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)] max-h-72 scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-700">
             {data &&
               data.map(
-                (item: {
-                  code: string;
-                  name: string;
-                  country: string;
-                  city: string;
-                  timezone: string;
-                  offset: string;
-                }) => (
-                  <Link href={`/timezone/${item.name}`} key={item.name}>
+                (item: Timezones) => (
+                  <>
+                    {/* <Link href={`/timezone/${item.name}`} key={item.name}> */}
                     {/* on click set search bar to none */}
-                    <a
-                      className="block px-2 py-2 text-sm text-gray-400 hover:text-teal-500 hover:bg-slate-500 hover:bg-opacity-50"
-                      onClick={() => { setSearch("") }}
+                    <div
+                      className="block px-2 py-2 text-sm text-gray-400 hover:text-teal-500 hover:bg-slate-500 hover:bg-opacity-50 cursor-pointer"
+                      key={item.name}
+                      onClick={() => { setSearch(""); setSelected(item); }}
                     >
                       {item.code} - {item.name} ({item.country}/{item.city}{" "}
                       {item.timezone} {item.offset})
-                    </a>
-                  </Link>
+                    </div>
+                    {/* </Link> */}
+                  </>
                 )
               )}
           </div>
         )}
       </div>
+      {selected && <Modal timezone={selected} setSelected={setSelected} />}
     </div>
   );
 };

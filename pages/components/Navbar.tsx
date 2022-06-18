@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Image from 'next/image';
 import { useEffect, useState } from "react";
 import getCurrentTime from "../functions/timeNow";
 import TimezoneSearch from "./TimezoneSearch";
@@ -40,7 +39,7 @@ const Navbar = ({ children }: Props) => {
         <div className="grid lg:grid-cols-2">
           <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
             <Link href={"/"}>
-              <a className='text-5xl truncate font-nova-flat md:text-6xl pb-5 hover:text-teal-500'>
+              <a className='text-4xl font-nova-flat md:text-6xl pb-5 hover:text-teal-500'>
                 And the time is ...
               </a>
             </Link>
@@ -50,7 +49,6 @@ const Navbar = ({ children }: Props) => {
             </div>
           </div>
           <div className='p-2 lg:p-10 mt-2 lg:mt-10'>
-            {/* search bar for timezones */}
             <TimezoneSearch />
           </div>
         </div>
