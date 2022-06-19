@@ -24,6 +24,11 @@ function Modal({ timezone, setSelected }: Props) {
     return () => clearInterval(interval);
   }, [timezone.name]);
 
+  // check if the timezone is added to homescreen via store
+  const isAdded = store.getState().timezones.find(
+    (tz) => tz.name === timezone.name,
+  );
+
   return (
     <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
@@ -103,20 +108,34 @@ function Modal({ timezone, setSelected }: Props) {
               </div>
             </div>
             <div className="bg-slate-700 px-4 py-3 sm:px-6 flex flex-row justify-end">
-              <button
-                type="button"
-                className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 text-base font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3 sm:w-auto sm:text-sm"
-                onClick={() => {
-                  store.dispatch({ type: "timezone/add", payload: timezone });
-                  setSelected(null);
-                }}
-              >Pin to home
-              </button>
+              {isAdded ?
+                <button
+                  type="button"
+                  disabled
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-slate-700 text-base font-medium text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  onClick={() => {
+                    store.dispatch({ type: "timezone/add", payload: timezone });
+                    setSelected(null);
+                  }}
+                >
+                  Already pinned to dashboard
+                </button>
+                :
+                <button
+                  type="button"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 text-base font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  onClick={() => {
+                    store.dispatch({ type: "timezone/add", payload: timezone });
+                    setSelected(null);
+                  }}
+                >
+                  Pin to dashboard
+                </button>
+              }
               <button
                 type="button"
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-gray-300 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                 onClick={() => {
-                  store.dispatch({ type: "timezone/add", payload: timezone });
                   setSelected(null);
                 }}
               >Cancel
@@ -125,7 +144,7 @@ function Modal({ timezone, setSelected }: Props) {
           </div>
         </div>
       </div>
-    </div>
+    </div >
   )
 }
 
