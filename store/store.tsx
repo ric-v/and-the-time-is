@@ -4,7 +4,7 @@ import { Timezones } from "../functions/timeNow";
 const initState = [] as Timezones[];
 
 const addTzCard = createAction<Timezones>("timezone/add");
-const removeTzCard = createAction("timezone/remove");
+const removeTzCard = createAction<Timezones>("timezone/remove");
 
 const tzReducer = createReducer(initState, (builder) => {
   builder.addCase(
@@ -14,8 +14,8 @@ const tzReducer = createReducer(initState, (builder) => {
     });
   builder.addCase(
     removeTzCard, (state, action) => {
-      const tz = action.payload;
-      return state.filter(tz => tz.name !== tz.name);
+      const tzData = action.payload;
+      return state.filter(tz => tzData.name !== tz.name);
     });
 });
 

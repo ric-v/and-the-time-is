@@ -69,13 +69,13 @@ function Modal({ timezone, setSelected }: Props) {
                           </tr>
                           <tr>
                             <td className="text-left text-sm leading-5 text-gray-300">
-                              Timezone
+                              Abbreviation
                             </td>
                             <td className="text-center text-sm font-medium text-gray-300">
                               :
                             </td>
                             <td className="text-left text-sm leading-5 font-bold text-gray-300">
-                              {timezone.timezone}
+                              {currentTime.split(' ')[4]}
                             </td>
                           </tr>
                           <tr>
@@ -86,7 +86,7 @@ function Modal({ timezone, setSelected }: Props) {
                               :
                             </td>
                             <td className="text-left text-sm leading-5 font-bold text-gray-300">
-                              {timezone.offset}
+                              {currentTime.split("(")[1].split(")")[0]}
                             </td>
                           </tr>
                           <tr>
@@ -112,7 +112,7 @@ function Modal({ timezone, setSelected }: Props) {
                 <button
                   type="button"
                   disabled
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-slate-700 text-base font-medium text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-slate-700 font-medium text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:ml-3  sm:text-sm"
                   onClick={() => {
                     store.dispatch({ type: "timezone/add", payload: timezone });
                     setSelected(null);
@@ -123,7 +123,7 @@ function Modal({ timezone, setSelected }: Props) {
                 :
                 <button
                   type="button"
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 text-base font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3 sm:w-auto sm:text-sm"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3"
                   onClick={() => {
                     store.dispatch({ type: "timezone/add", payload: timezone });
                     setSelected(null);

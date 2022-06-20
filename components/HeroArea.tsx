@@ -2,7 +2,7 @@ import React from 'react'
 import { useEffect, useState } from 'react';
 import { Timezones } from '../functions/timeNow';
 import { store } from '../store/store';
-import TzCard from './TzCard';
+import Card from './Card';
 
 const HeroArea = () => {
 
@@ -24,8 +24,8 @@ const HeroArea = () => {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 p-2 md:p-5 w-full gap-6">
         {
-          timezones.map((tz) => (
-            <TzCard key={tz.name} tz={tz} />
+          timezones.map((tzData) => (
+            <Card key={tzData.name} tzData={tzData} />
           ))
         }
       </div>
