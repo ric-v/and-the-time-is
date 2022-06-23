@@ -10,7 +10,7 @@ function AndTheTimeIs({ Component, pageProps }: AppProps) {
 
   return (
     <Provider store={store}>
-      <div className='h-full min-w-full' style={{ backgroundColor: '#1e2122' }}>
+      <div className='min-h-full min-w-full' style={{ backgroundColor: '#1e2122' }}>
         <Navbar>
           <Component {...pageProps} />
         </Navbar>
