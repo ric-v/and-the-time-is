@@ -33,3 +33,5 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+pages/api/timezone.ts
+pages/api/tz.tsv
