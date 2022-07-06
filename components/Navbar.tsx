@@ -1,6 +1,8 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import getCurrentTime from "../functions/timeNow";
+import getCurrentTime, { Timezones } from "../functions/timeNow";
+import { timezoneList } from "../pages/api/timezones";
+import Modal from "./Modal";
 import TimezoneSearch from "./TimezoneSearch";
 
 type Props = {
@@ -15,6 +17,7 @@ type Props = {
  * @param {Props} props
  */
 const Navbar = ({ children }: Props) => {
+  const [selected, setSelected] = useState<Timezones | null>(null);
   // get current time to state
   const [currentTime, setCurrentTime] = useState(
     getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
@@ -44,8 +47,14 @@ const Navbar = ({ children }: Props) => {
               </a>
             </Link>
             <div className='mt-20 font-nova-flat text-slate-300'>
-              <p className='text-teal-500 text-lg'>{`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}</p>
-              <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'>{currentTime}</p>
+              <p className='text-teal-500 text-lg'>
+                {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
+              </p>
+              <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
+                onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
+              >
+                {currentTime}
+              </p>
             </div>
           </div>
           <div className='p-2 lg:p-10 mt-2 lg:mt-10'>
@@ -54,6 +63,7 @@ const Navbar = ({ children }: Props) => {
         </div>
       </div>
 
+      {selected && <Modal timezone={selected} setSelected={setSelected} />}
       <div className="p-10">{children}</div>
     </>
   );
