@@ -1,5 +1,9 @@
 # and-the-time-is
 
+[![CodeQL](https://github.com/dev-asterix/and-the-time-is/actions/workflows/codeql.yml/badge.svg)](https://github.com/dev-asterix/and-the-time-is/actions/workflows/codeql.yml)
+![latest](https://badgen.net/github/tag/dev-asterix/and-the-time-is)
+![license](https://badgen.net/github/license/dev-asterix/and-the-time-is)
+
 The app displays the current time in local timezone. The time is displayed in 24-hour format. User can add other timezones to the list. The app displays the time in the selected timezone.
 
 **Find the app here: <https://and-the-time-is.vercel.app/>**
