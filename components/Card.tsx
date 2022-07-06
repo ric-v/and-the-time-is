@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import getCurrentTime, { Timezones } from "../functions/timeNow";
 import { store } from "../store/store";
+import Modal from "./Modal";
 
 type Props = {
   tzData: Timezones;
@@ -9,6 +10,7 @@ type Props = {
 const Card = ({ tzData }: Props) => {
   // get current time to state
   const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name));
+  const [selected, setSelected] = React.useState<Timezones | null>(null);
 
   // set interval to update time
   useEffect(() => {
@@ -21,13 +23,14 @@ const Card = ({ tzData }: Props) => {
   return (
     <div
       key={tzData.name}
-      className=" shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] 
+      className=" shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)]
         bg-gradient-to-br from-cyan-600 to-slate-800 rounded-lg p-4"
     >
       <div className="flex flex-row justify-between text-sm font-medium">
         <h3
-          className="text-xl leading-6 font-medium text-teal-300"
+          className="text-xl leading-6 font-medium text-teal-300 cursor-pointer"
           id="modal-title"
+          onClick={() => { setSelected(tzData) }}
         >
           {" "}
           {tzData.name}
@@ -51,10 +54,17 @@ const Card = ({ tzData }: Props) => {
           </svg>
         </button>
       </div>
-      <div className="mt-3 text-gray-300 truncate">
+      <div className="mt-3 text-gray-300 truncate cursor-pointer"
+        onClick={() => setSelected(tzData)}
+      >
         {tzData.city} - {tzData.country}
       </div>
-      <div className="mt-3 text-gray-200 font-semibold">{currentTime}</div>
+      <div className="mt-3 text-gray-200 font-semibold cursor-pointer"
+        onClick={() => setSelected(tzData)}
+      >
+        {currentTime}
+      </div>
+      {selected && <Modal timezone={selected} setSelected={setSelected} />}
     </div>
   );
 };

@@ -1,7 +1,14 @@
 import { NextApiRequest, NextApiResponse } from "next"
+import getCurrentTime from "../../functions/timeNow";
 
 // source: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 export const timezoneList = [
+  { code: 'UTC', name: 'UTC', city: 'UTC', country: 'Universal' },
+  { code: 'Etc/UTC', name: 'UTC', city: 'UTC', country: 'Universal' },
+  { code: 'Etc/UCT', name: 'UCT', city: 'UCT', country: 'Universal' },
+  { code: 'Etc/Universal', name: 'Universal', city: 'Universal', country: 'Universal' },
+  { code: 'Etc/Zulu', name: 'Zulu', city: 'Zulu', country: 'Universal' },
+  { code: 'GMT', name: 'Greenwich Mean Time', city: 'London', country: 'United Kingdom' },
   { code: 'AD', name: 'Europe/Andorra', city: 'Andorra', country: 'Andorra' },
   { code: 'AE,OM', name: 'Asia/Dubai', city: 'Abu Dhabi', country: 'United Arab Emirates' },
   { code: 'AF', name: 'Asia/Kabul', city: 'Kabul', country: 'Afghanistan' },
@@ -11,9 +18,41 @@ export const timezoneList = [
   { code: 'AM', name: 'Asia/Yerevan', city: 'Yerevan', country: 'Armenia' },
   { code: 'AO', name: 'Africa/Luanda', city: 'Luanda', country: 'Angola' },
   { code: 'AQ', name: 'Antarctica/Casey', city: 'Casey', country: 'Antarctica' },
+  { code: 'AQ', name: 'Antarctica/Davis', city: 'Davis', country: 'Antarctica' },
+  { code: 'AQ', name: 'Antarctica/DumontDUrville', city: 'DumontDUrville', country: 'Antarctica' },
+  { code: 'AQ', name: 'Antarctica/Mawson', city: 'Mawson', country: 'Antarctica' },
+  { code: 'AQ', name: 'Antarctica/McMurdo', city: 'McMurdo', country: 'Antarctica' },
+  { code: 'AQ', name: 'Antarctica/Palmer', city: 'Palmer', country: 'Antarctica' },
+  { code: 'AQ', name: 'Antarctica/Rothera', city: 'Rothera', country: 'Antarctica' },
+  { code: 'AQ', name: 'Antarctica/Syowa', city: 'Syowa', country: 'Antarctica' },
+  { code: 'AQ', name: 'Antarctica/Troll', city: 'Troll', country: 'Antarctica' },
+  { code: 'AQ', name: 'Antarctica/Vostok', city: 'Vostok', country: 'Antarctica' },
   { code: 'AR', name: 'America/Argentina/Buenos_Aires', city: 'Buenos Aires', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/Catamarca', city: 'Catamarca', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/Cordoba', city: 'Cordoba', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/Jujuy', city: 'Jujuy', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/La_Rioja', city: 'La Rioja', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/Mendoza', city: 'Mendoza', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/Rio_Gallegos', city: 'Rio Gallegos', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/Salta', city: 'Salta', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/San_Juan', city: 'San Juan', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/San_Luis', city: 'San Luis', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/Tucuman', city: 'Tucuman', country: 'Argentina' },
+  { code: 'AR', name: 'America/Argentina/Ushuaia', city: 'Ushuaia', country: 'Argentina' },
   { code: 'AS', name: 'Pacific/Pago_Pago', city: 'Pago Pago', country: 'American Samoa' },
   { code: 'AT', name: 'Europe/Vienna', city: 'Vienna', country: 'Austria' },
+  { code: 'AU', name: 'Australia/Macquarie', city: 'Macquarie', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Adelaide', city: 'Adelaide', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Brisbane', city: 'Brisbane', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Broken_Hill', city: 'Broken Hill', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Currie', city: 'Currie', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Darwin', city: 'Darwin', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Eucla', city: 'Eucla', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Hobart', city: 'Hobart', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Lindeman', city: 'Lindeman', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Lord_Howe', city: 'Lord Howe', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Melbourne', city: 'Melbourne', country: 'Australia' },
+  { code: 'AU', name: 'Australia/Perth', city: 'Perth', country: 'Australia' },
   { code: 'AU', name: 'Australia/Sydney', city: 'Sydney', country: 'Australia' },
   { code: 'AW', name: 'America/Aruba', city: 'Aruba', country: 'Aruba' },
   { code: 'AX', name: 'Europe/Mariehamn', city: 'Mariehamn', country: 'Aland Islands' },
@@ -104,6 +143,7 @@ export const timezoneList = [
   { code: 'ID', name: 'Asia/Jakarta', city: 'Jakarta', country: 'Indonesia' },
   { code: 'IE', name: 'Europe/Dublin', city: 'Dublin', country: 'Ireland' },
   { code: 'IL', name: 'Asia/Jerusalem', city: 'Jerusalem', country: 'Israel' },
+  { code: 'IN', name: 'Asia/Calcutta', city: 'Calcutta', country: 'India' },
   { code: 'IN', name: 'Asia/Kolkata', city: 'Kolkata', country: 'India' },
   { code: 'IO', name: 'Indian/Chagos', city: 'Chagos', country: 'Mauritius' },
   { code: 'IQ', name: 'Asia/Baghdad', city: 'Baghdad', country: 'Iraq' },
@@ -346,11 +386,14 @@ export default function timezones(req: NextApiRequest, res: NextApiResponse) {
   }
 
   const filteredTimezones = timezoneList.filter(timezone => {
+    const currentTime = getCurrentTime(timezone.name)
     return (
       timezone.name.toLowerCase().includes(searchKey.toLowerCase()) ||
       timezone.country.toLowerCase().includes(searchKey.toLowerCase()) ||
       timezone.city.toLowerCase().includes(searchKey.toLowerCase()) ||
-      timezone.code.toLowerCase().includes(searchKey.toLowerCase())
+      timezone.code.toLowerCase().includes(searchKey.toLowerCase()) ||
+      currentTime.split(' ')[4].toLowerCase().includes(searchKey.toLowerCase()) ||
+      currentTime.split("(")[1].split(")")[0].includes(searchKey.toLowerCase())
     );
   });
 
