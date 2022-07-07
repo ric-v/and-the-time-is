@@ -6,9 +6,10 @@ import { Timezones } from "../functions/timeNow";
 const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) =>
   fetch(input, init).then((res) => res.json());
 
-type Props = {};
-
-const TimezoneSearch = (_props: Props) => {
+/**
+ * TimezoneSearch - component to search for timezones and display the result in dropdown list
+ */
+const TimezoneSearch = () => {
   const [search, setSearch] = React.useState<String | null>("");
   const [selected, setSelected] = React.useState<Timezones | null>(null);
 
@@ -24,7 +25,7 @@ const TimezoneSearch = (_props: Props) => {
   }, [data, error]);
 
   return (
-    <div className="mt-5 sm:mt-10">
+    <div className="mt-2 mb-4 sm:mt-10">
       <div className="w-full">
         <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold">
           Search for timezone
