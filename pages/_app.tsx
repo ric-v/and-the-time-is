@@ -10,7 +10,7 @@ import { useState } from 'react';
 function AndTheTimeIs({ Component, pageProps }: AppProps) {
   return (
     <Provider store={store}>
-      <div className='flex flex-col justify-between min-h-full min-w-full' style={{ backgroundColor: '#1e2122' }}>
+      <div className='flex flex-col justify-between min-h-full min-w-full  bg-gradient-to-br from-slate-700 to-slate-900'>
         <div>
           <Navbar>
             <Component {...pageProps} />
@@ -24,3 +24,5 @@ function AndTheTimeIs({ Component, pageProps }: AppProps) {
 }
 
 export default AndTheTimeIs
+
+//  style={{ backgroundColor: '#1e2122' }}

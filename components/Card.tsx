@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import getCurrentTime, { Timezones } from "../functions/timeNow";
+import { RiCloseFill } from "react-icons/ri";
 import { store } from "../store/store";
 import Modal from "./Modal";
 
@@ -27,48 +28,40 @@ const Card = ({ tzData }: Props) => {
   }, [tzData.name]);
 
   return (
-    <div
+    <div className="flex flex-row justify-between border border-slate-700 shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)]
+    bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-4"
       key={tzData.name}
-      className=" shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)]
-        bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-4"
     >
-      <div className="flex flex-row justify-between text-sm font-medium">
-        <h3
-          className="text-xl leading-6 font-medium text-teal-300 cursor-pointer"
-          id="modal-title"
-          onClick={() => { setSelected(tzData) }}
+      <div>
+        <div className="flex flex-row justify-between text-sm font-medium">
+          <h3
+            className="text-lg leading-6 font-medium text-teal-600 cursor-pointer"
+            id="modal-title"
+            onClick={() => { setSelected(tzData) }}
+          >
+            {" "}
+            {tzData.city} - {tzData.country}
+          </h3>
+        </div>
+        <div className="mt-3 text-gray-500 text-xs truncate cursor-pointer"
+          onClick={() => setSelected(tzData)}
         >
-          {" "}
           {tzData.name}
-        </h3>
+        </div>
+        <div className="mt-3 text-gray-200 text-lg font-semibold cursor-pointer"
+          onClick={() => setSelected(tzData)}
+        >
+          {currentTime}
+        </div>
+      </div>
+      <div>
         <button
           onClick={() =>
             store.dispatch({ type: "timezone/remove", payload: tzData })
           }
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-rose-500"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-          >
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <RiCloseFill size={24} color='gray' />
         </button>
-      </div>
-      <div className="mt-3 text-gray-300 truncate cursor-pointer"
-        onClick={() => setSelected(tzData)}
-      >
-        {tzData.city} - {tzData.country}
-      </div>
-      <div className="mt-3 text-gray-200 font-semibold cursor-pointer"
-        onClick={() => setSelected(tzData)}
-      >
-        {currentTime}
       </div>
       {selected && <Modal timezone={selected} setSelected={setSelected} />}
     </div>
