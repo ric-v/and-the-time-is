@@ -8,12 +8,12 @@ type Props = {
 };
 
 /**
- * Card - Card component for the app to display timezone data in small cards
+ * ListView - component for showing bigger cards
  * 
  * @param props {tzData: Timezones}
  * @returns 
  */
-const Card = ({ tzData }: Props) => {
+const ListView = ({ tzData }: Props) => {
   // get current time to state
   const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name));
   const [selected, setSelected] = React.useState<Timezones | null>(null);
@@ -29,17 +29,17 @@ const Card = ({ tzData }: Props) => {
   return (
     <div
       key={tzData.name}
-      className=" shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)]
-        bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-4"
+      className="shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] 
+      bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-4"
     >
       <div className="flex flex-row justify-between text-sm font-medium">
         <h3
-          className="text-xl leading-6 font-medium text-teal-300 cursor-pointer"
+          className="text-sm md:text-lg leading-6 font-medium text-teal-300 cursor-pointer"
           id="modal-title"
           onClick={() => { setSelected(tzData) }}
         >
           {" "}
-          {tzData.name}
+          {tzData.name} - {tzData.country}
         </h3>
         <button
           onClick={() =>
@@ -60,12 +60,7 @@ const Card = ({ tzData }: Props) => {
           </svg>
         </button>
       </div>
-      <div className="mt-3 text-gray-300 truncate cursor-pointer"
-        onClick={() => setSelected(tzData)}
-      >
-        {tzData.city} - {tzData.country}
-      </div>
-      <div className="mt-3 text-gray-200 font-semibold cursor-pointer"
+      <div className="mt-3 text-gray-200 text-xl md:text-2xl font-semibold cursor-pointer"
         onClick={() => setSelected(tzData)}
       >
         {currentTime}
@@ -75,4 +70,4 @@ const Card = ({ tzData }: Props) => {
   );
 };
 
-export default Card;
+export default ListView;
