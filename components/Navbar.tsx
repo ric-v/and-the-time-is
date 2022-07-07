@@ -11,10 +11,11 @@ type Props = {
 
 /**
  * Navbar component
+ * 
  * @description
  * This component is used to render the navbar
  *
- * @param {Props} props
+ * @param {Props} props {children: React.ReactNode}
  */
 const Navbar = ({ children }: Props) => {
   const [selected, setSelected] = useState<Timezones | null>(null);
@@ -42,11 +43,11 @@ const Navbar = ({ children }: Props) => {
         <div className="grid lg:grid-cols-2">
           <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
             <Link href={"/"}>
-              <a className='text-4xl font-nova-flat md:text-6xl pb-5 hover:text-teal-500'>
+              <a className='text-4xl font-nova-flat md:text-6xl pb-2 hover:text-teal-500'>
                 And the time is ...
               </a>
             </Link>
-            <div className='mt-20 font-nova-flat text-slate-300'>
+            <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
               <p className='text-teal-500 text-lg'>
                 {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
               </p>
@@ -57,14 +58,14 @@ const Navbar = ({ children }: Props) => {
               </p>
             </div>
           </div>
-          <div className='p-2 lg:p-10 mt-2 lg:mt-10'>
+          <div className='p-2 lg:p-10 mt-0 md:mt-10 md:z-10'>
             <TimezoneSearch />
           </div>
         </div>
       </div>
 
       {selected && <Modal timezone={selected} setSelected={setSelected} />}
-      <div className="p-10">{children}</div>
+      <div className="p-2">{children}</div>
     </>
   );
 };

@@ -8,6 +8,12 @@ type Props = {
   setSelected: (timezone: Timezones | null) => void,
 }
 
+/**
+ * Modal - popup component for selected timezone details
+ * 
+ * @param props {timezone: Timezones, setSelected: (timezone: Timezones | null) => void}
+ * @returns 
+ */
 function Modal({ timezone, setSelected }: Props) {
   // get current time to state
   const [currentTime, setCurrentTime] = useState(
@@ -109,20 +115,13 @@ function Modal({ timezone, setSelected }: Props) {
             </div>
             <div className="bg-slate-700 px-4 py-3 sm:px-6 flex flex-row justify-end">
               {isAdded ?
-                <button
-                  type="button"
-                  disabled
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-slate-700 font-medium text-white hover:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500 sm:ml-3  sm:text-sm"
-                  onClick={() => {
-                    setSelected(null);
-                  }}
-                >
-                  Already pinned to dashboard
-                </button>
+                <></>
                 :
                 <button
                   type="button"
-                  className="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-teal-600 font-medium text-white hover:bg-teal-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3"
+                  className="w-full inline-flex justify-center rounded-md border border-transparent 
+                    shadow-sm px-4 py-2 bg-teal-600 font-medium text-clip text-white hover:bg-teal-700 
+                    focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3"
                   onClick={() => {
                     store.dispatch({ type: "timezone/add", payload: timezone });
                     setSelected(null);
@@ -137,7 +136,8 @@ function Modal({ timezone, setSelected }: Props) {
                 onClick={() => {
                   setSelected(null);
                 }}
-              >Cancel
+              >
+                Close
               </button>
             </div>
           </div>
