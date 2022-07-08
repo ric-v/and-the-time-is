@@ -1,18 +1,19 @@
 import '../styles/globals.css';
-
 import { Provider } from 'react-redux';
-
-import Footer from '../components/Footer';
-import Main from '../components/Main';
-import Navbar from '../components/Navbar';
 import { store } from '../store/store';
 
 import type { AppProps } from 'next/app';
+import Head from 'next/head';
 function AndTheTimeIs({ Component, pageProps }: AppProps) {
   return (
-    <Provider store={store}>
-      <Component {...pageProps} />
-    </Provider >
+    <>
+      <Head >
+        <title>And the time is...</title>
+      </Head>
+      <Provider store={store}>
+        <Component {...pageProps} />
+      </Provider >
+    </>
   )
 }
 
