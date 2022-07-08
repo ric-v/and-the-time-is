@@ -1,42 +1,76 @@
-import { configureStore, createAction, createReducer } from "@reduxjs/toolkit";
-import { Timezones } from "../functions/timeNow";
+import { configureStore, createAction, createReducer } from '@reduxjs/toolkit';
 
+import { Timezones } from '../functions/timeNow';
+
+/**
+ * @description - This is the reducer action data type.
+ */
+type storeData = {
+  payload: Timezones;
+  type: string;
+}
+/**
+ * @description - initial state of the store on load.
+ */
 const initState = [] as Timezones[];
 
-const addTzCard = createAction<Timezones>("timezone/add");
-const removeTzCard = createAction<Timezones>("timezone/remove");
+/**
+ * @description - add timezone to the store and update the state & local storage
+ * 
+ * @param state - current state
+ * @param action - action to be performed
+ * @returns new state
+ */
+const addTimezone = createAction<Timezones>("timezone/add");
+const addTimezoneFunc = (state: Timezones[], action: storeData) => {
+  const tz = action.payload;
+  if (!state.find((tzData) => tzData.name === tz.name)) {
+    // add this timezone to local storage
+    localStorage.setItem(
+      "timezones",
+      JSON.stringify([...state, action.payload]),
+    );
+    return [...state, tz];
+  }
+};
 
-const tzReducer = createReducer(initState, (builder) => {
-  builder.addCase(
-    addTzCard, (state, action) => {
-      const tz = action.payload;
-      if (!state.find((tzData) => tzData.name === tz.name)) {
-        // add this timezone to local storage
-        localStorage.setItem(
-          "timezones",
-          JSON.stringify([...state, action.payload]),
-        );
-        return [...state, tz];
-      }
-    });
-  builder.addCase(
-    removeTzCard, (state, action) => {
-      // remove this timezone from local storage
-      localStorage.setItem(
-        "timezones",
-        JSON.stringify(state.filter((tz) => tz.name !== action.payload.name)),
-      );
+/**
+ * @description - remove timezone from the store and update the state & local storage
+ * 
+ * @param state - current state
+ * @param action - action to be performed
+ * @returns new state
+ */
+const removeTimezone = createAction<Timezones>("timezone/remove");
+const removeTimezoneFunc = (state: Timezones[], action: storeData) => {
+  // remove this timezone from local storage
+  localStorage.setItem(
+    "timezones",
+    JSON.stringify(state.filter((tz) => tz.name !== action.payload.name)),
+  );
 
-      const tzData = action.payload;
-      return state.filter(tz => tzData.name !== tz.name);
-    });
+  const tzData = action.payload;
+  return state.filter(tz => tzData.name !== tz.name);
+};
+
+/**
+ * reducer - reducer for the store data
+ */
+const reducers = createReducer(initState, (builder) => {
+
+  // adding new timezone card to dashboard
+  builder.addCase(addTimezone, addTimezoneFunc);
+  builder.addCase(removeTimezone, removeTimezoneFunc);
 });
 
+/**
+ * data store for timezone data
+ */
 export const store = configureStore({
   preloadedState: {
-    timezones: initState,
+    storedata: initState,
   },
   reducer: {
-    timezones: tzReducer,
+    storedata: reducers,
   },
 });

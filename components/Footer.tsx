@@ -1,7 +1,6 @@
-import React from 'react'
-
 /**
- * Footer - Footer component for the app
+ * 
+ * @returns 
  */
 const Footer = () => {
   return (

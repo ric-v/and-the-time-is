@@ -1,15 +1,15 @@
-import React from 'react'
-import { HiViewGrid } from 'react-icons/hi';
+import React, { useEffect, useState } from 'react';
 import { BsGrid3X2GapFill } from 'react-icons/bs';
-import { useEffect, useState } from 'react';
+import { HiViewGrid } from 'react-icons/hi';
+
 import { Timezones } from '../functions/timeNow';
 import { store } from '../store/store';
+import ButtonGroup from './ButtonGroup';
 import Card from './Card';
 import ListView from './ListView';
-import ButtonGroup from './ButtonGroup';
 
 /**
- * Main - Main component for the app
+ * @description - main component for the app
  */
 const Main = () => {
 
@@ -38,7 +38,7 @@ const Main = () => {
     // start interval to get updated timezone list
     const interval = setInterval(() => {
       setTimezones(
-        store.getState().timezones,
+        store.getState().storedata,
       );
     }, 1000);
     return () => clearInterval(interval);
@@ -65,6 +65,8 @@ const Main = () => {
 
       {
         layout === 'grid' ?
+
+          // if layout is grid
           (<>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 p-2 md:p-5 w-full gap-6">
               {
@@ -74,6 +76,8 @@ const Main = () => {
               }
             </div>
           </>) :
+
+          // if layout is list
           (<>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
               {
@@ -84,6 +88,7 @@ const Main = () => {
             </div>
           </>)
       };
+
     </>
   )
 };

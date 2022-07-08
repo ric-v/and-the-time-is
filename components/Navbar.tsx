@@ -1,25 +1,27 @@
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import getCurrentTime, { Timezones } from "../functions/timeNow";
-import { timezoneList } from "../pages/api/timezones";
-import Modal from "./Modal";
-import TimezoneSearch from "./TimezoneSearch";
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
+import getCurrentTime, { Timezones } from '../functions/timeNow';
+import { timezoneList } from '../pages/api/timezones';
+import Modal from './Modal';
+import TimezoneSearch from './TimezoneSearch';
+
+/**
+ * @description Props for Navbar component
+ * @property {React.ReactNode} children - children to render
+ */
 type Props = {
   children: React.ReactNode;
 };
 
+
 /**
- * Navbar component
- * 
- * @description
- * This component is used to render the navbar
- *
- * @param {Props} props {children: React.ReactNode}
+ * @description - Navbar component with local time and timezone search
+ * @param {Props} props
  */
 const Navbar = ({ children }: Props) => {
-  const [selected, setSelected] = useState<Timezones | null>(null);
   // get current time to state
+  const [selected, setSelected] = useState<Timezones | null>(null);
   const [currentTime, setCurrentTime] = useState(
     getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
   );

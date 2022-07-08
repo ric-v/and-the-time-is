@@ -1,18 +1,21 @@
-import React, { useEffect, useState } from "react";
-import getCurrentTime, { Timezones } from "../functions/timeNow";
-import { RiCloseFill } from "react-icons/ri";
-import { store } from "../store/store";
-import Modal from "./Modal";
+import React, { useEffect, useState } from 'react';
+import { RiCloseFill } from 'react-icons/ri';
 
+import getCurrentTime, { Timezones } from '../functions/timeNow';
+import { store } from '../store/store';
+import Modal from './Modal';
+
+/**
+ * @interface Props
+ * @property {string} tzData - timezone to display
+ */
 type Props = {
   tzData: Timezones;
 };
 
 /**
- * ListView - component for showing bigger cards
- * 
- * @param props {tzData: Timezones}
- * @returns 
+ * @description component for showing bigger cards
+ * @param {Props} props
  */
 const ListView = ({ tzData }: Props) => {
   // get current time to state

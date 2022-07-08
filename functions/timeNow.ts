@@ -14,10 +14,9 @@ export type Timezones = {
 }
 
 /**
- * @description
- * get current time in YYYY-MM-DD HH:mm:ss.SSS format
- *
- * @returns {string}
+ * @description get current time in YYYY-MM-DD HH:mm:ss.SSS format
+ * @param {string} timezone
+ * @returns {string} currentTime
  */
 const getCurrentTime = (timezone: string): string => {
   return tz(new Date(), "%B %0d %Y %H:%M:%S %Z (%:z)", timezone);

@@ -1,18 +1,21 @@
-import React, { useState, useEffect } from 'react'
-import { Timezones } from "../functions/timeNow";
-import getCurrentTime from "../functions/timeNow";
+import React, { useEffect, useState } from 'react';
+
+import getCurrentTime, { Timezones } from '../functions/timeNow';
 import { store } from '../store/store';
 
+/**
+ * @interface Props
+ * @property {Timezones} timezone
+ * @property {(timezone: Timezones | null) => void} setSelected
+ */
 type Props = {
   timezone: Timezones,
   setSelected: (timezone: Timezones | null) => void,
 }
 
 /**
- * Modal - popup component for selected timezone details
- * 
- * @param props {timezone: Timezones, setSelected: (timezone: Timezones | null) => void}
- * @returns 
+ * @description - modal window for selected timezone details
+ * @param {Props} props
  */
 function Modal({ timezone, setSelected }: Props) {
   // get current time to state
@@ -31,7 +34,7 @@ function Modal({ timezone, setSelected }: Props) {
   }, [timezone.name]);
 
   // check if the timezone is added to homescreen via store
-  const isAdded = store.getState().timezones.find(
+  const isAdded = store.getState().storedata.find(
     (tz) => tz.name === timezone.name,
   );
 
@@ -47,6 +50,7 @@ function Modal({ timezone, setSelected }: Props) {
                 <div className="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
                   <h3 className="text-xl leading-6 font-medium text-teal-500" id="modal-title"> 📌 {timezone.name}</h3>
                   <div className="mt-5">
+
                     {/* table with timezone details */}
                     <div className="table-responsive">
                       <table className="table-auto w-full">
@@ -113,10 +117,11 @@ function Modal({ timezone, setSelected }: Props) {
                 </div>
               </div>
             </div>
+
             <div className="bg-slate-700 px-4 py-3 sm:px-6 flex flex-row justify-end">
-              {isAdded ?
-                <></>
-                :
+
+              {/* display add to home button only if its not added already */}
+              {!isAdded &&
                 <button
                   type="button"
                   className="w-full inline-flex justify-center rounded-md border border-transparent 
@@ -130,6 +135,7 @@ function Modal({ timezone, setSelected }: Props) {
                   Pin to dashboard
                 </button>
               }
+
               <button
                 type="button"
                 className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-gray-300 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"

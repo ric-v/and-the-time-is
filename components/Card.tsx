@@ -1,23 +1,27 @@
-import React, { useEffect, useState } from "react";
-import getCurrentTime, { Timezones } from "../functions/timeNow";
-import { RiCloseFill } from "react-icons/ri";
-import { store } from "../store/store";
-import Modal from "./Modal";
+import { useEffect, useState } from 'react';
+import { RiCloseFill } from 'react-icons/ri';
 
+import getCurrentTime, { Timezones } from '../functions/timeNow';
+import { store } from '../store/store';
+import Modal from './Modal';
+
+/**
+ * @interface Props
+ * @property {string} tzData - timezone to display
+ */
 type Props = {
   tzData: Timezones;
 };
 
 /**
- * Card - Card component for the app to display timezone data in small cards
- * 
- * @param props {tzData: Timezones}
+ * @description Card component for the app to display timezone data in small cards
+ * @param {Props} props
  * @returns 
  */
 const Card = ({ tzData }: Props) => {
   // get current time to state
   const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name));
-  const [selected, setSelected] = React.useState<Timezones | null>(null);
+  const [selected, setSelected] = useState<Timezones | null>(null);
 
   // set interval to update time
   useEffect(() => {
