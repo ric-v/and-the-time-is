@@ -397,7 +397,7 @@ const timezones = (req: NextApiRequest, res: NextApiResponse) => {
   // search criteria is the timezone code / name / city / country / timezone abbreviation / offset
   // return the filtered timezone list
   res.status(200).json(timezoneList.filter(timezone => {
-    const currentTime = getCurrentTime(timezone.name)
+    const currentTime = getCurrentTime(timezone.name, "%B %0d %Y %H:%M:%S %Z (%:z)")
     return (
       timezone.name.toLowerCase().includes(searchKey) ||
       timezone.city.toLowerCase().includes(searchKey) ||

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 
 import getCurrentTime, { Timezones } from '../functions/timeNow';
 import { timezoneList } from '../pages/api/timezones';
-import Modal from './Modal';
+import TimestampModal from './TimestampModal';
 import TimezoneSearch from './TimezoneSearch';
 
 /**
@@ -23,14 +23,14 @@ const Navbar = ({ children }: Props) => {
   // get current time to state
   const [selected, setSelected] = useState<Timezones | null>(null);
   const [currentTime, setCurrentTime] = useState(
-    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
+    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, "%B %0d %Y %H:%M:%S %Z (%:z)"),
   );
 
   // set interval to update time
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(
-        getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
+        getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, "%B %0d %Y %H:%M:%S %Z (%:z)"),
       );
     }, 100);
     return () => clearInterval(interval);
@@ -66,7 +66,7 @@ const Navbar = ({ children }: Props) => {
         </div>
       </div>
 
-      {selected && <Modal timezone={selected} setSelected={setSelected} />}
+      {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
       <div className="p-2">{children}</div>
     </>
   );

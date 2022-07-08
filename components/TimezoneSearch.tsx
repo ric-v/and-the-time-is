@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import useSWR from 'swr';
 
 import { Timezones } from '../functions/timeNow';
-import Modal from './Modal';
+import TimestampModal from './TimestampModal';
 
 const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) => fetch(input, init).then((res) => res.json());
 
@@ -11,7 +11,7 @@ const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) => fetch
  */
 const TimezoneSearch = () => {
   // set initial state for search and selection
-  const [search, setSearch] = React.useState<String | null>("");
+  const [search, setSearch] = React.useState("");
   const [selected, setSelected] = React.useState<Timezones | null>(null);
 
   // fetch timezon data from API and get data
@@ -40,6 +40,7 @@ const TimezoneSearch = () => {
           className="h-14 w-full bg-slate-700 rounded-3xl px-5 pr-14 
             shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)] focus:outline-none sm:px-5"
           placeholder="Search for a timezone code / timezone location / city..."
+          value={search}
           onChange={(e) => {
             setSearch(e.target.value);
           }}
@@ -76,7 +77,7 @@ const TimezoneSearch = () => {
       </div>
 
       {/* load modal on selected timezone data */}
-      {selected && <Modal timezone={selected} setSelected={setSelected} />}
+      {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
     </div>
   );
 };

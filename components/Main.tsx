@@ -6,6 +6,7 @@ import { Timezones } from '../functions/timeNow';
 import { store } from '../store/store';
 import ButtonGroup from './ButtonGroup';
 import Card from './Card';
+import DateFormatModal from './DateFormatModal';
 import ListView from './ListView';
 
 /**
@@ -53,14 +54,20 @@ const Main = () => {
         <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'grid'} position='right' >
           <BsGrid3X2GapFill size={22} color={layout === 'grid' ? 'gray' : 'white'} />
         </ButtonGroup>
-        {/* <div className='mx-4'>
-          <select className='w-auto md:w-96 h-10 rounded-lg px-2 drop-shadow-lg text-lg bg-transparent border border-gray-500 duration-300 
-          hover:bg-slate-800 focus:bg-slate-800 focus:ring-2 focus:ring-slate-600 text-gray-300' >
-            <option value="">Select a date-time format...</option>
-            <option value={'mmm dd yyyy hh:MM:ss Z (z)'}>mmm dd yyyy hh:MM:ss Z (z)</option>
-            <option value={'mm/dd/yyyy hh:MM:ss Z'}>mm/dd/yyyy hh:MM:ss Z</option>
-          </select>
-        </div> */}
+        <div className='mx-4'>
+          <button
+            type="button"
+            className="w-full inline-flex justify-center rounded-md border border-transparent 
+                    shadow-sm px-4 py-2 bg-teal-600 font-medium text-clip text-white hover:bg-teal-700 
+                    focus:outline-none sm:ml-3"
+            onClick={() => {
+              setFormatPickerSelected(true);
+            }}
+          >
+            change date format
+          </button>
+
+        </div>
       </div>
 
       {
@@ -89,6 +96,7 @@ const Main = () => {
           </>)
       };
 
+      {formatPickerSelected && <DateFormatModal setFormatPickerSelected={setFormatPickerSelected} />}
     </>
   )
 };

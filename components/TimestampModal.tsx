@@ -17,17 +17,17 @@ type Props = {
  * @description - modal window for selected timezone details
  * @param {Props} props
  */
-function Modal({ timezone, setSelected }: Props) {
+function TimestampModal({ timezone, setSelected }: Props) {
   // get current time to state
   const [currentTime, setCurrentTime] = useState(
-    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
+    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, "%B %0d %Y %H:%M:%S %Z (%:z)"),
   );
 
   // set interval to update time
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(
-        getCurrentTime(timezone.name),
+        getCurrentTime(timezone.name, "%B %0d %Y %H:%M:%S %Z (%:z)"),
       );
     }, 100);
     return () => clearInterval(interval);
@@ -40,7 +40,7 @@ function Modal({ timezone, setSelected }: Props) {
 
   return (
     <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+      <div className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity"></div>
 
       <div className="fixed z-10 inset-0 overflow-y-auto">
         <div className="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
@@ -153,4 +153,4 @@ function Modal({ timezone, setSelected }: Props) {
   )
 }
 
-export default Modal
+export default TimestampModal

@@ -3,7 +3,7 @@ import { RiCloseFill } from 'react-icons/ri';
 
 import getCurrentTime, { Timezones } from '../functions/timeNow';
 import { store } from '../store/store';
-import Modal from './Modal';
+import TimestampModal from './TimestampModal';
 
 /**
  * @interface Props
@@ -19,13 +19,13 @@ type Props = {
  */
 const ListView = ({ tzData }: Props) => {
   // get current time to state
-  const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name));
+  const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name, "%B %0d %Y %H:%M:%S %Z (%:z)"));
   const [selected, setSelected] = React.useState<Timezones | null>(null);
 
   // set interval to update time
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(getCurrentTime(tzData.name));
+      setCurrentTime(getCurrentTime(tzData.name, "%B %0d %Y %H:%M:%S %Z (%:z)"));
     }, 100);
     return () => clearInterval(interval);
   }, [tzData.name]);
@@ -38,15 +38,14 @@ const ListView = ({ tzData }: Props) => {
       <div>
         <div className="flex flex-row justify-between text-sm font-medium">
           <h3
-            className="text-sm leading-0 font-medium text-teal-600 cursor-pointer"
+            className="text-sm leading-0 font-medium truncate text-teal-600 cursor-pointer"
             id="modal-title"
             onClick={() => { setSelected(tzData) }}
           >
-            {" "}
             {tzData.name} - {tzData.country}
           </h3>
         </div>
-        <div className="mt-3 text-gray-200 text-lg md:text-2xl font-semibold cursor-pointer"
+        <div className="mt-3 text-gray-200 text-lg truncate md:text-2xl font-semibold cursor-pointer"
           onClick={() => setSelected(tzData)}
         >
           {currentTime}
@@ -61,7 +60,7 @@ const ListView = ({ tzData }: Props) => {
           <RiCloseFill size={24} color='gray' />
         </button>
       </div>
-      {selected && <Modal timezone={selected} setSelected={setSelected} />}
+      {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
     </div>
   );
 };
