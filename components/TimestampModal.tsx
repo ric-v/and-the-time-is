@@ -20,21 +20,21 @@ type Props = {
 function TimestampModal({ timezone, setSelected }: Props) {
   // get current time to state
   const [currentTime, setCurrentTime] = useState(
-    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, "%B %0d %Y %H:%M:%S %Z (%:z)"),
+    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
   );
 
   // set interval to update time
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(
-        getCurrentTime(timezone.name, "%B %0d %Y %H:%M:%S %Z (%:z)"),
+        getCurrentTime(timezone.name, store.getState().storedata.dateFormat),
       );
     }, 100);
     return () => clearInterval(interval);
   }, [timezone.name]);
 
   // check if the timezone is added to homescreen via store
-  const isAdded = store.getState().storedata.find(
+  const isAdded = store.getState().storedata.timezones.find(
     (tz) => tz.name === timezone.name,
   );
 
@@ -128,7 +128,7 @@ function TimestampModal({ timezone, setSelected }: Props) {
                     shadow-sm px-4 py-2 bg-teal-600 font-medium text-clip text-white hover:bg-teal-700 
                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3"
                   onClick={() => {
-                    store.dispatch({ type: "timezone/add", payload: timezone });
+                    store.dispatch({ type: "timezone/add", payload: { timezone: timezone, dateFormat: '' } });
                     setSelected(null);
                   }}
                 >

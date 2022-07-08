@@ -5,15 +5,25 @@ import { Timezones } from '../functions/timeNow';
 /**
  * @description - This is the reducer action data type.
  */
-type storeData = {
-  payload: Timezones;
-  type: string;
+type actionData = {
+  timezone: Timezones;
+  dateFormat: string;
 }
+
+type storeData = {
+  timezones: Timezones[];
+  dateFormat: string;
+}
+
 /**
  * @description - initial state of the store on load.
  */
-const initState = [] as Timezones[];
+const initState = {
+  timezones: [] as Timezones[],
+  dateFormat: "%b %d %Y %H:%M:%S %Z (%:z)",
+} as storeData;
 
+const addTimezone = createAction<actionData>("timezone/add");
 /**
  * @description - add timezone to the store and update the state & local storage
  * 
@@ -21,19 +31,19 @@ const initState = [] as Timezones[];
  * @param action - action to be performed
  * @returns new state
  */
-const addTimezone = createAction<Timezones>("timezone/add");
-const addTimezoneFunc = (state: Timezones[], action: storeData) => {
-  const tz = action.payload;
-  if (!state.find((tzData) => tzData.name === tz.name)) {
+const addTimezoneFunc = (state: storeData, action: { payload: actionData; type: string; }) => {
+  const tz = action.payload.timezone;
+  if (!state.timezones.find((tzData) => tzData.name === tz.name)) {
     // add this timezone to local storage
     localStorage.setItem(
       "timezones",
-      JSON.stringify([...state, action.payload]),
+      JSON.stringify([...state.timezones, action.payload.timezone]),
     );
-    return [...state, tz];
+    return { ...state, timezones: [...state.timezones, action.payload.timezone] };
   }
 };
 
+const removeTimezone = createAction<actionData>("timezone/remove");
 /**
  * @description - remove timezone from the store and update the state & local storage
  * 
@@ -41,16 +51,29 @@ const addTimezoneFunc = (state: Timezones[], action: storeData) => {
  * @param action - action to be performed
  * @returns new state
  */
-const removeTimezone = createAction<Timezones>("timezone/remove");
-const removeTimezoneFunc = (state: Timezones[], action: storeData) => {
+const removeTimezoneFunc = (state: storeData, action: { payload: actionData; type: string; }): storeData => {
   // remove this timezone from local storage
   localStorage.setItem(
     "timezones",
-    JSON.stringify(state.filter((tz) => tz.name !== action.payload.name)),
+    JSON.stringify(state.timezones.filter((tz) => tz.name !== action.payload.timezone.name)),
   );
 
-  const tzData = action.payload;
-  return state.filter(tz => tzData.name !== tz.name);
+  const tzData = action.payload.timezone;
+  return { ...state, timezones: state.timezones.filter((tz) => tz.name !== tzData.name) };
+};
+
+const setDateFormat = createAction<string>("dateformat/update");
+/**
+ * @description - remove timezone from the store and update the state & local storage
+ * 
+ * @param state - current state
+ * @param action - action to be performed
+ * @returns new state
+ */
+const dateFormatSetFunc = (state: storeData, action: { payload: string; type: string; }) => {
+  // store the value to local storage
+  localStorage.setItem("dateFormat", action.payload);
+  return { ...state, dateFormat: action.payload };
 };
 
 /**
@@ -61,6 +84,7 @@ const reducers = createReducer(initState, (builder) => {
   // adding new timezone card to dashboard
   builder.addCase(addTimezone, addTimezoneFunc);
   builder.addCase(removeTimezone, removeTimezoneFunc);
+  builder.addCase(setDateFormat, dateFormatSetFunc);
 });
 
 /**

@@ -10,6 +10,7 @@ class CustomHeaders extends Document {
     return (
       <Html>
         <Head>
+          <title>And the time is...</title>
           <link rel="preconnect" href="https://fonts.googleapis.com" />
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link href="https://fonts.googleapis.com/css2?family=Nova+Flat&display=swap" rel="stylesheet" />

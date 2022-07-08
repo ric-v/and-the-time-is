@@ -20,13 +20,13 @@ type Props = {
  */
 const Card = ({ tzData }: Props) => {
   // get current time to state
-  const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name, "%B %0d %Y %H:%M:%S %Z (%:z)"));
+  const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name, store.getState().storedata.dateFormat));
   const [selected, setSelected] = useState<Timezones | null>(null);
 
   // set interval to update time
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(getCurrentTime(tzData.name, "%B %0d %Y %H:%M:%S %Z (%:z)"));
+      setCurrentTime(getCurrentTime(tzData.name, store.getState().storedata.dateFormat));
     }, 100);
     return () => clearInterval(interval);
   }, [tzData.name]);
@@ -61,7 +61,7 @@ const Card = ({ tzData }: Props) => {
       <div>
         <button
           onClick={() =>
-            store.dispatch({ type: "timezone/remove", payload: tzData })
+            store.dispatch({ type: "timezone/remove", payload: { timezone: tzData, dateFormat: '' } })
           }
         >
           <RiCloseFill size={24} color='gray' />

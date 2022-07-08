@@ -18,10 +18,14 @@ type Props = {
  * @param {Props} props
  */
 function DateFormatModal({ setFormatPickerSelected }: Props) {
-  const defFormatString = "B d Y H:M:S Z (z)";
-  const [formattedTime, setFormattedTime] = useState(getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, "%B %0d %Y %H:%M:%S %Z (%:z)"));
+  const defFormatString = "b d Y H:M:S Z (z)";
+  const [formattedTime, setFormattedTime] = useState(getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat));
   const [expandInstruction, setExpandInstruction] = useState(false);
-  const [formatString, setFormatString] = useState(defFormatString);
+  const [formatString, setFormatString] = useState(
+    store.getState().storedata.dateFormat.
+      replaceAll(/%:/g, "").
+      replaceAll(/%/g, "")
+  );
 
   // date formaters for instruction table
   const dateformaters = [
@@ -76,7 +80,8 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
     </tr>
   )
 
-  useEffect(() => {
+  // generate date format basedon the timeformatters
+  const generateDateFormat = (formatString: string) => {
 
     let formatInput = formatString;
     // replace each character with % character
@@ -88,9 +93,13 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
         formatInput = formatInput.replace(char, format);
       }
     });
+    return formatInput;
+  }
+
+  useEffect(() => {
 
     // set the date time in given format
-    setFormattedTime(getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, formatInput));
+    setFormattedTime(getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, generateDateFormat(formatString)));
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formatString])
@@ -104,7 +113,7 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
           <div className="relative bg-slate-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
             <div className="bg-slate-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <h3 className="text-2xl leading-6 font-medium text-teal-500 mb-2" id="modal-title">Date format modifier</h3>
-              <p className='text-gray-500 text-sm'>update the date time format of your choice!</p>
+              <p className='text-gray-500 text-sm'>update the date time format to suit your choice!</p>
               <button
                 className='text-teal-600 text-sm'
                 onClick={() => setExpandInstruction(!expandInstruction)}
@@ -149,22 +158,6 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
               <p className='text-teal-400 text-center py-2'>
                 {formattedTime}
               </p>
-              {/* <div className='flex flex-row'>
-                <button
-                  type="button"
-                  className="w-full bg-teal-700 mx-2 md:mx-5 mt-2 md:mt-4 p-4 rounded-lg md:rounded-full text-white text-sm 
-                  leading-tight focus:outline-none hover:bg-teal-600 hover:text-white"
-                >
-                  Apply
-                </button>
-                <button
-                  type="button"
-                  className="w-full bg-gray-600 mx-2 md:mx-5 mt-2 md:mt-4 p-4 rounded-lg md:rounded-full text-white text-sm 
-                    leading-tight focus:outline-none hover:bg-gray-700 hover:text-white"
-                >
-                  Reset
-                </button>
-              </div> */}
             </div>
 
             <div className="bg-slate-700 px-4 py-3 sm:px-6 flex flex-row justify-end">
@@ -174,7 +167,7 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
                     shadow-sm px-4 py-2 bg-teal-600 font-medium text-white hover:bg-teal-700 
                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 sm:ml-3"
                 onClick={() => {
-                  // store.dispatch({ type: "timezone/add", payload: timezone });
+                  store.dispatch({ type: "dateformat/update", payload: generateDateFormat(formatString) });
                   setFormatPickerSelected(false);
                 }}
               >

@@ -15,10 +15,9 @@ import ListView from './ListView';
 const Main = () => {
 
   // get timezones from local storage
-  const [timezones, setTimezones] = useState<Timezones[]>();
+  const [timezones, setTimezones] = useState<Timezones[]>([]);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
   const [formatPickerSelected, setFormatPickerSelected] = useState(false);
-  const [formatPicker, setFormatPicker] = useState<string>('');
 
   // use effect to get timezones from local storage and layout from local storage
   // check for update from redux store
@@ -27,19 +26,25 @@ const Main = () => {
     const layoutLocal = localStorage.getItem('layout') as 'grid' | 'list';
     setLayout(layoutLocal ? layoutLocal : 'grid');
 
+    // fetch date format stored in localstorage
+    const dateFormatLocal = localStorage.getItem('dateFormat') as string;
+    if (dateFormatLocal) {
+      store.dispatch({ type: "dateformat/update", payload: dateFormatLocal });
+    }
+
     // get timezones from local storage
     const tzs = JSON.parse(localStorage.getItem("timezones") || "[]") as Timezones[];
     if (tzs) {
       // add to store
       tzs.forEach((tz) => {
-        store.dispatch({ type: "timezone/add", payload: tz });
+        store.dispatch({ type: "timezone/add", payload: { timezone: tz, dateFormat: '' } });
       });
     }
 
     // start interval to get updated timezone list
     const interval = setInterval(() => {
       setTimezones(
-        store.getState().storedata,
+        store.getState().storedata.timezones,
       );
     }, 1000);
     return () => clearInterval(interval);
@@ -77,7 +82,7 @@ const Main = () => {
           (<>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 p-2 md:p-5 w-full gap-6">
               {
-                timezones?.map((tzData) => (
+                timezones && timezones.map((tzData) => (
                   <Card key={tzData.name} tzData={tzData} />
                 ))
               }
@@ -88,7 +93,7 @@ const Main = () => {
           (<>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
               {
-                timezones?.map((tzData) => (
+                timezones && timezones.map((tzData) => (
                   <ListView key={tzData.name} tzData={tzData} />
                 ))
               }
