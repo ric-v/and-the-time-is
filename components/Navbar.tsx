@@ -42,7 +42,7 @@ const Navbar = () => {
           sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
         <div className="grid lg:grid-cols-2">
           <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
-            <Link href={"/About"}>
+            <Link href={"/"}>
               <a className='text-4xl font-nova-flat md:text-6xl pb-2 hover:text-teal-500'>
                 And the time is ...
               </a>
