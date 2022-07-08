@@ -1,5 +1,6 @@
-import { NextApiRequest, NextApiResponse } from "next"
-import getCurrentTime from "../../functions/timeNow";
+import { NextApiRequest, NextApiResponse } from 'next';
+
+import getCurrentTime from '../../functions/timeNow';
 
 // source: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 export const timezoneList = [
@@ -377,25 +378,36 @@ export const timezoneList = [
   { code: 'ZW', name: 'Africa/Harare', city: 'Harare', country: 'Zimbabwe' }
 ]
 
-export default function timezones(req: NextApiRequest, res: NextApiResponse) {
+/**
+ * @description Get the timezone name from the timezone code
+ * @param req - request object
+ * @param res - response object
+ */
+const timezones = (req: NextApiRequest, res: NextApiResponse) => {
 
-  const searchKey = req.query.search as string;
+  // Get the timezone code from the request
+  const searchKey = (req.query.search as string).toLowerCase();
 
+  // if the search key is not provided, return none
   if (!searchKey) {
     return res.status(200).json([]);
   }
 
-  const filteredTimezones = timezoneList.filter(timezone => {
-    const currentTime = getCurrentTime(timezone.name)
+  // filter timezone list by the search key
+  // search criteria is the timezone code / name / city / country / timezone abbreviation / offset
+  // return the filtered timezone list
+  res.status(200).json(timezoneList.filter(timezone => {
+    const currentTime = getCurrentTime(timezone.name, "%Z %:z %z")
     return (
-      timezone.name.toLowerCase().includes(searchKey.toLowerCase()) ||
-      timezone.country.toLowerCase().includes(searchKey.toLowerCase()) ||
-      timezone.city.toLowerCase().includes(searchKey.toLowerCase()) ||
-      timezone.code.toLowerCase().includes(searchKey.toLowerCase()) ||
-      currentTime.split(' ')[4].toLowerCase().includes(searchKey.toLowerCase()) ||
-      currentTime.split("(")[1].split(")")[0].includes(searchKey.toLowerCase())
+      timezone.name.toLowerCase().includes(searchKey) ||
+      timezone.city.toLowerCase().includes(searchKey) ||
+      timezone.code.toLowerCase().includes(searchKey) ||
+      timezone.country.toLowerCase().includes(searchKey) ||
+      currentTime.split(' ')[0].toLowerCase().includes(searchKey) ||
+      currentTime.split(" ")[1].includes(searchKey) ||
+      currentTime.split(" ")[2].includes(searchKey)
     );
-  });
-
-  res.status(200).json(filteredTimezones)
+  }))
 }
+
+export default timezones;

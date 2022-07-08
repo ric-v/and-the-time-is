@@ -1,28 +1,32 @@
-import React, { useEffect, useState } from "react";
-import getCurrentTime, { Timezones } from "../functions/timeNow";
-import { RiCloseFill } from "react-icons/ri";
-import { store } from "../store/store";
-import Modal from "./Modal";
+import { useEffect, useState } from 'react';
+import { RiCloseFill } from 'react-icons/ri';
 
+import getCurrentTime, { Timezones } from '../functions/timeNow';
+import { store } from '../store/store';
+import TimestampModal from './TimestampModal';
+
+/**
+ * @interface Props
+ * @property {string} tzData - timezone to display
+ */
 type Props = {
   tzData: Timezones;
 };
 
 /**
- * Card - Card component for the app to display timezone data in small cards
- * 
- * @param props {tzData: Timezones}
+ * @description Card component for the app to display timezone data in small cards
+ * @param {Props} props
  * @returns 
  */
 const Card = ({ tzData }: Props) => {
   // get current time to state
-  const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name));
-  const [selected, setSelected] = React.useState<Timezones | null>(null);
+  const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name, store.getState().storedata.dateFormat));
+  const [selected, setSelected] = useState<Timezones | null>(null);
 
   // set interval to update time
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(getCurrentTime(tzData.name));
+      setCurrentTime(getCurrentTime(tzData.name, store.getState().storedata.dateFormat));
     }, 100);
     return () => clearInterval(interval);
   }, [tzData.name]);
@@ -35,7 +39,7 @@ const Card = ({ tzData }: Props) => {
       <div>
         <div className="flex flex-row justify-between text-sm font-medium">
           <h3
-            className="text-lg leading-6 font-medium text-teal-600 cursor-pointer"
+            className="text-lg leading-6 font-medium truncate text-teal-600 cursor-pointer"
             id="modal-title"
             onClick={() => { setSelected(tzData) }}
           >
@@ -48,7 +52,7 @@ const Card = ({ tzData }: Props) => {
         >
           {tzData.name}
         </div>
-        <div className="mt-3 text-gray-200 text-lg font-semibold cursor-pointer"
+        <div className="mt-3 text-gray-200 text-lg truncate font-semibold cursor-pointer"
           onClick={() => setSelected(tzData)}
         >
           {currentTime}
@@ -57,13 +61,13 @@ const Card = ({ tzData }: Props) => {
       <div>
         <button
           onClick={() =>
-            store.dispatch({ type: "timezone/remove", payload: tzData })
+            store.dispatch({ type: "timezone/remove", payload: { timezone: tzData, dateFormat: '' } })
           }
         >
           <RiCloseFill size={24} color='gray' />
         </button>
       </div>
-      {selected && <Modal timezone={selected} setSelected={setSelected} />}
+      {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
     </div>
   );
 };
