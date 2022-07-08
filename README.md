@@ -1,8 +1,12 @@
 # and-the-time-is
 
+[![CodeQL](https://github.com/dev-asterix/and-the-time-is/actions/workflows/codeql.yml/badge.svg)](https://github.com/dev-asterix/and-the-time-is/actions/workflows/codeql.yml)
+![latest](https://badgen.net/github/tag/dev-asterix/and-the-time-is)
+![license](https://badgen.net/github/license/dev-asterix/and-the-time-is)
+
 The app displays the current time in local timezone. The time is displayed in 24-hour format. User can add other timezones to the list. The app displays the time in the selected timezone.
 
-**Find the app here: <https://and-the-time-is.vercel.app/>**
+**Find the app here: <https://andthetimeis.vercel.app/>**
 
 ## Getting Started
 
@@ -20,12 +24,20 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 
 ## Features
 
-- [x] ~~Display current time in local timezone~~
-- [x] ~~Search other timezones by code or timezone name~~
-- [ ] Add selected timestamps to homepage
-- [ ] Get complete list of timezones
-- [ ] Add timezone to favorites
-- [ ] Add timezone to history
+- [x] Display current time in local timezone
+- [x] Search other timezones by code or timezone name
+- [x] Add selected timestamps to homepage
+- [x] Add timezone to history
+- [x] Modify date time formatter with custom / templates
+- [x] Toggle view for smaller / bigger cards
+
+## Technologies Used
+
+- [Next.JS](https://nextjs.org)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [Redux-Toolkit](https://redux-toolkit.js.org/)
+
+Thanks to <https://github.com/bigeasy/timezone> for the timezone mapping package
 
 ## Learn More
 
