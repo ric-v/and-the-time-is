@@ -28,12 +28,6 @@ const Navbar = () => {
     return () => clearInterval(interval);
   }, []);
 
-  // store.subscribe(() => {
-  //   setCurrentTime(
-  //     getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
-  //   );
-  // });
-
   return (
     <>
       <div
@@ -43,7 +37,7 @@ const Navbar = () => {
         <div className="grid lg:grid-cols-2">
           <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
             <Link href={"/"}>
-              <a className='text-4xl font-nova-flat md:text-6xl pb-2 hover:text-teal-500'>
+              <a className='text-4xl font-nova-flat md:text-6xl pb-2 animate-pulse hover:text-teal-500'>
                 And the time is ...
               </a>
             </Link>
