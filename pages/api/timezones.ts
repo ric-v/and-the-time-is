@@ -397,14 +397,15 @@ const timezones = (req: NextApiRequest, res: NextApiResponse) => {
   // search criteria is the timezone code / name / city / country / timezone abbreviation / offset
   // return the filtered timezone list
   res.status(200).json(timezoneList.filter(timezone => {
-    const currentTime = getCurrentTime(timezone.name, "%B %0d %Y %H:%M:%S %Z (%:z)")
+    const currentTime = getCurrentTime(timezone.name, "%Z %:z %z")
     return (
       timezone.name.toLowerCase().includes(searchKey) ||
       timezone.city.toLowerCase().includes(searchKey) ||
       timezone.code.toLowerCase().includes(searchKey) ||
       timezone.country.toLowerCase().includes(searchKey) ||
-      currentTime.split(' ')[4].toLowerCase().includes(searchKey) ||
-      currentTime.split("(")[1].split(")")[0].includes(searchKey)
+      currentTime.split(' ')[0].toLowerCase().includes(searchKey) ||
+      currentTime.split(" ")[1].includes(searchKey) ||
+      currentTime.split(" ")[2].includes(searchKey)
     );
   }))
 }

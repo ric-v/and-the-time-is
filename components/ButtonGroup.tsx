@@ -25,9 +25,9 @@ const ButtonGroup = ({ children, layout, toLayout, position, setLayout }: Props)
   // css classes for button group
   let cssClass = "bg-transparent border p-1.5 border-gray-300 hover:bg-slate-700 disabled:border-gray-500";
   if (position === 'left') {
-    cssClass += " rounded-r-lg";
-  } else if (position === 'right') {
     cssClass += " rounded-l-lg";
+  } else if (position === 'right') {
+    cssClass += " rounded-r-lg";
   }
 
   return (

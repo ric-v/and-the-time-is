@@ -86,7 +86,8 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
     let formatInput = formatString;
     // replace each character with % character
     formatInput.split('').forEach((char) => {
-      if (![' ', '-', ':', '.', '/', '\\', '\'', '"', '(', ')', '[', ']', '{', '}', ';', '?', '>', '<', '*', '&', '^', '%', '$', '#', '@', '!', '~', '`'].includes(char)) {
+      if (![' ', '-', ':', '.', '/', '\\', '\'', '"', '(', ')', '[', ']', '{', '}', ';', '?', '>',
+        '<', '*', '&', '^', '%', '$', '#', '@', '!', '~', '`'].includes(char)) {
 
         // find the format for this display from dateformaters
         const format = dateformaters.find((formatter) => formatter.display === char)?.format as string;
@@ -97,7 +98,6 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
   }
 
   useEffect(() => {
-
     // set the date time in given format
     setFormattedTime(getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, generateDateFormat(formatString)));
 

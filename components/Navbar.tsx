@@ -8,19 +8,10 @@ import TimestampModal from './TimestampModal';
 import TimezoneSearch from './TimezoneSearch';
 
 /**
- * @description Props for Navbar component
- * @property {React.ReactNode} children - children to render
- */
-type Props = {
-  children: React.ReactNode;
-};
-
-
-/**
  * @description - Navbar component with local time and timezone search
  * @param {Props} props
  */
-const Navbar = ({ children }: Props) => {
+const Navbar = () => {
   // get current time to state
   const [selected, setSelected] = useState<Timezones | null>(null);
   const [currentTime, setCurrentTime] = useState(
@@ -51,7 +42,7 @@ const Navbar = ({ children }: Props) => {
           sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
         <div className="grid lg:grid-cols-2">
           <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
-            <Link href={"/"}>
+            <Link href={"/About"}>
               <a className='text-4xl font-nova-flat md:text-6xl pb-2 hover:text-teal-500'>
                 And the time is ...
               </a>
@@ -74,7 +65,6 @@ const Navbar = ({ children }: Props) => {
       </div>
 
       {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
-      <div className="p-2">{children}</div>
     </>
   );
 };

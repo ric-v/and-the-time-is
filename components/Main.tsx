@@ -52,13 +52,14 @@ const Main = () => {
 
   return (
     <>
-      <div className="flex flex-row-reverse pr-5">
-        <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'list'} position='left' >
+      <div className="flex flex-row-reverse pr-5 mt-5">
+        <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'list'} position='right' >
           <HiViewGrid size={22} color={layout === 'list' ? 'gray' : 'white'} />
         </ButtonGroup>
-        <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'grid'} position='right' >
+        <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'grid'} position='left' >
           <BsGrid3X2GapFill size={22} color={layout === 'grid' ? 'gray' : 'white'} />
         </ButtonGroup>
+
         <div className='mx-4'>
           <button
             type="button"
@@ -69,7 +70,7 @@ const Main = () => {
               setFormatPickerSelected(true);
             }}
           >
-            change date format
+            Change date format
           </button>
 
         </div>

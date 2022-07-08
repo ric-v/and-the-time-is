@@ -85,7 +85,7 @@ function TimestampModal({ timezone, setSelected }: Props) {
                               :
                             </td>
                             <td className="text-left text-sm leading-5 font-bold text-gray-300">
-                              {currentTime.split(' ')[4]}
+                              {getCurrentTime(timezone.name, "%Z")}
                             </td>
                           </tr>
                           <tr>
@@ -96,7 +96,7 @@ function TimestampModal({ timezone, setSelected }: Props) {
                               :
                             </td>
                             <td className="text-left text-sm leading-5 font-bold text-gray-300">
-                              {currentTime.split("(")[1].split(")")[0]}
+                              {getCurrentTime(timezone.name, "%:z")}
                             </td>
                           </tr>
                           <tr>
