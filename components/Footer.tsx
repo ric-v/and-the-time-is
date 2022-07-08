@@ -37,11 +37,11 @@ const Footer = ({ hidden }: Props) => {
   return (
     <div className='flex flex-col justify-center text-center mt-10 mb-5 bg-slate-900'>
       <div className="flex flex-row justify-center">
-        {/* <div className='grid grid-cols-2 md:grid-cols-2 text-center p-5'>
-          {footerNav('the time is 🕟', '/', 'left')}
+        <div className='grid grid-cols-2 md:grid-cols-2 text-center p-5'>
+          {/* {footerNav('the time is 🕟', '/', 'left')}
           {footerNav('the time was? ⌚', '/TimeWas', 'left')}
-          {footerNav('make it better 🚀', 'https://github.com/dev-asterix/and-the-time-is', 'right')}
-        </div> */}
+          {footerNav('make it better 🚀', 'https://github.com/dev-asterix/and-the-time-is', 'right')} */}
+        </div>
       </div>
       <div className='text-red-800 font-semibold text-sm lg:text-md'>
         *Disclaimer: This is a demo app. Timezones and timestamps displayed here are not accurate yet. This is still work in progress.

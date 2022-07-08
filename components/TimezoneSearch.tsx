@@ -37,8 +37,8 @@ const TimezoneSearch = () => {
         </p>
         <input
           type="text"
-          className="h-14 w-full bg-slate-700 rounded-3xl px-5 pr-14 
-            shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)] focus:outline-none sm:px-5"
+          className="h-14 w-full bg-slate-700 transition-colors duration-1000 rounded-3xl px-5 pr-14 
+            shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)] focus:outline-none focus:bg-slate-800 sm:px-5"
           placeholder="Search for a timezone code / timezone location / city..."
           value={search}
           onChange={(e) => {
@@ -49,7 +49,7 @@ const TimezoneSearch = () => {
         {/* search entry drop down */}
         {data && (
           <div
-            className="w-full px-2 bg-slate-700 rounded-xl 
+            className="w-full px-2 bg-slate-800 rounded-xl 
             shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)] max-h-72 scrollbar-thin
             scrollbar-thumb-gray-800 scrollbar-track-gray-700"
           >

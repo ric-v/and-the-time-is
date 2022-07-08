@@ -11,7 +11,7 @@ const Home: NextPage = () => {
         <Navbar />
         <Main />
       </div>
-      <Footer hidden="/TimeWas" />
+      <Footer hidden="/" />
     </div>
   );
 };
