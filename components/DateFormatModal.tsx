@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import getCurrentTime from '../functions/timeNow';
 import { BiReset } from 'react-icons/bi';
+import { IoMdArrowDropdown } from 'react-icons/io';
 import { store } from '../store/store';
 
 /**
@@ -21,6 +22,7 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
   const defFormatString = "b d Y H:M:S Z (z)";
   const [formattedTime, setFormattedTime] = useState(getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat));
   const [expandInstruction, setExpandInstruction] = useState(false);
+  const [dateFormat, setDateFormat] = useState('');
   const [formatString, setFormatString] = useState(
     store.getState().storedata.dateFormat.
       replaceAll(/%:/g, "").
@@ -87,7 +89,7 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
     // replace each character with % character
     formatInput.split('').forEach((char) => {
       if (![' ', '-', ':', '.', '/', '\\', '\'', '"', '(', ')', '[', ']', '{', '}', ';', '?', '>',
-        '<', '*', '&', '^', '%', '$', '#', '@', '!', '~', '`'].includes(char)) {
+        '<', '*', '&', '^', '%', '$', '#', '@', '!', '~', '`', ',', 'T'].includes(char)) {
 
         // find the format for this display from dateformaters
         const format = dateformaters.find((formatter) => formatter.display === char)?.format as string;
@@ -113,48 +115,91 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
           <div className="relative bg-slate-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
             <div className="bg-slate-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <h3 className="text-2xl leading-6 font-medium text-teal-500 mb-2" id="modal-title">Date format modifier</h3>
-              <p className='text-gray-500 text-sm'>update the date time format to suit your choice!</p>
-              <button
-                className='text-teal-600 text-sm'
-                onClick={() => setExpandInstruction(!expandInstruction)}
-              >
-                click here for instructions
-              </button>
-              {expandInstruction && (
-                <>
-                  {/* table with timezone details */}
-                  <div className="table-responsive border rounded-lg border-gray-600 m-2 p-2">
-                    <table className="table-auto w-full">
-                      <tbody>
-                        {generateTH('Format')}
-                        {generateTH('Description')}
-                        {generateTH('Example')}
-                        {dateformaters.map((formatter) => generateTR(formatter.display, formatter.description, formatter.example))}
-                      </tbody>
-                    </table>
-                  </div>
-                </>)}
-            </div>
+              <p className='text-gray-500 pl-5 text-sm'>update the date time format to suit your choice!</p>
 
-            <div className="flex flex-col bg-slate-800 px-4 pb-4 sm:pb-4">
-              {/* add reset button inside input */}
-              <div className="flex items-center justify-between">
-                <div className="flex-1">
-                  <input
-                    type="text"
-                    className="block w-full bg-slate-600 opacity-50 focus:opacity-100 p-4 rounded-full text-white text-sm 
-                  leading-tight focus:outline-none focus:bg-slate-700 focus:text-white"
-                    placeholder="Enter date format"
-                    defaultValue={defFormatString}
-                    value={formatString}
-                    onChange={(e) => {
-                      let formatInput = e.target.value;
-                      setFormatString(formatInput);
-                    }}
-                  />
-                </div>
-                <BiReset size={24} color='gray' onClick={() => { setFormatString(defFormatString) }} className='cursor-pointer' />
+              <div className='flex justify-center'>
+                {/* add drop down icon */}
+                <select
+                  className='appearance-none p-2 px-2 m-2 bg-slate-600 focus:bg-slate-700 animate-pulse 
+                    focus:animate-none transition duration-1000 ease-in-out
+                    rounded-full w-full text-gray-300 focus:outline-none focus:shadow-outline'
+                  autoFocus
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setDateFormat(val);
+                    if (val !== 'custom' && val !== '') {
+                      setFormatString(val);
+                    }
+                  }}
+                  value={dateFormat}
+                >
+                  <option value="">Choose a date-time format...</option>
+                  <option value="b d Y H:M:S Z (z)">b d Y H:M:S Z (z)</option>
+                  <option value="Y-m-d H:M:S Z">Y-m-d H:M:S Z</option>
+                  <option value="Y-m-d I:M:S p Z">Y-m-d I:M:S p Z</option>
+                  <option value="m/d/Y H:M:S Z">m/d/Y H:M:S Z</option>
+                  <option value="m/d/Y I:M:S p Z">m/d/Y I:M:S p Z</option>
+                  <option value="A, d B Y I:M:S Z">A, d B Y I:M:S Z</option>
+                  <option value="Y B d, A j">Y B d, A j</option>
+                  <option value="Y B d Z">Y B d Z</option>
+                  <option value="H:M:S Z">H:M:S Z</option>
+                  <option value="I:M:S p z">I:M:S p z</option>
+                  <option value="a, d b 'y I:M:S z">a, d b &apos;y I:M:S z</option>
+                  <option value="Y-m-dTH:M:Sz">Y-m-dTH:M:Sz</option>
+                  <option value="YmdHMSz">YmdHMSz</option>
+                  <option value="custom">Custom format...</option>
+                </select>
               </div>
+
+              {
+                dateFormat === 'custom' && (
+                  <>
+                    <button
+                      className='text-teal-600 pl-5 text-sm'
+                      onClick={() => setExpandInstruction(!expandInstruction)}
+                    >
+                      click here for instructions
+                    </button>
+
+                    {expandInstruction && (
+                      <>
+                        {/* table with timezone details */}
+                        <div className="table-responsive border rounded-lg border-gray-600 m-2 p-2">
+                          <table className="table-auto w-full">
+                            <tbody>
+                              {generateTH('Format')}
+                              {generateTH('Description')}
+                              {generateTH('Example')}
+                              {dateformaters.map((formatter) => generateTR(formatter.display, formatter.description, formatter.example))}
+                            </tbody>
+                          </table>
+                        </div>
+                      </>)}
+
+                    <div className="flex flex-col bg-slate-800 px-4 pb-4 sm:pb-4">
+                      {/* add reset button inside input */}
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <input
+                            type="text"
+                            className="block w-full bg-slate-600 opacity-50 focus:opacity-100 p-4 rounded-full text-white text-sm 
+                              leading-tight focus:outline-none focus:bg-slate-700 focus:text-white"
+                            placeholder="Enter date format"
+                            defaultValue={defFormatString}
+                            value={formatString}
+                            onChange={(e) => {
+                              let formatInput = e.target.value;
+                              setFormatString(formatInput);
+                            }}
+                          />
+                        </div>
+                        <BiReset size={24} color='gray' onClick={() => { setFormatString(defFormatString) }} className='cursor-pointer' />
+                      </div>
+
+                    </div>
+                  </>
+                )
+              }
               <p className='text-teal-400 text-center py-2'>
                 {formattedTime}
               </p>
