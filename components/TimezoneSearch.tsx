@@ -1,36 +1,35 @@
-import React, { useEffect } from "react";
-import useSWR from "swr";
-import Modal from "./Modal";
-import { Timezones } from "../functions/timeNow";
+import React, { useEffect } from 'react';
+import useSWR from 'swr';
 
-const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) =>
-  fetch(input, init).then((res) => res.json());
+import { Timezones } from '../functions/timeNow';
+import TimestampModal from './TimestampModal';
+
+const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) => fetch(input, init).then((res) => res.json());
 
 /**
- * TimezoneSearch - component to search for timezones and display the result in dropdown list
+ * @description Timezone search component for Navbar
  */
 const TimezoneSearch = () => {
-  const [search, setSearch] = React.useState<String | null>("");
+  // set initial state for search and selection
+  const [search, setSearch] = React.useState("");
   const [selected, setSelected] = React.useState<Timezones | null>(null);
 
-  const { data, error } = useSWR(`/api/timezones?search=${search}`, fetcher, {
-    revalidateOnFocus: false,
-  });
-
-  useEffect(() => {
-    if (error) {
-      console.error(error);
-      alert(error);
-    }
-  }, [data, error]);
+  // fetch timezon data from API and get data
+  const { data, error } = useSWR(
+    `/api/timezones?search=${search}`,
+    fetcher,
+    { revalidateOnFocus: false }
+  );
+  if (error) return <div>failed to load</div>;
 
   return (
     <div className="mt-2 mb-4 sm:mt-10">
       <div className="w-full">
+
         <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold">
           Search for timezone
         </label>
-        {/* sub text */}
+
         <p className="text-gray-500 text-md italic mb-2">
           eg: &quot;Europe&quot;, &quot;Kolkata&quot;, &quot;new york&quot;,
           &quot;sydney&quot;, &quot;UTC&quot;, &quot;-04:00&quot;, &quot;IST&quot;, &quot;EDT&quot;,
@@ -41,10 +40,13 @@ const TimezoneSearch = () => {
           className="h-14 w-full bg-slate-700 rounded-3xl px-5 pr-14 
             shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)] focus:outline-none sm:px-5"
           placeholder="Search for a timezone code / timezone location / city..."
-          onChange={(e) => setSearch(e.target.value)}
+          value={search}
+          onChange={(e) => {
+            setSearch(e.target.value);
+          }}
         />
 
-        {/* drop down list with data as content */}
+        {/* search entry drop down */}
         {data && (
           <div
             className="w-full px-2 bg-slate-700 rounded-xl 
@@ -54,31 +56,28 @@ const TimezoneSearch = () => {
             {data &&
               data.map(
                 (item: Timezones) => (
-                  <>
-                    {/* <Link href={`/timezone/${item.name}`} key={item.name}> */}
-                    {/* on click set search bar to none */}
-                    <div
-                      className="block px-2 py-2 text-sm text-gray-400 hover:text-teal-500 
+                  <div
+                    className="block px-2 py-2 text-sm text-gray-400 hover:text-teal-500 
                       hover:bg-slate-500 hover:bg-opacity-50 cursor-pointer"
-                      key={item.name}
-                      onClick={() => {
-                        // reset input field
-                        setSearch("");
-                        // set selected timezone
-                        setSelected(item);
-                      }}
-                    >
-                      {item.code} - {item.name} ({item.country}/{item.city}{" "}
-                      {item.timezone} {item.offset})
-                    </div>
-                    {/* </Link> */}
-                  </>
+                    key={item.name}
+                    onClick={() => {
+                      // reset input field
+                      setSearch("");
+                      // set selected timezone
+                      setSelected(item);
+                    }}
+                  >
+                    {item.code} - {item.name} ({item.country}/{item.city}{" "}
+                    {item.timezone} {item.offset})
+                  </div>
                 )
               )}
           </div>
         )}
       </div>
-      {selected && <Modal timezone={selected} setSelected={setSelected} />}
+
+      {/* load modal on selected timezone data */}
+      {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
     </div>
   );
 };

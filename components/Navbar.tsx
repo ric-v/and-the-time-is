@@ -1,38 +1,38 @@
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import getCurrentTime, { Timezones } from "../functions/timeNow";
-import { timezoneList } from "../pages/api/timezones";
-import Modal from "./Modal";
-import TimezoneSearch from "./TimezoneSearch";
+import Link from 'next/link';
+import { useEffect, useState } from 'react';
 
-type Props = {
-  children: React.ReactNode;
-};
+import getCurrentTime, { Timezones } from '../functions/timeNow';
+import { timezoneList } from '../pages/api/timezones';
+import { store } from '../store/store';
+import TimestampModal from './TimestampModal';
+import TimezoneSearch from './TimezoneSearch';
 
 /**
- * Navbar component
- * 
- * @description
- * This component is used to render the navbar
- *
- * @param {Props} props {children: React.ReactNode}
+ * @description - Navbar component with local time and timezone search
+ * @param {Props} props
  */
-const Navbar = ({ children }: Props) => {
-  const [selected, setSelected] = useState<Timezones | null>(null);
+const Navbar = () => {
   // get current time to state
+  const [selected, setSelected] = useState<Timezones | null>(null);
   const [currentTime, setCurrentTime] = useState(
-    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
+    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
   );
 
   // set interval to update time
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(
-        getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
+        getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
       );
     }, 100);
     return () => clearInterval(interval);
   }, []);
+
+  // store.subscribe(() => {
+  //   setCurrentTime(
+  //     getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
+  //   );
+  // });
 
   return (
     <>
@@ -64,8 +64,7 @@ const Navbar = ({ children }: Props) => {
         </div>
       </div>
 
-      {selected && <Modal timezone={selected} setSelected={setSelected} />}
-      <div className="p-2">{children}</div>
+      {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
     </>
   );
 };
