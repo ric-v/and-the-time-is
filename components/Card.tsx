@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { RiCloseFill } from 'react-icons/ri';
+import tz from 'timezone/loaded';
 
 import getCurrentTime, { Timezones } from '../functions/timeNow';
 import { store } from '../store/store';
@@ -11,6 +12,7 @@ import TimestampModal from './TimestampModal';
  */
 type Props = {
   tzData: Timezones;
+  page: string;
 };
 
 /**
@@ -18,16 +20,33 @@ type Props = {
  * @param {Props} props
  * @returns 
  */
-const Card = ({ tzData }: Props) => {
+const Card = ({ tzData, page }: Props) => {
   // get current time to state
-  const [currentTime, setCurrentTime] = useState(getCurrentTime(tzData.name, store.getState().storedata.dateFormat));
+  const [currentTime, setCurrentTime] = useState(page === 'timeis' ? getCurrentTime(tzData.name, store.getState().storedata.dateFormat) : tz(
+    new Date(store.getState().storedata.timewasData),
+    store.getState().storedata.dateFormat,
+    tzData.name,
+  ));
   const [selected, setSelected] = useState<Timezones | null>(null);
 
   // set interval to update time
-  useEffect(() => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  page === 'timeis' && useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(getCurrentTime(tzData.name, store.getState().storedata.dateFormat));
     }, 100);
+    return () => clearInterval(interval);
+  }, [tzData.name]);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  page === 'timewas' && useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentTime(tz(
+        new Date(store.getState().storedata.timewasData),
+        store.getState().storedata.dateFormat,
+        tzData.name,
+      ));
+    }, 1000);
     return () => clearInterval(interval);
   }, [tzData.name]);
 

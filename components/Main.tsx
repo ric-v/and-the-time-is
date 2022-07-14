@@ -9,10 +9,14 @@ import Card from './Card';
 import DateFormatModal from './DateFormatModal';
 import ListView from './ListView';
 
+type mainProps = {
+  page: string;
+}
+
 /**
  * @description - main component for the app
  */
-const Main = () => {
+const Main = ({ page }: mainProps) => {
 
   // get timezones from local storage
   const [timezones, setTimezones] = useState<Timezones[]>([]);
@@ -65,7 +69,9 @@ const Main = () => {
             type="button"
             className="w-full inline-flex justify-center rounded-md border border-transparent 
                     shadow-sm px-4 py-2 bg-teal-600 font-medium text-clip text-white hover:bg-teal-700 
-                    focus:outline-none sm:ml-3"
+                    focus:outline-none sm:ml-3 transition ease-in-out duration-1000"
+            data-bs-toggle="timestampmodal"
+            data-bs-target="#timestampmodal"
             onClick={() => {
               setFormatPickerSelected(true);
             }}
@@ -81,10 +87,10 @@ const Main = () => {
 
           // if layout is grid
           (<>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 p-2 md:p-5 w-full gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 p-2 md:p-5 w-full gap-6">
               {
                 timezones && timezones.map((tzData) => (
-                  <Card key={tzData.name} tzData={tzData} />
+                  <Card key={tzData.name} tzData={tzData} page={page} />
                 ))
               }
             </div>
@@ -95,7 +101,7 @@ const Main = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
               {
                 timezones && timezones.map((tzData) => (
-                  <ListView key={tzData.name} tzData={tzData} />
+                  <ListView key={tzData.name} tzData={tzData} page={page} />
                 ))
               }
             </div>

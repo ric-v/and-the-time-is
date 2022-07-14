@@ -8,11 +8,13 @@ import { Timezones } from '../functions/timeNow';
 type actionData = {
   timezone: Timezones;
   dateFormat: string;
+  timewasData: string;
 }
 
 type storeData = {
   timezones: Timezones[];
   dateFormat: string;
+  timewasData: string;
 }
 
 /**
@@ -21,6 +23,7 @@ type storeData = {
 const initState = {
   timezones: [] as Timezones[],
   dateFormat: "%b %d %Y %H:%M:%S %Z (%:z)",
+  timewasData: '' as string,
 } as storeData;
 
 const addTimezone = createAction<actionData>("timezone/add");
@@ -76,6 +79,19 @@ const dateFormatSetFunc = (state: storeData, action: { payload: string; type: st
   return { ...state, dateFormat: action.payload };
 };
 
+const setPickedtime = createAction<string>("timewas/data");
+/**
+ * @description - remove timezone from the store and update the state & local storage
+ * 
+ * @param state - current state
+ * @param action - action to be performed
+ * @returns new state
+ */
+const pickedDateFunc = (state: storeData, action: { payload: string; type: string; }) => {
+  // store the value to local storage
+  return { ...state, timewasData: action.payload };
+};
+
 /**
  * reducer - reducer for the store data
  */
@@ -85,6 +101,7 @@ const reducers = createReducer(initState, (builder) => {
   builder.addCase(addTimezone, addTimezoneFunc);
   builder.addCase(removeTimezone, removeTimezoneFunc);
   builder.addCase(setDateFormat, dateFormatSetFunc);
+  builder.addCase(setPickedtime, pickedDateFunc);
 });
 
 /**

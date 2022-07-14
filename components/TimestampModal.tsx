@@ -39,7 +39,8 @@ function TimestampModal({ timezone, setSelected }: Props) {
   );
 
   return (
-    <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+      id="timestampmodal" tab-index="-1" aria-hidden="true">
       <div className="fixed inset-0 bg-gray-600 bg-opacity-75 transition-opacity"></div>
 
       <div className="fixed z-10 inset-0 overflow-y-auto">
@@ -138,7 +139,12 @@ function TimestampModal({ timezone, setSelected }: Props) {
 
               <button
                 type="button"
-                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-gray-300 hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                className="mt-3 w-full inline-flex justify-center rounded-md border border-gray-600 
+                  shadow-sm px-4 py-2 bg-gray-800 text-base font-medium text-gray-300 
+                  hover:bg-gray-900 focus:outline-none focus:ring-2 focus:ring-offset-2 
+                  focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm
+                  transition duration-1000 ease-in-out"
+                data-bs-dismiss="timestampmodal"
                 onClick={() => {
                   setSelected(null);
                 }}

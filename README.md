@@ -25,11 +25,10 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 ## Features
 
 - [x] Display current time in local timezone
-- [x] Search other timezones by code or timezone name
-- [x] Add selected timestamps to homepage
-- [x] Add timezone to history
-- [x] Modify date time formatter with custom / templates
-- [x] Toggle view for smaller / bigger cards
+- [x] Search other timezones by code or timezone name, add or remove them from the dashboard
+- [x] Change UI layout from small / large tiles
+- [x] Modify the date format with custom formatter support
+- [x] Display the time then based on input for different timezones under `the time was`
 
 ## Technologies Used
 
