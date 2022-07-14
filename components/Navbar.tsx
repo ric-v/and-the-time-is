@@ -1,25 +1,52 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import tz from 'timezone/loaded';
 
 import getCurrentTime, { Timezones } from '../functions/timeNow';
 import { timezoneList } from '../pages/api/timezones';
 import { store } from '../store/store';
+import TimePicker from './TimePicker';
 import TimestampModal from './TimestampModal';
 import TimezoneSearch from './TimezoneSearch';
 
+export type TimePickerType = {
+  year: string;
+  month: string;
+  day: string;
+  hour: string;
+  minute: string;
+  second: string;
+}
+
+type navbarProps = {
+  title: string;
+  searchBar?: boolean;
+  timePicker?: boolean;
+}
+
 /**
  * @description - Navbar component with local time and timezone search
- * @param {Props} props
  */
-const Navbar = () => {
+const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
   // get current time to state
   const [selected, setSelected] = useState<Timezones | null>(null);
   const [currentTime, setCurrentTime] = useState(
     getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
   );
 
+  const now = new Date();
+  const [dateString, setDateString] = useState({
+    year: now.getFullYear().toString(),
+    month: (now.getMonth()).toString(),
+    day: now.getDate().toString(),
+    hour: now.getHours().toString(),
+    minute: now.getMinutes().toString(),
+    second: now.getSeconds().toString(),
+  } as TimePickerType);
+
   // set interval to update time
-  useEffect(() => {
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  searchBar && useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(
         getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
@@ -27,6 +54,22 @@ const Navbar = () => {
     }, 100);
     return () => clearInterval(interval);
   }, []);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  timePicker && useEffect(() => {
+
+    // construct the timestring from dateString
+    const pickedDate = `${dateString.day} ${new Date(Number.parseInt(dateString.year), Number.parseInt(dateString.month), 1).toLocaleString('default', { month: 'long' })} ${dateString.year}, ${dateString.hour}:${dateString.minute}:${dateString.second}`;
+    store.dispatch({ type: 'timewas/data', payload: pickedDate });
+    // set the current time to the picked time
+    setCurrentTime(
+      tz(
+        new Date(pickedDate),
+        store.getState().storedata.dateFormat,
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+      ),
+    );
+  }, [dateString]);
 
   return (
     <>
@@ -38,22 +81,41 @@ const Navbar = () => {
           <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
             <Link href={"/"}>
               <a className='text-4xl font-nova-flat md:text-6xl pb-2 animate-pulse hover:text-teal-500'>
-                And the time is ...
+                {title}
               </a>
             </Link>
-            <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
-              <p className='text-teal-500 text-lg'>
-                {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
-              </p>
-              <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
-                onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
-              >
-                {currentTime}
-              </p>
-            </div>
+            {
+              searchBar && (
+                <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
+                  <p className='text-teal-500 text-lg'>
+                    {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
+                  </p>
+                  <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
+                    onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
+                  >
+                    {currentTime}
+                  </p>
+                </div>)
+            }
+
+            {
+              timePicker && (
+                <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
+                  <p className='text-teal-500 text-lg'>
+                    {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
+                  </p>
+                  <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
+                    onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
+                  >
+                    {currentTime}
+                  </p>
+                </div>)
+            }
+
           </div>
           <div className='p-2 lg:p-10 mt-0 md:mt-10 md:z-10'>
-            <TimezoneSearch />
+            {searchBar && <TimezoneSearch />}
+            {timePicker && <TimePicker now={now} dateString={dateString} setDateString={setDateString} />}
           </div>
         </div>
       </div>
