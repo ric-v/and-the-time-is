@@ -22,7 +22,7 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
   }
 
   /**
-   * @description fetchs the timezone data from the API
+   * @description Label component for date and time picker
    * @param {string} text
    */
   const Label = (text: string) => {
@@ -33,6 +33,12 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
     )
   }
 
+  /**
+   * @description Select component for hour, minute, and second
+   * @param {string} field
+   * @param {number} limit
+   * @returns 
+   */
   const TimeSelect = (field: string, limit: number) => {
     return (
       <select
@@ -64,6 +70,8 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
 
       {Label('Select a date')}
       <div className={divClasses}>
+
+        {/* select year */}
         <select
           className={selectClasses}
           onChange={(e) => {
@@ -76,6 +84,8 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
             ))
           }
         </select>
+
+        {/* select month */}
         <select
           className={selectClasses}
           onChange={(e) => {
@@ -94,6 +104,8 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
             ))
           }
         </select>
+
+        {/* select day */}
         <select
           className={selectClasses}
           onChange={(e) => {
@@ -116,40 +128,8 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
       {Label('Select the time')}
       <div className={divClasses}>
         {TimeSelect('hour', 24)}
-        <select
-          className={selectClasses}
-          onChange={(e) => {
-            setDateString({ ...dateString, minute: e.target.value });
-          }}
-          value={dateString.minute}
-        >
-          {
-            Array.from(Array(60).keys()).map((minute) => (
-              <option key={minute} value={minute}>
-                {
-                  minute < 10 ? `0${minute}` : minute
-                }
-              </option>
-            ))
-          }
-        </select>
-        <select
-          className={selectClasses}
-          onChange={(e) => {
-            setDateString({ ...dateString, second: e.target.value });
-          }}
-          value={dateString.second}
-        >
-          {
-            Array.from(Array(60).keys()).map((second) => (
-              <option key={second} value={second}>
-                {
-                  second < 10 ? `0${second}` : second
-                }
-              </option>
-            ))
-          }
-        </select>
+        {TimeSelect('minute', 60)}
+        {TimeSelect('second', 60)}
       </div>
     </div >
   );
