@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BsGrid3X2GapFill } from 'react-icons/bs';
 import { HiViewGrid } from 'react-icons/hi';
 
-import { Timezones } from '../pages/functions/timeNow';
+import { Timezones } from '../pages/api/functions/timeNow';
 import { store } from '../store/store';
 import ButtonGroup from './ButtonGroup';
 import Card from './Card';

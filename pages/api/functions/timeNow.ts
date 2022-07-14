@@ -1,5 +1,5 @@
 import tz from 'timezone/loaded';
-import { store } from '../../store/store';
+import { store } from '../../../store/store';
 
 /**
  * type Timezones
