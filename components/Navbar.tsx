@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import tz from 'timezone/loaded';
 
-import { getCurrentTime, getParsedTime, Timezones } from '../pages/functions/timeNow';
+import { getCurrentTime, getParsedTime, Timezones } from '../pages/api/functions/timeNow';
 import { timezoneList } from '../pages/api/timezones';
 import { store } from '../store/store';
 import TimePicker from './TimePicker';

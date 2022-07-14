@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RiCloseFill } from 'react-icons/ri';
 
-import { getCurrentTime, getParsedTime, Timezones } from '../pages/functions/timeNow';
+import { getCurrentTime, getParsedTime, Timezones } from '../pages/api/functions/timeNow';
 import { store } from '../store/store';
 import TimestampModal from './TimestampModal';
 

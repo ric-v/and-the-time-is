@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import useSWR from 'swr';
 
-import { Timezones } from '../pages/functions/timeNow';
+import { Timezones } from '../pages/api/functions/timeNow';
 import TimestampModal from './TimestampModal';
 
 const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) => fetch(input, init).then((res) => res.json());

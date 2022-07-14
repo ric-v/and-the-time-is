@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { getCurrentTime } from '../pages/functions/timeNow';
+import { getCurrentTime } from '../pages/api/functions/timeNow';
 import { BiReset } from 'react-icons/bi';
 import { store } from '../store/store';
 
