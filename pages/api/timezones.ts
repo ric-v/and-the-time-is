@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 
-import getCurrentTime from '../../functions/timeNow';
+import { getCurrentTime } from '../functions/timeNow';
 
 // source: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
 export const timezoneList = [

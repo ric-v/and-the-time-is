@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 
-import getCurrentTime, { Timezones } from '../functions/timeNow';
+import { getCurrentTime, Timezones } from '../pages/functions/timeNow';
 import { store } from '../store/store';
 
 /**

@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import getCurrentTime from '../functions/timeNow';
+import { getCurrentTime } from '../pages/functions/timeNow';
 import { BiReset } from 'react-icons/bi';
-import { IoMdArrowDropdown } from 'react-icons/io';
 import { store } from '../store/store';
 
 /**

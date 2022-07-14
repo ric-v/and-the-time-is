@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import tz from 'timezone/loaded';
 
-import getCurrentTime, { Timezones } from '../functions/timeNow';
+import { getCurrentTime, getParsedTime, Timezones } from '../pages/functions/timeNow';
 import { timezoneList } from '../pages/api/timezones';
 import { store } from '../store/store';
 import TimePicker from './TimePicker';
@@ -45,31 +45,26 @@ const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
   } as TimePickerType);
 
   // set interval to update time
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  searchBar && useEffect(() => {
+  useEffect(() => {
+    timePicker
+      && store.dispatch(
+        {
+          type: 'timewas/data',
+          payload: `${dateString.day} ${new Date(Number.parseInt(dateString.year),
+            Number.parseInt(dateString.month), 1).toLocaleString('default', { month: 'long' })} 
+            ${dateString.year}, ${dateString.hour}:${dateString.minute}:${dateString.second}`
+        }
+      );
+
     const interval = setInterval(() => {
       setCurrentTime(
-        getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
+        searchBar
+          ? getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat)
+          : getParsedTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
       );
-    }, 100);
+    }, searchBar ? 100 : 1000);
     return () => clearInterval(interval);
-  }, []);
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  timePicker && useEffect(() => {
-
-    // construct the timestring from dateString
-    const pickedDate = `${dateString.day} ${new Date(Number.parseInt(dateString.year), Number.parseInt(dateString.month), 1).toLocaleString('default', { month: 'long' })} ${dateString.year}, ${dateString.hour}:${dateString.minute}:${dateString.second}`;
-    store.dispatch({ type: 'timewas/data', payload: pickedDate });
-    // set the current time to the picked time
-    setCurrentTime(
-      tz(
-        new Date(pickedDate),
-        store.getState().storedata.dateFormat,
-        Intl.DateTimeFormat().resolvedOptions().timeZone
-      ),
-    );
-  }, [dateString]);
+  }, [dateString, searchBar, timePicker]);
 
   return (
     <>
