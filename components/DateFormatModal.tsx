@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
 
-import getCurrentTime from '../functions/timeNow';
+import { getCurrentTime } from '../pages/functions/timeNow';
 import { BiReset } from 'react-icons/bi';
-import { IoMdArrowDropdown } from 'react-icons/io';
 import { store } from '../store/store';
 
 /**
@@ -107,12 +106,13 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
   }, [formatString])
 
   return (
-    <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div className="fixed inset-0 bg-gray-600 bg-opacity-80"></div>
+    <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true"
+      id="timestampmodal" tab-index="-1" aria-hidden="true">
+      <div className="fixed inset-0 backdrop-blur-md backdrop-brightness-75 transition-opacity"></div>
 
       <div className="fixed z-10 inset-0 overflow-y-auto">
-        <div className="flex items-end sm:items-center justify-center min-h-full">
-          <div className="relative bg-slate-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
+        <div className="flex items-end sm:items-center justify-center min-h-full p-4 text-center sm:p-0">
+          <div className="relative bg-slate-800 rounded-lg text-left overflow-hidden  shadow-[20px_40px_40px_5px_rgba(0,0,0,0.33)] transform transition-all sm:my-8 sm:max-w-lg sm:w-full">
             <div className="bg-slate-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
               <h3 className="text-2xl leading-6 font-medium text-teal-500 mb-2" id="modal-title">Date format modifier</h3>
               <p className='text-gray-500 pl-5 text-sm'>update the date time format to suit your choice!</p>

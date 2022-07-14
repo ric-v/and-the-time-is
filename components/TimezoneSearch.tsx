@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import useSWR from 'swr';
 
-import { Timezones } from '../functions/timeNow';
+import { Timezones } from '../pages/functions/timeNow';
 import TimestampModal from './TimestampModal';
 
 const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) => fetch(input, init).then((res) => res.json());
@@ -25,11 +25,9 @@ const TimezoneSearch = () => {
   return (
     <div className="mt-2 mb-4 sm:mt-10">
       <div className="w-full">
-
         <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold">
           Search for timezone
         </label>
-
         <p className="text-gray-500 text-md italic mb-2">
           eg: &quot;Europe&quot;, &quot;Kolkata&quot;, &quot;new york&quot;,
           &quot;sydney&quot;, &quot;UTC&quot;, &quot;-04:00&quot;, &quot;IST&quot;, &quot;EDT&quot;,

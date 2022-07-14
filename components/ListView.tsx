@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { RiCloseFill } from 'react-icons/ri';
-import tz from 'timezone/loaded';
 
-import getCurrentTime, { Timezones } from '../functions/timeNow';
+import { getCurrentTime, getParsedTime, Timezones } from '../pages/functions/timeNow';
 import { store } from '../store/store';
 import TimestampModal from './TimestampModal';
 
@@ -22,34 +21,21 @@ type Props = {
 const ListView = ({ tzData, page }: Props) => {
   // get current time to state
   const [currentTime, setCurrentTime] = useState(
-    page === 'timeis' ? getCurrentTime(tzData.name, store.getState().storedata.dateFormat) : tz(
-      new Date(store.getState().storedata.timewasData),
-      store.getState().storedata.dateFormat,
-      tzData.name,
-    )
+    page === 'timeis'
+      ? getCurrentTime(tzData.name, store.getState().storedata.dateFormat)
+      : getParsedTime(tzData.name)
   );
   const [selected, setSelected] = React.useState<Timezones | null>(null);
 
   // set interval to update time
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  page === 'timeis' && useEffect(() => {
+  useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentTime(getCurrentTime(tzData.name, store.getState().storedata.dateFormat));
-    }, 100);
+      setCurrentTime(
+        page === 'timewas' ? getParsedTime(tzData.name) : getCurrentTime(tzData.name, store.getState().storedata.dateFormat),
+      );
+    }, page === 'timewas' ? 1000 : 100);
     return () => clearInterval(interval);
-  }, [tzData.name]);
-
-  // eslint-disable-next-line react-hooks/rules-of-hooks
-  page === 'timewas' && useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentTime(tz(
-        new Date(store.getState().storedata.timewasData),
-        store.getState().storedata.dateFormat,
-        tzData.name,
-      ));
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [tzData.name]);
+  }, [page, tzData.name]);
 
   return (
     <div className="flex flex-row justify-between border border-slate-700 shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)]
