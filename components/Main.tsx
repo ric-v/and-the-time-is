@@ -7,7 +7,6 @@ import { store } from '../store/store';
 import ButtonGroup from './ui-elements/ButtonGroup';
 import Card from './Card';
 import DateFormatModal from './DateFormatModal';
-import ListView from './ListView';
 
 type mainProps = {
   page: string;
@@ -87,7 +86,7 @@ const Main = ({ page }: mainProps) => {
 
           // if layout is grid
           (<>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 p-2 md:p-5 w-full gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 p-2 md:p-5 w-full gap-3">
               {
                 timezones && timezones.map((tzData) => (
                   <Card key={tzData.name} tzData={tzData} page={page} />

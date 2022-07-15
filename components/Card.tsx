@@ -52,8 +52,8 @@ const Card = ({ tzData, page }: Props) => {
             {tzData.city} - {tzData.country}
           </h3>
         </div>
-        
-        <div className="mt-3 text-gray-200 text-lg truncate font-semibold cursor-pointer"
+
+        <div className="mt-3 text-gray-200 text-lg truncate font-semibold leading-tight cursor-pointer"
           onClick={() => setSelected(tzData)}
         >
           {currentTime}
