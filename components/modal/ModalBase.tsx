@@ -20,7 +20,9 @@ const ModalBase = ({ body, actionBar }: Props) => {
                 {body}
               </div>
             </div>
-            {actionBar}
+            <div className="bg-slate-700 px-4 py-3 sm:px-6 flex flex-row justify-end">
+              {actionBar}
+            </div>
           </div>
         </div>
       </div>

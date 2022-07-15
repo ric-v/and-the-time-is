@@ -5,6 +5,7 @@ import { getCurrentTime, Timezones } from '../pages/api/functions/timeNow';
 import { store } from '../store/store';
 import ModalBase from './modal/ModalBase';
 import TableRow from './ui-elements/TableRow';
+import ModalTitle from './modal/ModalTitle';
 
 /**
  * @interface Props
@@ -44,7 +45,7 @@ function TimestampModal({ timezone, setSelected }: Props) {
   return (
     <ModalBase body={
       <>
-        <h3 className="text-xl leading-6 font-medium text-teal-500" id="modal-title"> 📌 {timezone.name}</h3>
+        <ModalTitle title={`📌 ${timezone.name}`} />
 
         {/* table with timezone details */}
         <table className="table-responsive w-full mt-5">
@@ -60,7 +61,7 @@ function TimestampModal({ timezone, setSelected }: Props) {
       </>
     }
       actionBar={
-        <div className="bg-slate-700 px-4 py-3 sm:px-6 flex flex-row justify-end">
+        <>
           {/* display add to home button only if its not added already */}
           {!isAdded &&
             <ModalButton text='Add to Home' close={false} handleClick={
@@ -75,7 +76,7 @@ function TimestampModal({ timezone, setSelected }: Props) {
               setSelected(null);
             }
           } />
-        </div>
+        </>
       }
     />
   )

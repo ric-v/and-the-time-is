@@ -6,6 +6,7 @@ import { store } from '../store/store';
 import ModalBase from './modal/ModalBase';
 import TableRow from './ui-elements/TableRow';
 import TableHeader from './ui-elements/TableHeader';
+import ModalTitle from './modal/ModalTitle';
 
 /**
  * @interface Props
@@ -79,8 +80,7 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
   return (
     <ModalBase body={
       <>
-
-        <h3 className="text-2xl leading-6 font-medium text-teal-500 mb-2" id="modal-title">Date format modifier</h3>
+        <ModalTitle title='Date format modifier' />
         <p className='text-gray-500 pl-5 text-sm'>update the date time format to suit your choice!</p>
 
         {/* add drop down icon */}
@@ -179,7 +179,7 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
       </>
     }
       actionBar={
-        <div className="bg-slate-700 px-4 py-3 sm:px-6 flex flex-row justify-end">
+        <>
           <ModalButton text='Apply default' close={false} handleClick={
             () => {
               store.dispatch({ type: "dateformat/update", payload: generateDateFormat(formatString) });
@@ -191,7 +191,7 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
               setFormatPickerSelected(false);
             }
           } />
-        </div>
+        </>
       }
     />
   )

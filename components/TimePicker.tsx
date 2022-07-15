@@ -1,6 +1,8 @@
 
 import { useEffect, useState } from 'react';
 import type { TimePickerType } from './Navbar';
+import Label from './ui-elements/Label';
+import Select from './ui-elements/Select';
 
 const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) => fetch(input, init).then((res) => res.json());
 
@@ -22,46 +24,6 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
     return new Date(year, month + 1, 0).getDate();
   }
 
-  /**
-   * @description Label component for date and time picker
-   * @param {string} text
-   */
-  const Label = (text: string) => {
-    return (
-      <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold ">
-        {text}
-      </label>
-    )
-  }
-
-  /**
-   * @description Select component for hour, minute, and second
-   * @param {string} field
-   * @param {number} limit
-   * @returns 
-   */
-  const TimeSelect = (field: string, limit: number) => {
-    return (
-      <select
-        className={selectClasses}
-        onChange={(e) => {
-          setDateString({ ...dateString, [field]: e.target.value })
-        }}
-        value={dateString[field]}
-      >
-        {
-          Array.from(Array(limit).keys()).map((val) => (
-            <option key={val} value={val}>
-              {
-                val < 10 ? `0${val}` : val
-              }
-            </option>
-          ))
-        }
-      </select>
-    )
-  }
-
   useEffect(() => {
     const date = new Date();
   }, [dateString]);
@@ -69,7 +31,7 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
   return (
     <div className="mt-2 mb-4 sm:mt-2 w-full">
 
-      {Label('Select a date (Year - Month - Date)')}
+      <Label text='Select a date (Year - Month - Date)' />
       <div className={divClasses}>
 
         {/* select year */}
@@ -126,11 +88,11 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
         </select>
       </div>
 
-      {Label('Select the time (Hour - Minute - Second)')}
+      <Label text='Select the time (Hour - Minute - Second)' />
       <div className={divClasses}>
-        {TimeSelect('hour', 24)}
-        {TimeSelect('minute', 60)}
-        {TimeSelect('second', 60)}
+        <Select field="hour" limit={24} dateString={dateString} handler={setDateString} classes={selectClasses} />
+        <Select field="minute" limit={60} dateString={dateString} handler={setDateString} classes={selectClasses} />
+        <Select field="second" limit={60} dateString={dateString} handler={setDateString} classes={selectClasses} />
       </div>
     </div >
   );
