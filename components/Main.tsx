@@ -5,7 +5,7 @@ import { HiViewGrid } from 'react-icons/hi';
 import { Timezones } from '../pages/api/functions/timeNow';
 import { store } from '../store/store';
 import ButtonGroup from './ui-elements/ButtonGroup';
-import Card from './Card';
+import Card from './ui-elements/Card';
 import DateFormatModal from './DateFormatModal';
 
 type mainProps = {

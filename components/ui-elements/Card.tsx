@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
 import { RiCloseFill } from 'react-icons/ri';
 
-import { getCurrentTime, getParsedTime, Timezones } from '../pages/api/functions/timeNow';
-import { store } from '../store/store';
-import TimestampModal from './TimestampModal';
+import { getCurrentTime, getParsedTime, Timezones } from '../../pages/api/functions/timeNow';
+import { store } from '../../store/store';
+import TimestampModal from '../TimestampModal';
 
 /**
  * @interface Props

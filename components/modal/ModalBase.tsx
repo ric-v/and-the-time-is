@@ -9,7 +9,7 @@ const ModalBase = ({ body, actionBar }: Props) => {
   return (
     <div className="relative z-10" aria-labelledby="modal-title" role="dialog" aria-modal="true"
       id="timestampmodal" tab-index="-1" aria-hidden="true">
-      <div className="fixed inset-0 backdrop-blur-md backdrop-brightness-75 transition-opacity"></div>
+      <div className="fixed inset-0 backdrop-blur-lg backdrop-brightness-75 transition-opacity"></div>
 
       <div className="fixed z-10 inset-0 overflow-y-auto">
         <div className="flex items-center justify-center min-h-full p-4 text-center sm:p-0">
