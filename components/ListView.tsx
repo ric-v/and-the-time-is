@@ -49,9 +49,10 @@ const ListView = ({ tzData, page }: Props) => {
             id="modal-title"
             onClick={() => { setSelected(tzData) }}
           >
-            {tzData.name} - {tzData.country}
+            {tzData.city} - {tzData.country}
           </h3>
         </div>
+
         <div className="mt-3 text-gray-200 text-lg truncate md:text-2xl font-semibold cursor-pointer"
           onClick={() => setSelected(tzData)}
         >

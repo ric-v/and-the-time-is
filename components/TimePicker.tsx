@@ -14,8 +14,9 @@ type timePickerProps = {
  * @description Timezone search component for Navbar
  */
 const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
-  const selectClasses = 'bg-gray-700 overflow-y-auto text-center rounded-lg p-2 scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-800';
-  const divClasses = 'grid grid-cols-3 gap-2 md:gap-10 p-2 mt-5';
+  const selectClasses = `bg-gray-700 overflow-y-auto text-center rounded-lg p-2 scrollbar-thin 
+  scrollbar-track-gray-700 scrollbar-thumb-gray-800  shadow-[10px_30px_30px_-10px_rgba(0,0,0,0.53)]`;
+  const divClasses = 'grid grid-cols-3 gap-2 md:gap-10 p-2 mt-2';
   // fetch number of days in a month of the year 
   const daysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
@@ -27,7 +28,7 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
    */
   const Label = (text: string) => {
     return (
-      <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold">
+      <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold ">
         {text}
       </label>
     )
@@ -66,9 +67,9 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
   }, [dateString]);
 
   return (
-    <div className="mt-2 mb-4 sm:mt-10 w-full">
+    <div className="mt-2 mb-4 sm:mt-2 w-full">
 
-      {Label('Select a date')}
+      {Label('Select a date (Year - Month - Date)')}
       <div className={divClasses}>
 
         {/* select year */}
@@ -125,7 +126,7 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
         </select>
       </div>
 
-      {Label('Select the time')}
+      {Label('Select the time (Hour - Minute - Second)')}
       <div className={divClasses}>
         {TimeSelect('hour', 24)}
         {TimeSelect('minute', 60)}

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import ButtonGroup from "./ButtonGroup";
+import ButtonGroup from "./ui-elements/ButtonGroup";
 
 type Props = {
   hidden: string,

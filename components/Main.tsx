@@ -4,7 +4,7 @@ import { HiViewGrid } from 'react-icons/hi';
 
 import { Timezones } from '../pages/api/functions/timeNow';
 import { store } from '../store/store';
-import ButtonGroup from './ButtonGroup';
+import ButtonGroup from './ui-elements/ButtonGroup';
 import Card from './Card';
 import DateFormatModal from './DateFormatModal';
 import ListView from './ListView';
@@ -101,7 +101,7 @@ const Main = ({ page }: mainProps) => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
               {
                 timezones && timezones.map((tzData) => (
-                  <ListView key={tzData.name} tzData={tzData} page={page} />
+                  <Card key={tzData.name} tzData={tzData} page={page} />
                 ))
               }
             </div>

@@ -17,7 +17,6 @@ type Props = {
 /**
  * @description Card component for the app to display timezone data in small cards
  * @param {Props} props
- * @returns 
  */
 const Card = ({ tzData, page }: Props) => {
   // get current time to state
@@ -50,15 +49,10 @@ const Card = ({ tzData, page }: Props) => {
             id="modal-title"
             onClick={() => { setSelected(tzData) }}
           >
-            {" "}
             {tzData.city} - {tzData.country}
           </h3>
         </div>
-        <div className="mt-3 text-gray-500 text-xs truncate cursor-pointer"
-          onClick={() => setSelected(tzData)}
-        >
-          {tzData.name}
-        </div>
+        
         <div className="mt-3 text-gray-200 text-lg truncate font-semibold cursor-pointer"
           onClick={() => setSelected(tzData)}
         >

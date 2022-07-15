@@ -25,7 +25,7 @@ const TimezoneSearch = () => {
   return (
     <div className="mt-2 mb-4 sm:mt-10">
       <div className="w-full">
-        <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold">
+        <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold  shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)]">
           Search for timezone
         </label>
         <p className="text-gray-500 text-md italic mb-2">

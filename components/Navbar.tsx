@@ -69,7 +69,7 @@ const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
   return (
     <>
       <div
-        className='h-1/2 lg:h-96 text-center lg:text-left curve shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
+        className='h-1/2 lg:h-96 text-center curve shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
            from-cyan-800 to-slate-900 text-slate-300
           sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
         <div className="grid lg:grid-cols-2">
@@ -108,9 +108,9 @@ const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
             }
 
           </div>
-          <div className='p-2 lg:p-10 mt-0 md:mt-10 md:z-10'>
-            {searchBar && <TimezoneSearch />}
+          <div className={`p-2 ${searchBar ? 'lg:p-10' : 'lg:p-2'} md:z-10`}>
             {timePicker && <TimePicker now={now} dateString={dateString} setDateString={setDateString} />}
+            {<TimezoneSearch />}
           </div>
         </div>
       </div>
