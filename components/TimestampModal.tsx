@@ -64,14 +64,12 @@ function TimestampModal({ timezone, setSelected }: Props) {
       actionBar={
         <>
           {/* display add to home button only if its not added already */}
-          {!isAdded &&
-            <ModalButton text='Add to Home' close={false} handleClick={
-              () => {
-                store.dispatch({ type: "timezone/add", payload: { timezone: timezone, dateFormat: '' } });
-                setSelected(null);
-              }
-            } />
-          }
+          <ModalButton text={isAdded === undefined ? 'Add to Dashboard' : 'Already pinned'} disabled={isAdded !== undefined} close={false} handleClick={
+            () => {
+              store.dispatch({ type: "timezone/add", payload: { timezone: timezone, dateFormat: '' } });
+              setSelected(null);
+            }
+          } />
           <ModalButton text='Close' close={true} handleClick={
             () => {
               setSelected(null);

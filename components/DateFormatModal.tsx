@@ -32,6 +32,10 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
       replaceAll(/%/g, "")
   );
 
+  const isModified = store.getState().storedata.dateFormat.
+    replaceAll(/%:/g, "").
+    replaceAll(/%/g, "") !== formatString;
+
   // date formaters for instruction table
   const dateformaters = [
     { display: 'B', format: '%B', description: 'full month name', example: 'January, March' },
@@ -182,7 +186,7 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
     }
       actionBar={
         <>
-          <ModalButton text='Apply default' close={false} handleClick={
+          <ModalButton text={isModified ? 'Apply as default' : 'Already applied!'} close={false} disabled={!isModified} handleClick={
             () => {
               store.dispatch({ type: "dateformat/update", payload: generateDateFormat(formatString) });
               setFormatPickerSelected(false);
