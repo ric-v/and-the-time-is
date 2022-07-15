@@ -1,17 +1,19 @@
 import React from 'react'
 
 type Props = {
-  classes?: string,
+  _classes?: string,
   field: string,
   limit: number,
   dateString: any,
+  optionDisplay: (val: any) => string,
+  selectVal: (val: any) => string,
   handler: (dateString: any) => void
 }
 
-const Select = ({ classes, field, limit, dateString, handler }: Props) => {
+const Select = ({ field, limit, dateString, optionDisplay, selectVal, handler, _classes }: Props) => {
   return (
     <select
-      className={classes}
+      className='bg-gray-700 overflow-y-auto text-center rounded-lg p-2 scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-800  shadow-[10px_30px_30px_-10px_rgba(0,0,0,0.53)]'
       onChange={(e) => {
         handler({ ...dateString, [field]: e.target.value })
       }}
@@ -19,9 +21,9 @@ const Select = ({ classes, field, limit, dateString, handler }: Props) => {
     >
       {
         Array.from(Array(limit).keys()).map((val) => (
-          <option key={val} value={val}>
+          <option key={val} value={selectVal(val)}>
             {
-              val < 10 ? `0${val}` : val
+              optionDisplay(val)
             }
           </option>
         ))
@@ -30,4 +32,4 @@ const Select = ({ classes, field, limit, dateString, handler }: Props) => {
   )
 }
 
-export default Select
+export default Select;
