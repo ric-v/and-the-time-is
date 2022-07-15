@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import tz from 'timezone/loaded';
+import { Transition } from '@headlessui/react'
 
 import { getCurrentTime, getParsedTime, Timezones } from '../pages/api/functions/timeNow';
 import { timezoneList } from '../pages/api/timezones';
@@ -74,7 +75,7 @@ const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
           sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
         <div className="grid lg:grid-cols-2">
           <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
-            <Link href={"/"}>
+            <Link href={searchBar ? '/TimeWas' : '/'}>
               <a className='text-4xl font-nova-flat md:text-6xl pb-2 animate-pulse hover:text-teal-500'>
                 {title}
               </a>

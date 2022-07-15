@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import ModalButton from './modal/ModalButton';
 import { getCurrentTime, Timezones } from '../pages/api/functions/timeNow';
@@ -6,6 +6,7 @@ import { store } from '../store/store';
 import ModalBase from './modal/ModalBase';
 import TableRow from './ui-elements/TableRow';
 import ModalTitle from './modal/ModalTitle';
+import { Transition } from '@headlessui/react'
 
 /**
  * @interface Props

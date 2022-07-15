@@ -87,7 +87,8 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
         <select
           className='appearance-none p-2 px-2 m-2 bg-slate-600 focus:bg-slate-700 animate-pulse 
                     focus:animate-none transition duration-1000 ease-in-out
-                    rounded-full w-full text-gray-300 focus:outline-none focus:shadow-outline'
+                    rounded-full w-full text-gray-300 focus:outline-none focus:shadow-outline
+                    border border-gray-500 border-dashed'
           autoFocus
           onChange={(e) => {
             const val = e.target.value;
@@ -173,7 +174,8 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
             </>
           )
         }
-        <p className='text-teal-400 text-center py-2'>
+        <p className='text-gray-500 pl-5 text-sm mt-5 border-t border-gray-600 border-dashed'>DATE FORMAT PREVIEW</p>
+        <p className='text-teal-400 text-center text-xl text-ellipsis font-semibold py-2'>
           {formattedTime}
         </p>
       </>

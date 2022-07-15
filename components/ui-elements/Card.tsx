@@ -59,14 +59,13 @@ const Card = ({ tzData, page }: Props) => {
           {currentTime}
         </div>
       </div>
-      <div>
-        <button
-          onClick={() =>
-            store.dispatch({ type: "timezone/remove", payload: { timezone: tzData, dateFormat: '' } })
-          }
-        >
-          <RiCloseFill size={24} color='gray' />
-        </button>
+      <div className='flex flex-col items-center justify-center p-2 border-l border-t border-solid border-slate-800 cursor-pointer
+      rounded-lg text-gray-600 transition duration-500 ease-in-out hover:bg-pink-900 hover:text-white  shadow-[0px_10px_20px_-5px_rgba(0,0,0,0.33)]'
+        onClick={() =>
+          store.dispatch({ type: "timezone/remove", payload: { timezone: tzData, dateFormat: '' } })
+        }
+      >
+        <RiCloseFill size={24} />
       </div>
       {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
     </div>

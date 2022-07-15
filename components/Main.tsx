@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { BsGrid3X2GapFill } from 'react-icons/bs';
 import { HiViewGrid } from 'react-icons/hi';
 
+import Footer from "../components/Footer";
+import Navbar from "../components/Navbar";
 import { Timezones } from '../pages/api/functions/timeNow';
 import { store } from '../store/store';
 import ButtonGroup from './ui-elements/ButtonGroup';
@@ -55,59 +57,69 @@ const Main = ({ page }: mainProps) => {
 
   return (
     <>
-      <div className="flex flex-row-reverse pr-5 mt-5">
-        <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'list'} position='right' >
-          <HiViewGrid size={22} color={layout === 'list' ? 'gray' : 'white'} />
-        </ButtonGroup>
-        <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'grid'} position='left' >
-          <BsGrid3X2GapFill size={22} color={layout === 'grid' ? 'gray' : 'white'} />
-        </ButtonGroup>
+      <div className='flex flex-col justify-between min-h-full min-w-full bg-gradient-to-br from-slate-700 to-slate-900'>
+        <div>
+          <Navbar
+            title={`And the time ${page === 'timeis' ? 'is' : 'was'}...`}
+            searchBar={page === 'timeis'}
+            timePicker={page === 'timewas'}
+          />
+          <div className="flex flex-row-reverse pr-5 mt-5">
+            <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'list'} position='right' >
+              <HiViewGrid size={22} color={layout === 'list' ? 'gray' : 'white'} />
+            </ButtonGroup>
+            <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'grid'} position='left' >
+              <BsGrid3X2GapFill size={22} color={layout === 'grid' ? 'gray' : 'white'} />
+            </ButtonGroup>
 
-        <div className='mx-4'>
-          <button
-            type="button"
-            className="w-full inline-flex justify-center rounded-md border border-transparent 
-                    shadow-sm px-4 py-2 bg-teal-600 font-medium text-clip text-white hover:bg-teal-700 
-                    focus:outline-none sm:ml-3 transition ease-in-out duration-1000"
-            data-bs-toggle="timestampmodal"
-            data-bs-target="#timestampmodal"
-            onClick={() => {
-              setFormatPickerSelected(true);
-            }}
-          >
-            Change date format
-          </button>
+            <div className='mx-4'>
+              <button
+                type="button"
+                className="w-full inline-flex justify-center rounded-md border-t border-l border-gray-600
+                    px-4 py-2 bg-teal-600 font-medium text-clip text-white hover:bg-teal-700 
+                    focus:outline-none sm:ml-3 transition ease-in-out duration-1000 
+                    shadow-[10px_10px_20px_-5px_rgba(0,0,0,0.53)]"
+                data-bs-toggle="timestampmodal"
+                data-bs-target="#timestampmodal"
+                onClick={() => {
+                  setFormatPickerSelected(true);
+                }}
+              >
+                Change date format
+              </button>
 
+            </div>
+          </div>
+
+          {
+            layout === 'grid' ?
+              // if layout is grid
+              (<>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 p-2 md:p-5 w-full gap-3">
+                  {
+                    timezones && timezones.map((tzData) => (
+                      <Card key={tzData.name} tzData={tzData} page={page} />
+                    ))
+                  }
+                </div>
+              </>) :
+
+              // if layout is list
+              (<>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
+                  {
+                    timezones && timezones.map((tzData) => (
+                      <Card key={tzData.name} tzData={tzData} page={page} />
+                    ))
+                  }
+                </div>
+              </>)
+          };
+
+          {formatPickerSelected && <DateFormatModal setFormatPickerSelected={setFormatPickerSelected} />}
         </div>
+        <Footer hidden={page === 'timeis' ? "/" : '/TimeWas'} />
       </div>
-
-      {
-        layout === 'grid' ?
-
-          // if layout is grid
-          (<>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 p-2 md:p-5 w-full gap-3">
-              {
-                timezones && timezones.map((tzData) => (
-                  <Card key={tzData.name} tzData={tzData} page={page} />
-                ))
-              }
-            </div>
-          </>) :
-
-          // if layout is list
-          (<>
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
-              {
-                timezones && timezones.map((tzData) => (
-                  <Card key={tzData.name} tzData={tzData} page={page} />
-                ))
-              }
-            </div>
-          </>)
-      };
-
-      {formatPickerSelected && <DateFormatModal setFormatPickerSelected={setFormatPickerSelected} />}
     </>
   )
 };

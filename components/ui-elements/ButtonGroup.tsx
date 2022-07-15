@@ -21,19 +21,11 @@ type Props = {
  * @param {Props} props - props for component
  */
 const ButtonGroup = ({ children, layout, toLayout, position, setLayout }: Props) => {
-
-  // css classes for button group
-  let cssClass = "bg-transparent border p-1.5 border-gray-300 hover:bg-slate-700 disabled:border-gray-500";
-  if (position === 'left') {
-    cssClass += " rounded-l-lg";
-  } else if (position === 'right') {
-    cssClass += " rounded-r-lg";
-  }
-
   return (
     <button
       disabled={layout === toLayout}
-      className={cssClass}
+      className={`bg-transparent border p-1.5 border-gray-300 hover:bg-slate-700 disabled:border-gray-500 
+      shadow-[15px_20px_20px_-5px_rgba(0,0,0,0.53)] transition duration-1000 ease-in-out ${position === 'left' ? 'rounded-l-lg' : 'rounded-r-lg'}`}
       onClick={() => {
         localStorage.setItem('layout', toLayout);
         setLayout(toLayout);
