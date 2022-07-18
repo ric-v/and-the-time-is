@@ -18,7 +18,8 @@ const ModalButton = ({ text, close, handleClick, classes, disabled }: Props) => 
                   focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 
                   sm:ml-3 sm:w-auto sm:text-sm transition duration-1000 ease-in-out
                   shadow-[10px_10px_20px_-5px_rgba(0,0,0,0.53)]
-                  bg-gray-800 hover:bg-gray-900 ${disabled ? 'cursor-not-allowed' : ''}  ${classes}`}
+                  ${close ? 'bg-gray-800 hover:bg-gray-900' : 'bg-teal-600 hover:bg-teal-800'}
+                  ${disabled ? 'cursor-not-allowed' : ''}  ${classes}`}
       onClick={handleClick}
     >
       {text}
