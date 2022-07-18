@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import tz from 'timezone/loaded';
+import { Transition } from '@headlessui/react'
 
 import { getCurrentTime, getParsedTime, Timezones } from '../pages/api/functions/timeNow';
 import { timezoneList } from '../pages/api/timezones';
@@ -69,48 +70,31 @@ const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
   return (
     <>
       <div
-        className='h-1/2 lg:h-96 text-center lg:text-left curve shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
+        className='h-1/2 lg:h-96 text-center curve shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
            from-cyan-800 to-slate-900 text-slate-300
           sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
         <div className="grid lg:grid-cols-2">
           <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
-            <Link href={"/"}>
+            <Link href={searchBar ? '/TimeWas' : '/'}>
               <a className='text-4xl font-nova-flat md:text-6xl pb-2 animate-pulse hover:text-teal-500'>
                 {title}
               </a>
             </Link>
-            {
-              searchBar && (
-                <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
-                  <p className='text-teal-500 text-lg'>
-                    {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
-                  </p>
-                  <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
-                    onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
-                  >
-                    {currentTime}
-                  </p>
-                </div>)
-            }
-
-            {
-              timePicker && (
-                <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
-                  <p className='text-teal-500 text-lg'>
-                    {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
-                  </p>
-                  <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
-                    onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
-                  >
-                    {currentTime}
-                  </p>
-                </div>)
-            }
+            <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
+              <p className='text-teal-500 text-lg'>
+                {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
+              </p>
+              <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
+                onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
+              >
+                {currentTime}
+              </p>
+            </div>
 
           </div>
-          <div className='p-2 lg:p-10 mt-0 md:mt-10 md:z-10'>
-            {searchBar && <TimezoneSearch />}
+          <div className={`p-2 ${searchBar ? 'lg:p-10' : 'lg:p-2'} md:z-10`}>
             {timePicker && <TimePicker now={now} dateString={dateString} setDateString={setDateString} />}
+            {<TimezoneSearch />}
           </div>
         </div>
       </div>

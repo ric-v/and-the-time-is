@@ -3,6 +3,7 @@ import useSWR from 'swr';
 
 import { Timezones } from '../pages/api/functions/timeNow';
 import TimestampModal from './TimestampModal';
+import Label from './ui-elements/Label';
 
 const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) => fetch(input, init).then((res) => res.json());
 
@@ -25,9 +26,7 @@ const TimezoneSearch = () => {
   return (
     <div className="mt-2 mb-4 sm:mt-10">
       <div className="w-full">
-        <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold">
-          Search for timezone
-        </label>
+        <Label text='Search Timezone' />
         <p className="text-gray-500 text-md italic mb-2">
           eg: &quot;Europe&quot;, &quot;Kolkata&quot;, &quot;new york&quot;,
           &quot;sydney&quot;, &quot;UTC&quot;, &quot;-04:00&quot;, &quot;IST&quot;, &quot;EDT&quot;,

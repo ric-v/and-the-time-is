@@ -1,6 +1,8 @@
 
 import { useEffect, useState } from 'react';
 import type { TimePickerType } from './Navbar';
+import Label from './ui-elements/Label';
+import Select from './ui-elements/Select';
 
 const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) => fetch(input, init).then((res) => res.json());
 
@@ -14,51 +16,9 @@ type timePickerProps = {
  * @description Timezone search component for Navbar
  */
 const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
-  const selectClasses = 'bg-gray-700 overflow-y-auto text-center rounded-lg p-2 scrollbar-thin scrollbar-track-gray-700 scrollbar-thumb-gray-800';
-  const divClasses = 'grid grid-cols-3 gap-2 md:gap-10 p-2 mt-5';
   // fetch number of days in a month of the year 
   const daysInMonth = (month: number, year: number) => {
     return new Date(year, month + 1, 0).getDate();
-  }
-
-  /**
-   * @description Label component for date and time picker
-   * @param {string} text
-   */
-  const Label = (text: string) => {
-    return (
-      <label className="block uppercase tracking-wide text-teal-400 text-sm font-bold">
-        {text}
-      </label>
-    )
-  }
-
-  /**
-   * @description Select component for hour, minute, and second
-   * @param {string} field
-   * @param {number} limit
-   * @returns 
-   */
-  const TimeSelect = (field: string, limit: number) => {
-    return (
-      <select
-        className={selectClasses}
-        onChange={(e) => {
-          setDateString({ ...dateString, [field]: e.target.value })
-        }}
-        value={dateString[field]}
-      >
-        {
-          Array.from(Array(limit).keys()).map((val) => (
-            <option key={val} value={val}>
-              {
-                val < 10 ? `0${val}` : val
-              }
-            </option>
-          ))
-        }
-      </select>
-    )
   }
 
   useEffect(() => {
@@ -66,70 +26,44 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
   }, [dateString]);
 
   return (
-    <div className="mt-2 mb-4 sm:mt-10 w-full">
-
-      {Label('Select a date')}
-      <div className={divClasses}>
-
+    <div className="mt-2 mb-4 sm:mt-2 w-full">
+      <Label text='Select a date (Year - Month - Date)' />
+      <div className='grid grid-cols-3 gap-2 md:gap-10 p-0 md:p-2 mt-2'>
         {/* select year */}
-        <select
-          className={selectClasses}
-          onChange={(e) => {
-            setDateString({ ...dateString, year: e.target.value });
-          }}
-          value={dateString.year}>
-          {
-            Array.from(Array(now.getFullYear() - 1800).keys()).map((year) => (
-              <option key={year + 1} value={now.getFullYear() - year}>{now.getFullYear() - year}</option>
-            ))
-          }
-        </select>
+        <Select field='year' limit={now.getFullYear() - 1800} dateString={dateString} handler={setDateString}
+          selectVal={(val: number) => (now.getFullYear() - val).toString()}
+          optionDisplay={
+            (val: number) => (now.getFullYear() - val).toString()
+          } />
 
         {/* select month */}
-        <select
-          className={selectClasses}
-          onChange={(e) => {
-            setDateString({ ...dateString, month: e.target.value });
-          }}
-          value={dateString.month}
-        >
-          {
-            Array.from(Array(12).keys()).map((month) => (
-              <option key={month} value={month}>
-                {
-                  // show month in full name
-                  new Date(Number.parseInt(dateString.year), month, 1).toLocaleString('default', { month: 'long' })
-                }
-              </option>
-            ))
-          }
-        </select>
+        <Select field='month' limit={12} dateString={dateString} handler={setDateString}
+          selectVal={(val) => val}
+          optionDisplay={
+            (val: number) =>
+              (new Date(Number.parseInt(dateString.year), val, 1).toLocaleString('default', { month: 'long' })).
+                toString()
+          } />
 
         {/* select day */}
-        <select
-          className={selectClasses}
-          onChange={(e) => {
-            setDateString({ ...dateString, day: e.target.value });
-          }}
-          value={dateString.day}
-        >
-          {
-            Array.from(Array(daysInMonth(Number.parseInt(dateString.month), Number.parseInt(dateString.year))).keys()).map((date) => (
-              <option key={date + 1} value={date + 1}>
-                {
-                  date + 1 < 10 ? `0${date + 1}` : date + 1
-                }
-              </option>
-            ))
-          }
-        </select>
+        <Select field='day' dateString={dateString} handler={setDateString}
+          limit={daysInMonth(Number.parseInt(dateString.month), Number.parseInt(dateString.year))}
+          selectVal={(val) => val + 1}
+          optionDisplay={
+            (val: number) => (val + 1 < 10 ? `0${val + 1}` : val + 1).toString()
+          } />
       </div>
-
-      {Label('Select the time')}
-      <div className={divClasses}>
-        {TimeSelect('hour', 24)}
-        {TimeSelect('minute', 60)}
-        {TimeSelect('second', 60)}
+      <Label text='Select the time (Hour - Minute - Second)' />
+      <div className='grid grid-cols-3 gap-2 md:gap-10 p-0 md:p-2 mt-2'>
+        {
+          [{ field: 'hour', limit: 24, }, { field: 'minute', limit: 60, }, { field: 'second', limit: 60, }].
+            map(timeData => (
+              <Select key={timeData.field} field={timeData.field} limit={timeData.limit}
+                dateString={dateString} handler={setDateString} selectVal={(val) => val}
+                optionDisplay={(val: number) => (val < 10 ? `0${val}` : val).toString()}
+              />
+            ))
+        }
       </div>
     </div >
   );

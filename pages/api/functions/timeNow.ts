@@ -31,12 +31,6 @@ export const getCurrentTime = (timezone: string, format: string): string => {
  * @returns {string} currentTime
  */
 export const getParsedTime = (timezone: string): string => {
-
-  console.log(tz(
-    new Date(store.getState().storedata.timewasData),
-    store.getState().storedata.dateFormat,
-    timezone,
-  ))
   return tz(
     new Date(store.getState().storedata.timewasData),
     store.getState().storedata.dateFormat,
