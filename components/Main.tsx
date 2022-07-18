@@ -90,32 +90,13 @@ const Main = ({ page }: mainProps) => {
 
             </div>
           </div>
-
-          {
-            layout === 'grid' ?
-              // if layout is grid
-              (<>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 p-2 md:p-5 w-full gap-3">
-                  {
-                    timezones && timezones.map((tzData) => (
-                      <Card key={tzData.name} tzData={tzData} page={page} />
-                    ))
-                  }
-                </div>
-              </>) :
-
-              // if layout is list
-              (<>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-2 p-3">
-                  {
-                    timezones && timezones.map((tzData) => (
-                      <Card key={tzData.name} tzData={tzData} page={page} />
-                    ))
-                  }
-                </div>
-              </>)
-          };
-
+          <div className={layout === 'list' ? `grid grid-cols-1 lg:grid-cols-2 gap-2 p-3` : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 p-2 md:p-5 w-full gap-3`}>
+            {
+              timezones && timezones.map((tzData) => (
+                <Card key={tzData.name} tzData={tzData} page={page} />
+              ))
+            }
+          </div>
           {formatPickerSelected && <DateFormatModal setFormatPickerSelected={setFormatPickerSelected} />}
         </div>
         <Footer hidden={page === 'timeis' ? "/" : '/TimeWas'} />

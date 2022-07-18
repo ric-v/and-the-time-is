@@ -80,33 +80,16 @@ const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
                 {title}
               </a>
             </Link>
-            {
-              searchBar && (
-                <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
-                  <p className='text-teal-500 text-lg'>
-                    {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
-                  </p>
-                  <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
-                    onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
-                  >
-                    {currentTime}
-                  </p>
-                </div>)
-            }
-
-            {
-              timePicker && (
-                <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
-                  <p className='text-teal-500 text-lg'>
-                    {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
-                  </p>
-                  <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
-                    onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
-                  >
-                    {currentTime}
-                  </p>
-                </div>)
-            }
+            <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
+              <p className='text-teal-500 text-lg'>
+                {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
+              </p>
+              <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
+                onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
+              >
+                {currentTime}
+              </p>
+            </div>
 
           </div>
           <div className={`p-2 ${searchBar ? 'lg:p-10' : 'lg:p-2'} md:z-10`}>
