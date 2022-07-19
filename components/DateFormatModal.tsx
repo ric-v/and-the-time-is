@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import ModalButton from './modal/ModalButton';
-import { getCurrentTime } from '../pages/api/functions/timeNow';
+import { getCurrentTime, trimTimeFormat } from '../pages/api/functions/timeNow';
 import { BiReset } from 'react-icons/bi';
 import { store } from '../store/store';
 import ModalBase from './modal/ModalBase';
@@ -25,16 +25,10 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
   const defFormatString = "b d Y H:M:S Z (z)";
   const [formattedTime, setFormattedTime] = useState(getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat));
   const [expandInstruction, setExpandInstruction] = useState(false);
-  const [dateFormat, setDateFormat] = useState('');
-  const [formatString, setFormatString] = useState(
-    store.getState().storedata.dateFormat.
-      replaceAll(/%:/g, "").
-      replaceAll(/%/g, "")
-  );
+  const [dateFormat, setDateFormat] = useState(trimTimeFormat(store.getState().storedata.dateFormat));
+  const [formatString, setFormatString] = useState(trimTimeFormat(store.getState().storedata.dateFormat));
 
-  const isModified = store.getState().storedata.dateFormat.
-    replaceAll(/%:/g, "").
-    replaceAll(/%/g, "") !== formatString;
+  const isModified = trimTimeFormat(store.getState().storedata.dateFormat) !== formatString;
 
   // date formaters for instruction table
   const dateformaters = [
@@ -45,16 +39,19 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
     { display: 'm', format: '%m', description: 'month', example: '01, 12' },
     { display: 'y', format: '%y', description: 'year', example: '00, 99' },
     { display: 'Y', format: '%Y', description: 'full year', example: '2000, 2020' },
-    { display: 'H', format: '%H', description: 'hour', example: '00, 23' },
+    { display: 'H', format: '%H', description: 'hour (24-hour clock)', example: '00, 23' },
     { display: 'I', format: '%I', description: 'hour (12-hour clock)', example: '01, 12' },
     { display: 'M', format: '%M', description: 'minute', example: '00, 59' },
     { display: 'S', format: '%S', description: 'second', example: '00, 59' },
     { display: 'p', format: '%p', description: 'AM/PM', example: 'AM, PM' },
+    { display: 'P', format: '%P', description: 'am/pm', example: 'am, pm' },
     { display: 'Z', format: '%Z', description: 'timezone', example: 'UTC, EST' },
     { display: 'z', format: '%:z', description: 'timezone', example: '+00:00, -05:00' },
     { display: 'A', format: '%A', description: 'full weekday name', example: 'Monday, Sunday' },
     { display: 'a', format: '%a', description: 'short weekday name', example: 'Mon, Sun' },
     { display: 'W', format: '%W', description: 'week of year', example: '00, 53' },
+    { display: 's', format: '%s', description: 'epoch/unix time', example: '0, 1658230652' },
+    { display: 'n', format: ' ', description: 'epoch/unix nano', example: '1, 1658255852000' },
   ]
 
   // generate date format basedon the timeformatters
@@ -81,6 +78,24 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formatString])
 
+  const presetFormats = [
+    { display: 'b d Y H:M:S Z (z)', value: 'b d Y H:M:S Z (z)' },
+    { display: 'Y-m-d H:M:S Z', value: 'Y-m-d H:M:S Z' },
+    { display: 'Y-m-d I:M:S p Z', value: 'Y-m-d I:M:S p Z' },
+    { display: 'm/d/Y H:M:S Z', value: 'm/d/Y H:M:S Z' },
+    { display: 'm/d/Y I:M:S p Z', value: 'm/d/Y I:M:S p Z' },
+    { display: 'A, d B Y I:M:S Z', value: 'A, d B Y I:M:S Z' },
+    { display: 'Y B d, A j', value: 'Y B d, A j' },
+    { display: 'Y B d Z', value: 'Y B d Z' },
+    { display: 'H:M:S Z', value: 'H:M:S Z' },
+    { display: 'I:M:S p z', value: 'I:M:S p z' },
+    { display: 'a, d b \'y I:M:S z', value: 'a, d b \'y I:M:S z' },
+    { display: 'Y-m-dTH:M:Sz', value: 'Y-m-dTH:M:Sz' },
+    { display: 'YmdHMSz', value: 'YmdHMSz' },
+    { display: 'Epoch/Unix', value: 's' },
+    { display: 'Epoch/Unix nano', value: ' ' },
+  ]
+
   return (
     <ModalBase body={
       <>
@@ -92,7 +107,7 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
           className='appearance-none p-2 px-2 m-2 bg-slate-600 focus:bg-slate-700 animate-pulse 
                     focus:animate-none transition duration-1000 ease-in-out
                     rounded-full w-full text-gray-300 focus:outline-none focus:shadow-outline
-                    border border-gray-500 border-dashed'
+                    border border-gray-500 border-dashed scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-700'
           autoFocus
           onChange={(e) => {
             const val = e.target.value;
@@ -104,19 +119,12 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
           value={dateFormat}
         >
           <option value="">Choose a date-time format...</option>
-          <option value="b d Y H:M:S Z (z)">b d Y H:M:S Z (z)</option>
-          <option value="Y-m-d H:M:S Z">Y-m-d H:M:S Z</option>
-          <option value="Y-m-d I:M:S p Z">Y-m-d I:M:S p Z</option>
-          <option value="m/d/Y H:M:S Z">m/d/Y H:M:S Z</option>
-          <option value="m/d/Y I:M:S p Z">m/d/Y I:M:S p Z</option>
-          <option value="A, d B Y I:M:S Z">A, d B Y I:M:S Z</option>
-          <option value="Y B d, A j">Y B d, A j</option>
-          <option value="Y B d Z">Y B d Z</option>
-          <option value="H:M:S Z">H:M:S Z</option>
-          <option value="I:M:S p z">I:M:S p z</option>
-          <option value="a, d b 'y I:M:S z">a, d b &apos;y I:M:S z</option>
-          <option value="Y-m-dTH:M:Sz">Y-m-dTH:M:Sz</option>
-          <option value="YmdHMSz">YmdHMSz</option>
+          {
+            presetFormats.map((preset) => {
+              return <option key={preset.value} value={preset.value}>{preset.display}
+              </option>
+            })
+          }
           <option value="custom">Custom format...</option>
         </select>
 
@@ -130,31 +138,30 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
                 click here for instructions
               </button>
 
-              {expandInstruction && (
-                <>
-                  {/* table with timezone details */}
-                  <div className="table-responsive border rounded-lg border-gray-600 m-2 p-2">
-                    <table className="table-auto w-full">
-                      <tbody>
-                        <TableHeader heading='Format' />
-                        <TableHeader heading='Description' />
-                        <TableHeader heading='Example' />
+              {expandInstruction && (<>
+                {/* table with timezone details */}
+                <div className="table-responsive border rounded-lg border-gray-600 m-2 p-2">
+                  <table className="table-auto w-full">
+                    <tbody>
+                      <TableHeader heading='Format' />
+                      <TableHeader heading='Description' />
+                      <TableHeader heading='Example' />
 
-                        {dateformaters.map(
-                          (format) =>
-                            <TableRow key={format.display}
-                              col1={format.display}
-                              col2={format.description}
-                              col3={format.example}
-                            />
-                        )}
+                      {dateformaters.map(
+                        (format) =>
+                          <TableRow key={format.display}
+                            col1={format.display}
+                            col2={format.description}
+                            col3={format.example}
+                          />
+                      )}
 
-                      </tbody>
-                    </table>
-                  </div>
-                </>)}
+                    </tbody>
+                  </table>
+                </div>
+              </>)}
 
-              <div className="flex flex-col bg-slate-800 px-4 pb-4 sm:pb-4">
+              <div className="flex flex-col px-4 pb-4 sm:pb-4">
                 {/* add reset button inside input */}
                 <div className="flex items-center justify-between">
                   <div className="flex-1">
