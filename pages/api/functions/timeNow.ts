@@ -38,3 +38,11 @@ export const getParsedTime = (timezone: string): string => {
   );
 };
 
+/**
+ * @description trim additional % from time for display
+ * @param {string} time
+ * @returns {string}
+ */
+export const trimTimeFormat = (time: string): string => {
+  return time.replaceAll(/%:/g, "").replaceAll(/%/g, "")
+};
