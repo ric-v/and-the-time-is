@@ -95,33 +95,9 @@ const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
           </div>
           <div className={`p-2 ${searchBar ? 'lg:p-10' : 'lg:p-2'} md:z-10`}>
             {timePicker && <TimePicker now={now} dateString={dateString} setDateString={setDateString} />}
-            {searchBar &&
-              <>
-                <Label text='About' key={'about'} classes={'pb-2'} />
-                <div className='text-center md:text-left text-gray-400 
-                md:border-l md:shadow-[-40px_0px_40px_-20px_rgba(0,0,0,0.33)] border-dashed border-slate-500 pl-2'>
-                  <p className='font-nova-flat'>
-                    <span className='text-teal-300'>&apos;And the time is&apos; </span>app is for those who wants to track current timestamps across the globe.
-                    Search for the timezones to keep track of and pin them to the dashboard for easy access.
-                  </p>
-                  <br />
-                  <p className='font-nova-flat'>
-                    <span className='text-teal-300'>&apos;And the time was&apos;</span> helps you to track what the time was at a specific timezone compared to your location.
-                    It comes with a time picker to set the time you want to track across all selected timezones.
-                  </p>
-                  <br />
-                  <p className='font-nova-flat'>
-                    This is a free and open source project under GPL-3 copyleft license. You can find the source code on <a className='text-teal-300' href='https://github.com/dev-asterix/and-the-time-is.web'>Github</a>.
-                  </p>
-                  <br />
-                  <p className='font-nova-flat'>Code. Share. Prosper.</p>
-                </div>
-              </>
-            }
+            {searchBar && <TimezoneSearch />}
           </div>
         </div>
-        <TimezoneSearch />
-
       </div>
 
       {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
