@@ -35,7 +35,7 @@ const Footer = ({ hidden }: Props) => {
   }
 
   return (
-    <div className='flex flex-col justify-center text-center mt-10 mb-5 bg-slate-900'>
+    <div className='flex flex-col justify-center text-center mt-10 pb-5 bg-slate-900 border-t border-dashed border-gray-600'>
       <div className="flex flex-row justify-center">
         <div className='grid grid-cols-2 md:grid-cols-2 text-center p-5'>
           {footerNav('the time is 🕟', '/', 'left')}

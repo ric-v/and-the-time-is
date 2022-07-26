@@ -7,6 +7,7 @@ module.exports = {
   theme: {
     fontFamily: {
       "nova-flat": '"Nova Flat"',
+      "proxima-nova": '"Proxima Nova"',
     },
     extend: {},
   },

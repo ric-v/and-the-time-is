@@ -9,6 +9,7 @@ import { store } from '../store/store';
 import ButtonGroup from './ui-elements/ButtonGroup';
 import Card from './ui-elements/Card';
 import DateFormatModal from './DateFormatModal';
+import TimezoneSearch from './TimezoneSearch';
 
 type mainProps = {
   page: string;

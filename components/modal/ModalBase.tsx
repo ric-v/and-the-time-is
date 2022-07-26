@@ -21,7 +21,7 @@ const ModalBase = ({ body, actionBar }: Props) => {
                 {body}
               </div>
             </div>
-            <div className="bg-gradient-to-br from-slate-700 to-slate-800 px-4 py-3 sm:px-6 flex flex-row justify-end">
+            <div className="bg-gradient-to-br from-slate-700 to-slate-800 px-4 py-3 sm:px-6 flex flex-row justify-end border-t border-dashed border-gray-500">
               {actionBar}
             </div>
           </div>
