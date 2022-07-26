@@ -38,7 +38,7 @@ const TimePicker = ({ now, dateString, setDateString }: timePickerProps) => {
   }, [setDateString, unixTime]);
 
   return (
-    <div className="mt-2 mb-1 sm:mt-2 w-full border-b border-dashed  border-gray-500 pb-3 shadow-[30px_20px_40px_-15px_rgba(0,0,0,0.53)]">
+    <div className="mt-2 mb-1 sm:mt-2 w-full pb-3">
 
       <div className={`flex flex-row justify-center items-center align-center mb-10 cursor-pointer
         transition-all duration-1000 ease-in-out border-b border-dashed  border-gray-500 shadow-[10px_20px_40px_-15px_rgba(0,0,0,0.53)]

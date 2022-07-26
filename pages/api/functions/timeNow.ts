@@ -5,6 +5,7 @@ import { store } from '../../../store/store';
  * type Timezones
  */
 export type Timezones = {
+  customname: string;
   code: string;
   name: string;
   country: string;

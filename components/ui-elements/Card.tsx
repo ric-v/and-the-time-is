@@ -38,10 +38,9 @@ const Card = ({ tzData, page }: Props) => {
   }, [page, tzData.name]);
 
   return (
-    <div className="flex flex-row justify-between border border-slate-700 shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)]
-    bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-4"
-      key={tzData.name}
-    > 
+    <div className='flex flex-row justify-between bg-gradient-to-br from-slate-800 to-slate-900 
+        border border-slate-600 border-dashed shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] rounded-lg p-4'
+      key={tzData.name}>
       <div>
         <div className="flex flex-row justify-between text-sm font-medium">
           <h3
@@ -49,7 +48,7 @@ const Card = ({ tzData, page }: Props) => {
             id="modal-title"
             onClick={() => { setSelected(tzData) }}
           >
-            {tzData.city} - {tzData.country}
+            {tzData.customname === undefined ? `${tzData.city} - ${tzData.country}` : tzData.customname}
           </h3>
         </div>
 
@@ -59,7 +58,7 @@ const Card = ({ tzData, page }: Props) => {
           {currentTime}
         </div>
       </div>
-      <div className='flex flex-col items-center justify-center p-2 border-l border-t border-solid border-slate-800 cursor-pointer
+      <div className='flex flex-col items-center justify-center p-2 border-l border-t border-slate-700 cursor-pointer border-dashed
       rounded-lg text-gray-600 transition duration-500 ease-in-out hover:bg-pink-900 hover:text-white  shadow-[0px_10px_20px_-5px_rgba(0,0,0,0.33)]'
         onClick={() =>
           store.dispatch({ type: "timezone/remove", payload: { timezone: tzData, dateFormat: '' } })

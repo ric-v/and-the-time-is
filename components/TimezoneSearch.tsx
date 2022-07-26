@@ -24,7 +24,7 @@ const TimezoneSearch = () => {
   if (error) return <div>failed to load</div>;
 
   return (
-    <div className="mt-2 mb-4 sm:mt-10">
+    <div className="mb-4 p-3 md:p-5 text-white">
       <div className="w-full">
         <Label text='Search Timezone' />
         <p className="text-gray-500 text-md italic mb-2">
@@ -35,6 +35,7 @@ const TimezoneSearch = () => {
         <input
           type="text"
           className="h-14 w-full bg-slate-700 transition-colors duration-1000 rounded-3xl px-5 pr-14 
+            border border-dashed border-gray-500
             shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)] focus:outline-none focus:bg-slate-800 sm:px-5"
           placeholder="Search for a timezone code / timezone location / city..."
           value={search}
@@ -46,7 +47,7 @@ const TimezoneSearch = () => {
         {/* search entry drop down */}
         {data && (
           <div
-            className="w-full px-2 bg-slate-800 rounded-xl 
+            className="w-full px-2 bg-slate-800 rounded-xl border-x border-dashed border-gray-500
             shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)] max-h-72 scrollbar-thin
             scrollbar-thumb-gray-800 scrollbar-track-gray-700"
           >

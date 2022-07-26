@@ -24,8 +24,8 @@ const ButtonGroup = ({ children, layout, toLayout, position, setLayout }: Props)
   return (
     <button
       disabled={layout === toLayout}
-      className={`bg-transparent border p-1.5 border-gray-300 hover:bg-slate-700 disabled:border-gray-500 
-      shadow-[15px_20px_20px_-5px_rgba(0,0,0,0.53)] transition duration-1000 ease-in-out ${position === 'left' ? 'rounded-l-lg' : 'rounded-r-lg'}`}
+      className={`bg-transparent border p-1.5 border-gray-300 border-dashed hover:bg-slate-700 disabled:border-gray-500 
+      shadow-[15px_20px_20px_-5px_rgba(0,0,0,0.53)] transition duration-1000 ease-in-out ${position === 'left' ? 'rounded-l-lg' : position === 'middle' ? '' : 'rounded-r-lg'}`}
       onClick={() => {
         localStorage.setItem('layout', toLayout);
         setLayout(toLayout);

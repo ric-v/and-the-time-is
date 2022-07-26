@@ -9,6 +9,7 @@ import { store } from '../store/store';
 import TimePicker from './TimePicker';
 import TimestampModal from './TimestampModal';
 import TimezoneSearch from './TimezoneSearch';
+import Label from './ui-elements/Label';
 
 export type TimePickerType = {
   year: string;
@@ -70,8 +71,8 @@ const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
   return (
     <>
       <div
-        className='h-1/2 lg:h-1/2 text-center curve shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
-           from-cyan-800 to-slate-900 text-slate-300
+        className='h-1/2 text-center shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
+           from-cyan-800 to-slate-900 text-slate-300 border-b border-dashed border-gray-600
           sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
         <div className="grid lg:grid-cols-2">
           <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
@@ -94,7 +95,7 @@ const Navbar = ({ title, searchBar, timePicker }: navbarProps) => {
           </div>
           <div className={`p-2 ${searchBar ? 'lg:p-10' : 'lg:p-2'} md:z-10`}>
             {timePicker && <TimePicker now={now} dateString={dateString} setDateString={setDateString} />}
-            <TimezoneSearch />
+            {searchBar && <TimezoneSearch />}
           </div>
         </div>
       </div>
