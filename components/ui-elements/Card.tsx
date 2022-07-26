@@ -41,7 +41,7 @@ const Card = ({ tzData, page }: Props) => {
     <div className="flex flex-row justify-between border border-slate-700 shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)]
     bg-gradient-to-br from-slate-800 to-slate-900 rounded-lg p-4"
       key={tzData.name}
-    > 
+    >
       <div>
         <div className="flex flex-row justify-between text-sm font-medium">
           <h3
@@ -49,7 +49,7 @@ const Card = ({ tzData, page }: Props) => {
             id="modal-title"
             onClick={() => { setSelected(tzData) }}
           >
-            {tzData.city} - {tzData.country}
+            {tzData.customname === undefined ? `${tzData.city} - ${tzData.country}` : tzData.customname}
           </h3>
         </div>
 
