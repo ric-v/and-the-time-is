@@ -41,7 +41,7 @@ const Footer = ({ hidden }: Props) => {
         <div className='grid grid-cols-2 md:grid-cols-4 text-center p-5'>
           {footerNav('the time is 🕟', '/', 'left')}
           {footerNav('the time was? ⌚', '/TimeWas', 'left')}
-          {footerNav('Suggestions 🤔', '', 'middle', () => window.open('mailto:asterix.dev@outlook.com?subject=Issue Report on and-the-time-is.web&body=Please describe the issue you are facing. Add the page on which the issue occured and screenshots if available.'))}
+          {footerNav('Suggestions 🤔', '', 'middle', () => window.open('mailto:support@astrx.dev?subject=Issue Report on and-the-time-is.web&body=Please describe the issue you are facing. Add the page on which the issue occured and screenshots if available.'))}
           {footerNav('Report bug 🪲', 'https://github.com/dev-asterix/and-the-time-is.web/issues/new?assignees=&labels=&template=bug_report.md&title=', 'middle')}
           {footerNav('make it better 🚀', 'https://github.com/dev-asterix/and-the-time-is', 'right')}
         </div>
