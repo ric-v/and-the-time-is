@@ -6,7 +6,7 @@
 
 The app displays the current time in local timezone. The time is displayed in 24-hour format. User can add other timezones to the list. The app displays the time in the selected timezone.
 
-**Find the app here: <https://andthetimeis.vercel.app/>**
+**Find the app here: <http://timeis.astrx.dev>**
 
 ## Getting Started
 
