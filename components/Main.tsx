@@ -88,7 +88,6 @@ const Main = ({ page }: mainProps) => {
               >
                 Change date format
               </button>
-
             </div>
           </div>
           <div className={layout === 'list' ? `grid grid-cols-1 lg:grid-cols-2 gap-2 p-3` : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 p-2 md:p-5 w-full gap-3`}>
@@ -107,4 +106,3 @@ const Main = ({ page }: mainProps) => {
 };
 
 export default Main;
-

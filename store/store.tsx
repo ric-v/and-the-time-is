@@ -46,6 +46,26 @@ const addTimezoneFunc = (state: storeData, action: { payload: actionData; type: 
   }
 };
 
+const updateTimezone = createAction<actionData>("timezone/update");
+/**
+ * @description - updates timezone name in the store and update the state & local storage
+ * 
+ * @param state - current state
+ * @param action - action to be performed
+ * @returns new state
+ */
+const updateTimezoneFunc = (state: storeData, action: { payload: actionData; type: string; }) => {
+  const tz = action.payload.timezone;
+  if (state.timezones.find((tzData) => tzData.city === tz.city && tzData.country === tz.country)) {
+    // add this timezone to local storage
+    localStorage.setItem(
+      "timezones",
+      JSON.stringify(state.timezones.map((tzData) => ((tzData.city === tz.city && tzData.country === tz.country)) ? tz : tzData)),
+    );
+    return { ...state, timezones: state.timezones.map((tzData) => ((tzData.city === tz.city && tzData.country === tz.country)) ? tz : tzData) };
+  }
+};
+
 const removeTimezone = createAction<actionData>("timezone/remove");
 /**
  * @description - remove timezone from the store and update the state & local storage
@@ -100,6 +120,7 @@ const reducers = createReducer(initState, (builder) => {
   // adding new timezone card to dashboard
   builder.addCase(addTimezone, addTimezoneFunc);
   builder.addCase(removeTimezone, removeTimezoneFunc);
+  builder.addCase(updateTimezone, updateTimezoneFunc);
   builder.addCase(setDateFormat, dateFormatSetFunc);
   builder.addCase(setPickedtime, pickedDateFunc);
 });

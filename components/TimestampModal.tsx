@@ -46,7 +46,7 @@ function TimestampModal({ timezone, setSelected }: Props) {
   return (
     <ModalBase body={
       <>
-        <ModalTitle title={timezone.name} />
+        <ModalTitle title={timezone.customname ? timezone.customname : timezone.name} />
 
         {/* table with timezone details */}
         <table className="table-responsive w-full mt-5">
