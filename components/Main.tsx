@@ -23,6 +23,7 @@ const Main = ({ page }: mainProps) => {
   // get timezones from local storage
   const [timezones, setTimezones] = useState<Timezones[]>([]);
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
+  const [navbarSize, setNavbarSize] = useState<'full' | 'mini'>('full');
   const [formatPickerSelected, setFormatPickerSelected] = useState(false);
 
   // use effect to get timezones from local storage and layout from local storage
@@ -31,6 +32,11 @@ const Main = ({ page }: mainProps) => {
     // get layout from localstorage
     const layoutLocal = localStorage.getItem('layout') as 'grid' | 'list';
     setLayout(layoutLocal ? layoutLocal : 'grid');
+
+    // get navbar height from localstorage
+    const navbarSizeLocal = localStorage.getItem('navbar-size') as 'full' | 'mini';
+    console.log(navbarSizeLocal);
+    setNavbarSize(navbarSizeLocal ? navbarSizeLocal : 'full');
 
     // fetch date format stored in localstorage
     const dateFormatLocal = localStorage.getItem('dateFormat') as string;
@@ -58,10 +64,11 @@ const Main = ({ page }: mainProps) => {
 
   return (
     <>
-      <div className='flex flex-col justify-between min-h-full min-w-full bg-gradient-to-br from-slate-700 to-slate-900'>
+      <div className='flex flex-col justify-between min-h-full min-w-full bg-gradient-to-br from-slate-700 to-slate-900 transition-all ease-in-out duration-1000'>
         <div>
           <Navbar
             title={`And the time ${page === 'timeis' ? 'is' : 'was'}...`}
+            navbar={navbarSize}
             searchBar={page === 'timeis'}
             timePicker={page === 'timewas'}
           />

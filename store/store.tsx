@@ -8,12 +8,14 @@ import { Timezones } from '../pages/api/functions/timeNow';
 type actionData = {
   timezone: Timezones;
   dateFormat: string;
+  miniNav: string;
   timewasData: string;
 }
 
 type storeData = {
   timezones: Timezones[];
   dateFormat: string;
+  miniNav: string;
   timewasData: string;
 }
 
@@ -23,6 +25,7 @@ type storeData = {
 const initState = {
   timezones: [] as Timezones[],
   dateFormat: "%b %d %Y %H:%M:%S %Z (%:z)",
+  miniNav: "full",
   timewasData: '' as string,
 } as storeData;
 
@@ -99,6 +102,20 @@ const dateFormatSetFunc = (state: storeData, action: { payload: string; type: st
   return { ...state, dateFormat: action.payload };
 };
 
+const setMiniNav = createAction<string>("navbar/resize");
+/**
+ * @description - resize the size of the navbar
+ * 
+ * @param state - current state
+ * @param action - action to be performed
+ * @returns new state
+ */
+const setMiniNavFunc = (state: storeData, action: { payload: string; type: string; }) => {
+  // store the value to local storage
+  localStorage.setItem("navbar-size", action.payload);
+  return { ...state, miniNav: action.payload };
+};
+
 const setPickedtime = createAction<string>("timewas/data");
 /**
  * @description - remove timezone from the store and update the state & local storage
@@ -122,6 +139,7 @@ const reducers = createReducer(initState, (builder) => {
   builder.addCase(removeTimezone, removeTimezoneFunc);
   builder.addCase(updateTimezone, updateTimezoneFunc);
   builder.addCase(setDateFormat, dateFormatSetFunc);
+  builder.addCase(setMiniNav, setMiniNavFunc);
   builder.addCase(setPickedtime, pickedDateFunc);
 });
 
