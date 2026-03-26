@@ -2,7 +2,7 @@ import '../public/styles/globals.css';
 import { Provider } from 'react-redux';
 import { store } from '../store/store';
 
-import type { AppProps } from 'next/app';
+import type { AppProps } from 'next/dist/pages/_app';
 import Head from 'next/head';
 function AndTheTimeIs({ Component, pageProps }: AppProps) {
   return (
