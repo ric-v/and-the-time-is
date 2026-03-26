@@ -1,28 +1,17 @@
 import { ChangeEvent, useEffect, useState } from 'react';
-import { RiCloseFill } from 'react-icons/ri';
-import { FiEdit } from 'react-icons/fi';
-import { VscClose } from 'react-icons/vsc';
-import { CgUndo } from 'react-icons/cg';
-
 import { getCurrentTime, getParsedTime, Timezones } from '../../utils/timeNow';
 import { store } from '../../store/store';
 import TimestampModal from '../TimestampModal';
 
-/**
- * @interface Props
- * @property {string} tzData - timezone to display
- */
 type Props = {
   tzData: Timezones;
   page: string;
 };
 
 /**
- * @description Card component for the app to display timezone data in small cards
- * @param {Props} props
+ * @description Compact card component for timezone display
  */
 const Card = ({ tzData, page }: Props) => {
-  // get current time to state
   const [currentTime, setCurrentTime] = useState(
     page === 'timeis'
       ? getCurrentTime(tzData.name, store.getState().storedata.dateFormat)
@@ -30,21 +19,16 @@ const Card = ({ tzData, page }: Props) => {
   );
   const [selected, setSelected] = useState<Timezones | null>(null);
   const [customName, setCustomName] = useState(tzData.customname ? tzData.customname : tzData.name);
-  const [editable, setEditable] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // handle card title change
   const handleCardTitleChange = (e: ChangeEvent<HTMLInputElement>) => {
     setCustomName(e.target.value);
     const updatedTz = { ...tzData, customname: e.target.value };
-
-    // update store
-    // sleep for 0.1s to allow for input to be updated
     setTimeout(() => {
       store.dispatch({ type: "timezone/update", payload: { timezone: updatedTz, dateFormat: '' } });
     }, 500);
-  }
+  };
 
-  // set interval to update time
   useEffect(() => {
     const interval = setInterval(() => {
       setCurrentTime(
@@ -54,79 +38,85 @@ const Card = ({ tzData, page }: Props) => {
     return () => clearInterval(interval);
   }, [page, tzData.name]);
 
+  // Get region icon based on timezone
+  const getRegionIcon = () => {
+    const name = tzData.name.toLowerCase();
+    if (name.includes('america') || name.includes('new york') || name.includes('los angeles') || name.includes('chicago')) {
+      return '🌎';
+    } else if (name.includes('europe') || name.includes('london') || name.includes('paris') || name.includes('berlin')) {
+      return '🌍';
+    } else if (name.includes('asia') || name.includes('kolkata') || name.includes('tokyo') || name.includes('singapore')) {
+      return '🌏';
+    } else if (name.includes('australia') || name.includes('sydney') || name.includes('pacific') || name.includes('auckland')) {
+      return '🌊';
+    }
+    return '🌐';
+  };
+
   return (
-    <div className='flex flex-row justify-between bg-gradient-to-br from-slate-800 to-slate-900 
-        border border-slate-600 border-dashed shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] rounded-lg p-4'
-      key={tzData.name}>
-      <div>
-        <div className="flex flex-row justify-start text-sm font-medium">
-          <h3
-            className="text-lg leading-6 font-medium truncate text-teal-600 cursor-pointer"
-            id="modal-title"
-            onClick={() => {
-              if (!editable) {
-                setSelected(tzData)
-              }
-            }}
-          >
+    <>
+      <div
+        className="timezone-card group relative rounded-xl p-4"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        {/* Header: Icon + Timezone Name + Code + Remove */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-1.5 flex-1 min-w-0">
+            <span className="text-sm">{getRegionIcon()}</span>
             <input
               type="text"
-              name="card-name"
-              id="card-name"
-              disabled={!editable}
-              className={`appearance-none bg-transparent p-1 rounded-lg ${editable ? 'border-b border-teal-600 border-dashed' : 'cursor-pointer'}
-                focus:outline-none transition ease-in-out duration-1000`}
               value={customName}
-              onChange={(e) => { handleCardTitleChange(e) }}
-              onBlur={() => { setEditable(false) }}
+              onChange={handleCardTitleChange}
+              className="flex-1 bg-transparent text-xs font-medium text-[var(--text-primary)] border-none outline-none focus:ring-0 placeholder-[var(--text-muted)] truncate min-w-0"
+              placeholder="City name"
             />
-          </h3>
-          {
-            editable ? (
-              <VscClose
-                size={22}
-                className='text-gray-600 cursor-pointer'
-                onClick={() => { setEditable(false) }}
-              />
-            ) : (
-              <FiEdit
-                size={18}
-                className='text-gray-600 cursor-pointer'
-                onClick={() => { setEditable(true) }}
-              />
-            )
-          }
-          {
-            !editable && tzData.customname && (
-              <CgUndo
-                size={18}
-                className='text-gray-600 cursor-pointer ml-2'
-                onClick={() => {
-                  setCustomName(tzData.name);
-                  const updatedTz = { ...tzData, customname: null };
-                  store.dispatch({ type: "timezone/update", payload: { timezone: updatedTz, dateFormat: '' } });
-                }}
-              />
-            )
-          }
+            <span className="text-[9px] font-medium tracking-wider uppercase text-[var(--text-muted)] flex-shrink-0">
+              {tzData.code || 'UTC'}
+            </span>
+          </div>
+
+          {/* Remove button */}
+          <button
+            onClick={() =>
+              store.dispatch({ type: "timezone/remove", payload: { timezone: tzData, dateFormat: '' } })
+            }
+            className={`p-1 rounded-md transition-all duration-200 flex-shrink-0 ${isHovered
+                ? 'opacity-100 text-red-400 hover:bg-red-400/10'
+                : 'opacity-0 text-[var(--text-muted)]'
+              }`}
+            aria-label="Remove timezone"
+          >
+            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
         </div>
 
-        <div className="mt-3 text-gray-200 text-lg truncate font-semibold leading-tight cursor-pointer"
+        {/* Time + Date + UTC Offset */}
+        <button
           onClick={() => setSelected(tzData)}
+          className="w-full text-left"
         >
-          {currentTime}
-        </div>
+          <div className="flex items-end justify-between">
+            <div className="flex items-baseline gap-2">
+              <span className="font-mono text-2xl md:text-3xl font-light text-[var(--text-primary)] tracking-tight">
+                {currentTime}
+              </span>
+              <span className="text-[10px] text-[var(--text-muted)]">
+                {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+              </span>
+            </div>
+            <span className="text-[10px] text-[var(--text-muted)]">
+              UTC {tzData.offset || '+00:00'}
+            </span>
+          </div>
+        </button>
       </div>
-      <div className='flex flex-col items-center justify-center p-2 border-l border-t border-slate-700 cursor-pointer border-dashed
-      rounded-lg text-gray-600 transition duration-500 ease-in-out hover:bg-pink-900 hover:text-white  shadow-[0px_10px_20px_-5px_rgba(0,0,0,0.33)]'
-        onClick={() =>
-          store.dispatch({ type: "timezone/remove", payload: { timezone: tzData, dateFormat: '' } })
-        }
-      >
-        <RiCloseFill size={24} />
-      </div>
+
+      {/* Modal */}
       {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
-    </div>
+    </>
   );
 };
 

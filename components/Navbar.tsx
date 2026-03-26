@@ -1,147 +1,79 @@
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { BsCaretDownFill, BsCaretUpFill } from 'react-icons/bs';
+import ThemeToggle from './ThemeToggle';
 
-import { getCurrentTime, getParsedTime, Timezones } from '../utils/timeNow';
-import { timezoneList } from '../pages/api/timezones';
-import { store } from '../store/store';
-import TimePicker from './TimePicker';
-import TimestampModal from './TimestampModal';
-import TimezoneSearch from './TimezoneSearch';
-
-export type TimePickerType = {
-  year: string;
-  month: string;
-  day: string;
-  hour: string;
-  minute: string;
-  second: string;
-}
-
-type navbarProps = {
-  title: string;
-  navbar: 'full' | 'mini';
-  searchBar?: boolean;
-  timePicker?: boolean;
-}
+type NavbarProps = {
+  page: 'timeis' | 'timewas';
+};
 
 /**
- * @description - Navbar component with local time and timezone search
+ * @description Minimal navbar component with theme toggle
  */
-const Navbar = ({ title, navbar, searchBar, timePicker }: navbarProps) => {
-  // get current time to state
-  const [selected, setSelected] = useState<Timezones | null>(null);
-  const [currentTime, setCurrentTime] = useState("");
-  const [isClient, setIsClient] = useState(false);
-  const [expand, setExpand] = useState<'full' | 'mini'>(navbar);
-
-  const now = new Date();
-  const [dateString, setDateString] = useState({
-    year: now.getFullYear().toString(),
-    month: (now.getMonth()).toString(),
-    day: now.getDate().toString(),
-    hour: now.getHours().toString(),
-    minute: now.getMinutes().toString(),
-    second: now.getSeconds().toString(),
-  } as TimePickerType);
-
-  // set interval to update time
-  useEffect(() => {
-    timePicker
-      && store.dispatch(
-        {
-          type: 'timewas/data',
-          payload: `${dateString.day} ${new Date(Number.parseInt(dateString.year),
-            Number.parseInt(dateString.month), 1).toLocaleString('default', { month: 'long' })} 
-            ${dateString.year}, ${dateString.hour}:${dateString.minute}:${dateString.second}`
-        }
-      );
-
-    setIsClient(true);
-    setCurrentTime(
-      getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
-    );
-
-    const interval = setInterval(() => {
-      setCurrentTime(
-        searchBar
-          ? getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat)
-          : getParsedTime(Intl.DateTimeFormat().resolvedOptions().timeZone),
-      );
-    }, searchBar ? 100 : 1000);
-    return () => clearInterval(interval);
-  }, [dateString, searchBar, timePicker]);
-
+const Navbar = ({ page }: NavbarProps) => {
   return (
-    <>
-      {
-        expand === 'full' ? (
-          <div
-            className='h-1/2 text-center justify-between shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
-              from-cyan-800 to-slate-900 text-slate-300 border-b border-dashed border-gray-600
-              sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
-            <div className="grid lg:grid-cols-2">
-              <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
-                <Link href={searchBar ? '/TimeWas' : '/'} className='text-4xl font-nova-flat md:text-6xl pb-2 animate-pulse hover:text-teal-500'>
-                  {title}
-                </Link>
-                <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
-                  <p className='text-teal-500 text-lg'>
-                    {`Local Time in  ${Intl.DateTimeFormat().resolvedOptions().timeZone} :`}
-                  </p>
-                  <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
-                    onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
-                  >
-                    {isClient ? currentTime : '...'}
-                  </p>
-                </div>
-
-              </div>
-              <div className={`flex flex-row justify-between ${searchBar ? 'lg:p-6' : 'lg:p-2'} md:z-10`}>
-                {timePicker && <TimePicker now={now} dateString={dateString} setDateString={setDateString} />}
-                {searchBar && <TimezoneSearch />}
-                <BsCaretUpFill
-                  className="h-10 w-10 p-2 m-3 rounded-md bg-inherit font-medium text-clip text-white hover:bg-teal-700 
-                    focus:outline-none transition ease-in-out duration-1000 cursor-pointer
-                    shadow-[10px_10px_20px_-5px_rgba(0,0,0,0.53)]"
-                  onClick={() => {
-                    setExpand('mini');
-                    store.dispatch({ type: 'navbar/resize', payload: "mini" });
-                  }}
-                />
-              </div>
+    <nav className="sticky top-0 z-50 glass-effect border-b border-(--border-subtle)">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo / Brand */}
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-8 h-8 rounded-lg bg-(--accent-primary)/10 flex items-center justify-center border border-(--accent-primary)/20 group-hover:border-(--accent-primary)/40 transition-colors overflow-hidden">
+              <img
+                src="/favicon.ico"
+                alt="Logo"
+                className="w-5 h-5 object-contain"
+              />
             </div>
-          </div>
-        ) : (
-          <div className='grid grid-cols-1 h-48 md:h-24 md:grid-cols-3 text-center items-center md:justify-items-end shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
-            from-cyan-800 to-slate-900 text-slate-300 border-b border-dashed border-gray-600 p-3
-              sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
-            <Link href={searchBar ? '/TimeWas' : '/'} className='text-2xl font-nova-flat md:text-5xl animate-pulse hover:text-teal-500'>
-              {title}
+            <span className="text-sm font-medium tracking-wide text-(--text-primary)">
+              AND THE TIME {page === 'timeis' ? 'IS' : 'WAS'}
+            </span>
+          </Link>
+
+          {/* Navigation Links */}
+          <div className="flex items-center gap-1">
+            <Link
+              href="/"
+              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                page === 'timeis'
+                  ? 'text-(--accent-primary) bg-(--accent-muted)'
+                  : 'text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-elevated)'
+              }`}
+            >
+              Time Now
             </Link>
-            <div>
-              <p
-                className='text-xl truncate md:text-2xl pt-2 font-nova-flat list-outside text-teal-300 hover:text-teal-300'
-                onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
+            <Link
+              href="/TimeWas"
+              className={`px-4 py-2 text-sm rounded-lg transition-colors ${
+                page === 'timewas'
+                  ? 'text-(--accent-primary) bg-(--accent-muted)'
+                  : 'text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-elevated)'
+              }`}
+            >
+              Time Was
+            </Link>
+            <div className="w-px h-6 bg-(--border-default) mx-2" />
+            <ThemeToggle />
+            <div className="w-px h-6 bg-(--border-default) mx-2" />
+            <a
+              href="https://github.com/dev-asterix/and-the-time-is"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-4 py-2 text-sm text-(--text-secondary) hover:text-(--text-primary) transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="currentColor"
+                viewBox="0 0 24 24"
               >
-                {isClient ? currentTime : '...'}
-              </p>
-            </div>
-            <BsCaretDownFill
-              className="h-10 w-10 p-2 mr-3 rounded-md bg-inherit font-medium text-clip text-white hover:bg-teal-700 
-                focus:outline-none sm:ml-3 transition ease-in-out duration-1000 cursor-pointer
-                shadow-[10px_10px_20px_-5px_rgba(0,0,0,0.53)]"
-              onClick={() => {
-                setExpand('full');
-                store.dispatch({ type: 'navbar/resize', payload: "full" });
-              }}
-            />
+                <path
+                  fillRule="evenodd"
+                  d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"
+                  clipRule="evenodd"
+                />
+              </svg>
+            </a>
           </div>
-        )
-      }
-
-      {selected && <TimestampModal timezone={selected} setSelected={setSelected} />}
-    </>
+        </div>
+      </div>
+    </nav>
   );
 };
 

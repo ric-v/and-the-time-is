@@ -1,115 +1,168 @@
 import React, { useEffect, useState } from 'react';
-import { BsGrid3X2GapFill } from 'react-icons/bs';
-import { HiViewGrid } from 'react-icons/hi';
-
-import Footer from "../components/Footer";
-import Navbar from "../components/Navbar";
+import Footer from './Footer';
+import Navbar from './Navbar';
+import HeroSection from './HeroSection';
+import TimezoneSearch from './TimezoneSearch';
+import FormatToggle from './FormatToggle';
 import { Timezones } from '../utils/timeNow';
 import { store } from '../store/store';
-import ButtonGroup from './ui-elements/ButtonGroup';
 import Card from './ui-elements/Card';
-import DateFormatModal from './DateFormatModal';
-import TimezoneSearch from './TimezoneSearch';
 
-type mainProps = {
-  page: string;
-}
+type MainProps = {
+  page: 'timeis' | 'timewas';
+};
 
 /**
- * @description - main component for the app
+ * @description Main component with modern UI layout
  */
-const Main = ({ page }: mainProps) => {
-
-  // get timezones from local storage
+const Main = ({ page }: MainProps) => {
   const [timezones, setTimezones] = useState<Timezones[]>([]);
+  const [selectedFormat, setSelectedFormat] = useState('%H:%M:%S');
   const [layout, setLayout] = useState<'grid' | 'list'>('grid');
-  const [navbarSize, setNavbarSize] = useState<'full' | 'mini'>('full');
-  const [formatPickerSelected, setFormatPickerSelected] = useState(false);
 
-  // use effect to get timezones from local storage and layout from local storage
-  // check for update from redux store
   useEffect(() => {
-    // get layout from localstorage
+    // Get layout from localStorage
     const layoutLocal = localStorage.getItem('layout') as 'grid' | 'list';
-    setLayout(layoutLocal ? layoutLocal : 'grid');
+    setLayout(layoutLocal || 'grid');
 
-    // get navbar height from localstorage
-    const navbarSizeLocal = localStorage.getItem('navbar-size') as 'full' | 'mini';
-    console.log(navbarSizeLocal);
-    setNavbarSize(navbarSizeLocal ? navbarSizeLocal : 'full');
-
-    // fetch date format stored in localstorage
+    // Get date format from localStorage
     const dateFormatLocal = localStorage.getItem('dateFormat') as string;
     if (dateFormatLocal) {
-      store.dispatch({ type: "dateformat/update", payload: dateFormatLocal });
+      setSelectedFormat(dateFormatLocal);
+      store.dispatch({ type: 'dateformat/update', payload: dateFormatLocal });
     }
 
-    // get timezones from local storage
-    const tzs = JSON.parse(localStorage.getItem("timezones") || "[]") as Timezones[];
-    if (tzs) {
-      // add to store
+    // Get timezones from localStorage
+    const tzs = JSON.parse(localStorage.getItem('timezones') || '[]') as Timezones[];
+    if (tzs && tzs.length > 0) {
       tzs.forEach((tz) => {
-        store.dispatch({ type: "timezone/add", payload: { timezone: tz, dateFormat: '' } });
+        store.dispatch({ type: 'timezone/add', payload: { timezone: tz, dateFormat: '' } });
       });
     }
 
-    // start interval to get updated timezone list
+    // Update timezones every second
     const interval = setInterval(() => {
-      setTimezones(
-        store.getState().storedata.timezones,
-      );
+      setTimezones(store.getState().storedata.timezones);
     }, 1000);
+
     return () => clearInterval(interval);
   }, []);
 
-  return (
-    <>
-      <div className='flex flex-col justify-between min-h-full min-w-full bg-gradient-to-br from-slate-700 to-slate-900 transition-all ease-in-out duration-1000'>
-        <div>
-          <Navbar
-            title={`And the time ${page === 'timeis' ? 'is' : 'was'}...`}
-            navbar={navbarSize}
-            searchBar={page === 'timeis'}
-            timePicker={page === 'timewas'}
-          />
-          <div className="flex flex-row-reverse pr-5 mt-5">
-            <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'list'} position='right' >
-              <HiViewGrid size={22} color={layout === 'list' ? 'gray' : 'white'} />
-            </ButtonGroup>
-            <ButtonGroup layout={layout} setLayout={setLayout} toLayout={'grid'} position='left' >
-              <BsGrid3X2GapFill size={22} color={layout === 'grid' ? 'gray' : 'white'} />
-            </ButtonGroup>
+  const handleTimezoneSelect = (timezone: Timezones) => {
+    store.dispatch({ type: 'timezone/add', payload: { timezone, dateFormat: '' } });
+  };
 
-            <div className='mx-4'>
+  const handleLayoutToggle = () => {
+    const newLayout = layout === 'grid' ? 'list' : 'grid';
+    setLayout(newLayout);
+    localStorage.setItem('layout', newLayout);
+  };
+
+  return (
+    <div className="min-h-screen flex flex-col bg-(--bg-primary)">
+      {/* Navbar */}
+      <Navbar page={page} />
+
+      {/* Main Content */}
+      <main className="flex-1">
+        {/* Hero Section */}
+        <HeroSection
+          title={`And the time ${page === 'timeis' ? 'is' : 'was'}...`}
+          page={page}
+          compact={timezones.length > 0}
+        />
+
+        {/* Search and Controls Section */}
+        <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* Search Bar */}
+          <div className="mb-6">
+            <TimezoneSearch onTimezoneSelect={handleTimezoneSelect} />
+          </div>
+
+          {/* Controls Row */}
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
+            {/* Format Toggle */}
+            <FormatToggle
+              selectedFormat={selectedFormat}
+              onFormatChange={setSelectedFormat}
+            />
+
+            {/* Layout Toggle */}
+            <div className="flex items-center gap-2">
               <button
-                type="button"
-                className="w-full inline-flex justify-center rounded-md border-t border-l border-gray-600
-                    px-4 py-2 bg-teal-600 font-medium text-clip text-white hover:bg-teal-700 
-                    focus:outline-none sm:ml-3 transition ease-in-out duration-1000 
-                    shadow-[10px_10px_20px_-5px_rgba(0,0,0,0.53)]"
-                data-bs-toggle="timestampmodal"
-                data-bs-target="#timestampmodal"
-                onClick={() => {
-                  setFormatPickerSelected(true);
-                }}
+                onClick={handleLayoutToggle}
+                className={`p-2 rounded-lg transition-colors ${
+                  layout === 'grid'
+                    ? 'bg-(--accent-primary)/10 text-(--accent-primary)'
+                    : 'text-(--text-muted) hover:text-(--text-primary)'
+                }`}
+                aria-label="Grid view"
               >
-                Change date format
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                </svg>
+              </button>
+              <button
+                onClick={handleLayoutToggle}
+                className={`p-2 rounded-lg transition-colors ${
+                  layout === 'list'
+                    ? 'bg-(--accent-primary)/10 text-(--accent-primary)'
+                    : 'text-(--text-muted) hover:text-(--text-primary)'
+                }`}
+                aria-label="List view"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
               </button>
             </div>
           </div>
-          <div className={layout === 'list' ? `grid grid-cols-1 lg:grid-cols-2 gap-2 p-3` : `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-5 p-2 md:p-5 w-full gap-3`}>
-            {
-              timezones && timezones.map((tzData) => (
+
+          {/* Timezone Cards Grid */}
+          {timezones && timezones.length > 0 ? (
+            <div
+              className={
+                layout === 'grid'
+                  ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
+                  : 'flex flex-col gap-3'
+              }
+            >
+              {timezones.map((tzData) => (
                 <Card key={tzData.name} tzData={tzData} page={page} />
-              ))
-            }
-          </div>
-          {formatPickerSelected && <DateFormatModal setFormatPickerSelected={setFormatPickerSelected} />}
+              ))}
+            </div>
+          ) : (
+            <div className="text-center py-16">
+              <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-(--bg-card) border border-(--border-subtle) flex items-center justify-center">
+                <svg
+                  className="w-10 h-10 text-(--text-muted)"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-lg font-medium text-(--text-primary) mb-2">
+                No timezones added yet
+              </h3>
+              <p className="text-sm text-(--text-muted) max-w-md mx-auto">
+                Search for a timezone above to add it to your dashboard. You can add multiple timezones to track time across different regions.
+              </p>
+            </div>
+          )}
         </div>
-        <Footer hidden={page === 'timeis' ? "/" : '/TimeWas'} />
-      </div>
-    </>
-  )
+      </main>
+
+      {/* Footer */}
+      <Footer page={page} />
+    </div>
+  );
 };
 
 export default Main;
