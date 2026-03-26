@@ -1,7 +1,7 @@
 
 import { useEffect, useState } from 'react';
 import { BiReset, BiToggleLeft, BiToggleRight } from 'react-icons/bi';
-import { getCurrentTime } from '../pages/api/functions/timeNow';
+import { getCurrentTime } from '../utils/timeNow';
 import type { TimePickerType } from './Navbar';
 import Label from './ui-elements/Label';
 import Select from './ui-elements/Select';

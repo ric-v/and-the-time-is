@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { BsCaretDownFill, BsCaretUpFill } from 'react-icons/bs';
 
-import { getCurrentTime, getParsedTime, Timezones } from '../pages/api/functions/timeNow';
+import { getCurrentTime, getParsedTime, Timezones } from '../utils/timeNow';
 import { timezoneList } from '../pages/api/timezones';
 import { store } from '../store/store';
 import TimePicker from './TimePicker';
@@ -31,9 +31,8 @@ type navbarProps = {
 const Navbar = ({ title, navbar, searchBar, timePicker }: navbarProps) => {
   // get current time to state
   const [selected, setSelected] = useState<Timezones | null>(null);
-  const [currentTime, setCurrentTime] = useState(
-    getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
-  );
+  const [currentTime, setCurrentTime] = useState("");
+  const [isClient, setIsClient] = useState(false);
   const [expand, setExpand] = useState<'full' | 'mini'>(navbar);
 
   const now = new Date();
@@ -58,6 +57,11 @@ const Navbar = ({ title, navbar, searchBar, timePicker }: navbarProps) => {
         }
       );
 
+    setIsClient(true);
+    setCurrentTime(
+      getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat),
+    );
+
     const interval = setInterval(() => {
       setCurrentTime(
         searchBar
@@ -78,10 +82,8 @@ const Navbar = ({ title, navbar, searchBar, timePicker }: navbarProps) => {
               sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
             <div className="grid lg:grid-cols-2">
               <div className='p-2 lg:p-8 mt-2 lg:mt-10'>
-                <Link href={searchBar ? '/TimeWas' : '/'}>
-                  <a className='text-4xl font-nova-flat md:text-6xl pb-2 animate-pulse hover:text-teal-500'>
-                    {title}
-                  </a>
+                <Link href={searchBar ? '/TimeWas' : '/'} className='text-4xl font-nova-flat md:text-6xl pb-2 animate-pulse hover:text-teal-500'>
+                  {title}
                 </Link>
                 <div className='mt-5 md:mt-20 font-nova-flat text-slate-300'>
                   <p className='text-teal-500 text-lg'>
@@ -90,7 +92,7 @@ const Navbar = ({ title, navbar, searchBar, timePicker }: navbarProps) => {
                   <p className='mt-3 text-xl truncate md:text-3xl list-outside hover:text-teal-300'
                     onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
                   >
-                    {currentTime}
+                    {isClient ? currentTime : '...'}
                   </p>
                 </div>
 
@@ -114,17 +116,15 @@ const Navbar = ({ title, navbar, searchBar, timePicker }: navbarProps) => {
           <div className='grid grid-cols-1 h-48 md:h-24 md:grid-cols-3 text-center items-center md:justify-items-end shadow-[0px_50px_30px_-15px_rgba(0,0,0,0.33)] bg-gradient-to-br 
             from-cyan-800 to-slate-900 text-slate-300 border-b border-dashed border-gray-600 p-3
               sm:shadow-[0px_50px_50px_-15px_rgba(0,0,0,0.6)]'>
-            <Link href={searchBar ? '/TimeWas' : '/'}>
-              <a className='text-2xl font-nova-flat md:text-5xl animate-pulse hover:text-teal-500'>
-                {title}
-              </a>
+            <Link href={searchBar ? '/TimeWas' : '/'} className='text-2xl font-nova-flat md:text-5xl animate-pulse hover:text-teal-500'>
+              {title}
             </Link>
             <div>
               <p
                 className='text-xl truncate md:text-2xl pt-2 font-nova-flat list-outside text-teal-300 hover:text-teal-300'
                 onClick={() => setSelected(timezoneList.filter(tz => tz.name === Intl.DateTimeFormat().resolvedOptions().timeZone)[0] as Timezones)}
               >
-                {currentTime}
+                {isClient ? currentTime : '...'}
               </p>
             </div>
             <BsCaretDownFill

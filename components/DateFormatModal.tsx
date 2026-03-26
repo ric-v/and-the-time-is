@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import ModalButton from './modal/ModalButton';
-import { getCurrentTime, trimTimeFormat } from '../pages/api/functions/timeNow';
+import { getCurrentTime, trimTimeFormat } from '../utils/timeNow';
 import { BiReset } from 'react-icons/bi';
 import { store } from '../store/store';
 import ModalBase from './modal/ModalBase';

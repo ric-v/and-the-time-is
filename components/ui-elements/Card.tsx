@@ -4,7 +4,7 @@ import { FiEdit } from 'react-icons/fi';
 import { VscClose } from 'react-icons/vsc';
 import { CgUndo } from 'react-icons/cg';
 
-import { getCurrentTime, getParsedTime, Timezones } from '../../pages/api/functions/timeNow';
+import { getCurrentTime, getParsedTime, Timezones } from '../../utils/timeNow';
 import { store } from '../../store/store';
 import TimestampModal from '../TimestampModal';
 

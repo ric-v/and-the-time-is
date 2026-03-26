@@ -4,7 +4,7 @@ import { HiViewGrid } from 'react-icons/hi';
 
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
-import { Timezones } from '../pages/api/functions/timeNow';
+import { Timezones } from '../utils/timeNow';
 import { store } from '../store/store';
 import ButtonGroup from './ui-elements/ButtonGroup';
 import Card from './ui-elements/Card';

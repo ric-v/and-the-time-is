@@ -23,15 +23,16 @@ const Footer = ({ hidden }: Props) => {
     }
 
     return (
-      <ButtonGroup position={position} toLayout='grid' layout={"grid"} setLayout={() => { }} >
-        <Link passHref={true} href={link} as={link}>
-          <a target={link.startsWith('http') ? '_blank' : '_self'}>
-            <button className="text-white p-2" onClick={_action}>
-              {text}
-            </button>
-          </a>
-        </Link>
-      </ButtonGroup >
+      <Link
+        href={link}
+        target={link.startsWith('http') ? '_blank' : '_self'}
+        className={`bg-transparent border p-1.5 border-gray-300 border-dashed hover:bg-slate-700 
+          shadow-[15px_20px_20px_-5px_rgba(0,0,0,0.53)] transition duration-1000 ease-in-out text-white flex justify-center items-center
+          ${position === 'left' ? 'rounded-l-lg' : position === 'middle' ? '' : 'rounded-r-lg'}`}
+        onClick={_action}
+      >
+        {text}
+      </Link>
     );
   }
 

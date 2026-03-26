@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import useSWR from 'swr';
 
-import { Timezones } from '../pages/api/functions/timeNow';
+import { Timezones } from '../utils/timeNow';
 import TimestampModal from './TimestampModal';
 import Label from './ui-elements/Label';
 
