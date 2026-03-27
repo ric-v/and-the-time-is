@@ -11,6 +11,17 @@ type TimezoneSearchProps = {
   onTimezoneSelect?: (timezone: Timezones) => void;
 };
 
+const RECENT_TIMEZONE_KEY = 'recent-timezone-searches';
+const POPULAR_TIMEZONES = [
+  'Europe/London',
+  'America/New_York',
+  'Asia/Tokyo',
+  'Asia/Kolkata',
+  'Europe/Paris',
+  'Australia/Sydney',
+];
+const QUICK_CHIPS = ['IST', 'UTC', 'EST', 'PST', 'JST'];
+
 /**
  * @description Modern timezone search component
  */
@@ -18,6 +29,7 @@ const TimezoneSearch = ({ onTimezoneSelect }: TimezoneSearchProps) => {
   const [search, setSearch] = React.useState('');
   const [selected, setSelected] = React.useState<Timezones | null>(null);
   const [isOpen, setIsOpen] = React.useState(false);
+  const [recentTimezones, setRecentTimezones] = React.useState<Timezones[]>([]);
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -44,9 +56,37 @@ const TimezoneSearch = ({ onTimezoneSelect }: TimezoneSearchProps) => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  useEffect(() => {
+    const recent = JSON.parse(localStorage.getItem(RECENT_TIMEZONE_KEY) || '[]') as Timezones[];
+    setRecentTimezones(recent.slice(0, 4));
+  }, []);
+
+  const persistRecent = (item: Timezones) => {
+    const existing = JSON.parse(localStorage.getItem(RECENT_TIMEZONE_KEY) || '[]') as Timezones[];
+    const deduped = existing.filter((tz) => tz.name !== item.name);
+    const next = [item, ...deduped].slice(0, 6);
+    localStorage.setItem(RECENT_TIMEZONE_KEY, JSON.stringify(next));
+    setRecentTimezones(next.slice(0, 4));
+  };
+
+  const getDisplayName = (item: Timezones) => item.city || item.name.split('/').pop()?.replace(/_/g, ' ') || item.name;
+
+  const getDisplayOffset = (item: Timezones) => item.offset || '+00:00';
+
+  const popularMatches = React.useMemo(() => {
+    if (!data || !Array.isArray(data)) {
+      return [];
+    }
+
+    const byName = new Map<string, Timezones>();
+    data.forEach((item: Timezones) => byName.set(item.name, item));
+    return POPULAR_TIMEZONES.map((name) => byName.get(name)).filter(Boolean) as Timezones[];
+  }, [data]);
+
   const handleSelect = (item: Timezones) => {
     setSearch('');
     setIsOpen(false);
+    persistRecent(item);
     if (onTimezoneSelect) {
       onTimezoneSelect(item);
     } else {
@@ -92,7 +132,7 @@ const TimezoneSearch = ({ onTimezoneSelect }: TimezoneSearchProps) => {
             setIsOpen(true);
           }}
           onFocus={() => setIsOpen(true)}
-          placeholder="Search for a timezone or city..."
+          placeholder="Search timezone, city, abbreviation, or UTC offset..."
           className="w-full h-12 pl-12 pr-4 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl text-[var(--text-primary)] placeholder-[var(--text-muted)] focus:outline-none focus:border-[var(--accent-primary)]/50 focus:ring-2 focus:ring-[var(--accent-primary)]/20 transition-all"
         />
         {search && (
@@ -108,6 +148,22 @@ const TimezoneSearch = ({ onTimezoneSelect }: TimezoneSearchProps) => {
             </svg>
           </button>
         )}
+      </div>
+
+      <div className="mt-2 flex flex-wrap gap-2">
+        {QUICK_CHIPS.map((chip) => (
+          <button
+            key={chip}
+            onClick={() => {
+              setSearch(chip);
+              setIsOpen(true);
+              inputRef.current?.focus();
+            }}
+            className="px-2.5 py-1 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] text-[11px] font-medium text-[var(--text-secondary)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--accent-primary)] transition-colors"
+          >
+            {chip}
+          </button>
+        ))}
       </div>
 
       {/* Search Results Dropdown */}
@@ -126,7 +182,7 @@ const TimezoneSearch = ({ onTimezoneSelect }: TimezoneSearchProps) => {
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="font-medium text-[var(--text-primary)]">
-                      {item.city}
+                      {getDisplayName(item)}
                     </span>
                     <span className="text-[var(--text-muted)] mx-2">•</span>
                     <span className="text-sm text-[var(--text-secondary)]">
@@ -134,7 +190,7 @@ const TimezoneSearch = ({ onTimezoneSelect }: TimezoneSearchProps) => {
                     </span>
                   </div>
                   <span className="text-sm font-mono text-[var(--accent-primary)]">
-                    {item.offset}
+                    {getDisplayOffset(item)}
                   </span>
                 </div>
                 <div className="text-xs text-[var(--text-muted)] mt-1 truncate">
@@ -143,6 +199,48 @@ const TimezoneSearch = ({ onTimezoneSelect }: TimezoneSearchProps) => {
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Search Suggestions */}
+      {isOpen && !search && (
+        <div className="absolute z-50 w-full mt-2 bg-[var(--bg-card)] border border-[var(--border-subtle)] rounded-xl shadow-xl p-4 space-y-4 animate-fade-in">
+          <div>
+            <p className="text-xs uppercase tracking-wider text-[var(--text-muted)] mb-2">Popular timezones</p>
+            <div className="flex flex-wrap gap-2">
+              {popularMatches.map((item) => (
+                <button
+                  key={item.name}
+                  onClick={() => handleSelect(item)}
+                  className="px-3 py-1.5 rounded-full border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:border-[var(--accent-primary)]/40 hover:text-[var(--accent-primary)] text-xs text-[var(--text-secondary)] transition-colors"
+                >
+                  {getDisplayName(item)}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {recentTimezones.length > 0 && (
+            <div>
+              <p className="text-xs uppercase tracking-wider text-[var(--text-muted)] mb-2">Recent</p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                {recentTimezones.map((item) => (
+                  <button
+                    key={item.name}
+                    onClick={() => handleSelect(item)}
+                    className="flex items-center justify-between px-3 py-2 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] hover:border-[var(--accent-primary)]/40 transition-colors"
+                  >
+                    <span className="text-sm text-[var(--text-primary)]">{getDisplayName(item)}</span>
+                    <span className="text-xs font-mono text-[var(--text-muted)]">UTC {getDisplayOffset(item)}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <p className="text-xs text-[var(--text-muted)]">
+            Tip: Try queries like <span className="text-[var(--text-secondary)]">Tokyo</span>, <span className="text-[var(--text-secondary)]">EST</span>, or <span className="text-[var(--text-secondary)]">+05:30</span>.
+          </p>
         </div>
       )}
 

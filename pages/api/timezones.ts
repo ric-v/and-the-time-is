@@ -1,19 +1,41 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { getCurrentTime } from '../../utils/timeNow';
+import { getCurrentTime, getUtcOffsetIntl } from '../../utils/timeNow';
 import * as ct from 'countries-and-timezones';
+
+const timezoneAliases: Record<string, string> = {
+  'Asia/Calcutta': 'Asia/Kolkata',
+};
+
+const popularTimezones = new Set([
+  'UTC',
+  'Europe/London',
+  'America/New_York',
+  'Asia/Tokyo',
+  'Asia/Kolkata',
+  'Europe/Paris',
+  'Australia/Sydney',
+]);
+
+const canonicalizeTimezone = (name: string): string => timezoneAliases[name] || name;
 
 // Generate the list dynamically from the library
 // Filter to only include canonically supported timezones in the environment + any others the library knows
 const allTz = ct.getAllTimezones();
 export const timezoneList = (Object.values(allTz) as ct.Timezone[]).map(tz => {
+  const timezoneName = canonicalizeTimezone(tz.name);
   const countryCode = tz.countries[0];
   const country = countryCode ? ct.getCountry(countryCode) : null;
+  const currentOffset = getUtcOffsetIntl(timezoneName);
   
   return {
     code: countryCode || tz.name,
-    name: tz.name,
-    city: tz.name.split('/').pop()?.replace(/_/g, ' ') || tz.name,
-    country: country ? country.name : 'Universal'
+    name: timezoneName,
+    city: timezoneName.split('/').pop()?.replace(/_/g, ' ') || timezoneName,
+    country: country ? country.name : 'Universal',
+    timezone: timezoneName,
+    offset: currentOffset,
+    currentTime: getCurrentTime(timezoneName, '%H:%M:%S'),
+    customname: timezoneName.split('/').pop()?.replace(/_/g, ' ') || timezoneName,
   };
 });
 
@@ -27,7 +49,7 @@ const timezones = (req: NextApiRequest, res: NextApiResponse) => {
 
   // if the search key is not provided, return none
   if (!searchKey) {
-    return res.status(200).json([]);
+    return res.status(200).json(timezoneList.filter((timezone) => popularTimezones.has(timezone.name)));
   }
 
   // filter timezone list by the search key

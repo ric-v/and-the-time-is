@@ -88,11 +88,11 @@ const HeroSection = ({ title, page, compact = false }: HeroSectionProps) => {
 
       {/* Large Time Display */}
       <div className="flex items-center font-mono">
-        <span className="text-6xl md:text-8xl lg:text-9xl font-light text-(--text-primary) tracking-tight">{hours}</span>
-        <span className="text-5xl md:text-7xl lg:text-8xl text-(--text-muted) font-light mx-2 md:mx-3">:</span>
-        <span className="text-6xl md:text-8xl lg:text-9xl font-light text-(--text-primary) tracking-tight">{minutes}</span>
-        <span className="text-5xl md:text-7xl lg:text-8xl text-(--text-muted) font-light mx-2 md:mx-3">:</span>
-        <span className="text-6xl md:text-8xl lg:text-9xl font-light text-(--accent-primary) tracking-tight">{isClient ? seconds : '--'}</span>
+        <span className="hero-clock-hour text-6xl md:text-8xl lg:text-9xl font-light text-(--text-secondary) tracking-tight">{hours}</span>
+        <span className="hero-clock-separator text-5xl md:text-7xl lg:text-8xl text-(--text-muted) font-light mx-2 md:mx-3">:</span>
+        <span className="hero-clock-minute text-6xl md:text-8xl lg:text-9xl font-light text-(--text-primary) tracking-tight">{minutes}</span>
+        <span className="hero-clock-separator text-5xl md:text-7xl lg:text-8xl text-(--text-muted) font-light mx-2 md:mx-3">:</span>
+        <span className="hero-clock-second text-6xl md:text-8xl lg:text-9xl font-light text-(--accent-primary) tracking-tight">{isClient ? seconds : '--'}</span>
       </div>
 
       {/* Date & Timezone */}

@@ -7,6 +7,7 @@ import FormatToggle from './FormatToggle';
 import { Timezones } from '../utils/timeNow';
 import { store } from '../store/store';
 import Card from './ui-elements/Card';
+import TimePicker, { TimePickerType } from './TimePicker';
 
 type MainProps = {
   page: 'timeis' | 'timewas';
@@ -18,13 +19,34 @@ type MainProps = {
 const Main = ({ page }: MainProps) => {
   const [timezones, setTimezones] = useState<Timezones[]>([]);
   const [selectedFormat, setSelectedFormat] = useState('%H:%M:%S');
-  const [layout, setLayout] = useState<'grid' | 'list'>('grid');
+  const [timePickerNow] = useState<Date>(() => new Date());
+
+  const [dateString, setDateString] = useState<TimePickerType>({
+    year: new Date().getFullYear().toString(),
+    month: new Date().getMonth().toString(),
+    day: new Date().getDate().toString(),
+    hour: new Date().getHours().toString(),
+    minute: new Date().getMinutes().toString(),
+    second: new Date().getSeconds().toString(),
+  });
 
   useEffect(() => {
-    // Get layout from localStorage
-    const layoutLocal = localStorage.getItem('layout') as 'grid' | 'list';
-    setLayout(layoutLocal || 'grid');
+    if (page === 'timewas') {
+      store.dispatch({
+        type: 'timewas/data',
+        payload: new Date(
+          Number.parseInt(dateString.year),
+          Number.parseInt(dateString.month),
+          Number.parseInt(dateString.day),
+          Number.parseInt(dateString.hour),
+          Number.parseInt(dateString.minute),
+          Number.parseInt(dateString.second)
+        ).toISOString()
+      });
+    }
+  }, [dateString, page]);
 
+  useEffect(() => {
     // Get date format from localStorage
     const dateFormatLocal = localStorage.getItem('dateFormat') as string;
     if (dateFormatLocal) {
@@ -33,11 +55,15 @@ const Main = ({ page }: MainProps) => {
     }
 
     // Get timezones from localStorage
+    const isCuratedByUser = localStorage.getItem('timezones-user-curated') === 'true';
     const tzs = JSON.parse(localStorage.getItem('timezones') || '[]') as Timezones[];
-    if (tzs && tzs.length > 0) {
+    if (tzs && tzs.length > 0 && isCuratedByUser) {
       tzs.forEach((tz) => {
         store.dispatch({ type: 'timezone/add', payload: { timezone: tz, dateFormat: '' } });
       });
+    } else if (tzs && tzs.length > 0 && !isCuratedByUser) {
+      // Clear legacy seeded cards from earlier versions so first-run UX starts empty.
+      localStorage.setItem('timezones', '[]');
     }
 
     // Update timezones every second
@@ -49,13 +75,8 @@ const Main = ({ page }: MainProps) => {
   }, []);
 
   const handleTimezoneSelect = (timezone: Timezones) => {
+    localStorage.setItem('timezones-user-curated', 'true');
     store.dispatch({ type: 'timezone/add', payload: { timezone, dateFormat: '' } });
-  };
-
-  const handleLayoutToggle = () => {
-    const newLayout = layout === 'grid' ? 'list' : 'grid';
-    setLayout(newLayout);
-    localStorage.setItem('layout', newLayout);
   };
 
   return (
@@ -69,11 +90,17 @@ const Main = ({ page }: MainProps) => {
         <HeroSection
           title={`And the time ${page === 'timeis' ? 'is' : 'was'}...`}
           page={page}
-          compact={timezones.length > 0}
+          compact={page === 'timewas' && timezones.length > 0}
         />
 
         {/* Search and Controls Section */}
         <div className="mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {page === 'timewas' && (
+            <div className="mb-6 rounded-xl border border-(--border-subtle) bg-(--bg-card) p-4 md:p-6">
+              <TimePicker now={timePickerNow} setDateString={setDateString} />
+            </div>
+          )}
+
           {/* Search Bar */}
           <div className="mb-6">
             <TimezoneSearch onTimezoneSelect={handleTimezoneSelect} />
@@ -86,46 +113,12 @@ const Main = ({ page }: MainProps) => {
               selectedFormat={selectedFormat}
               onFormatChange={setSelectedFormat}
             />
-
-            {/* Layout Toggle */}
-            <div className="flex items-center gap-2">
-              <button
-                onClick={handleLayoutToggle}
-                className={`p-2 rounded-lg transition-colors ${
-                  layout === 'grid'
-                    ? 'bg-(--accent-primary)/10 text-(--accent-primary)'
-                    : 'text-(--text-muted) hover:text-(--text-primary)'
-                }`}
-                aria-label="Grid view"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                </svg>
-              </button>
-              <button
-                onClick={handleLayoutToggle}
-                className={`p-2 rounded-lg transition-colors ${
-                  layout === 'list'
-                    ? 'bg-(--accent-primary)/10 text-(--accent-primary)'
-                    : 'text-(--text-muted) hover:text-(--text-primary)'
-                }`}
-                aria-label="List view"
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-              </button>
-            </div>
           </div>
 
           {/* Timezone Cards Grid */}
           {timezones && timezones.length > 0 ? (
             <div
-              className={
-                layout === 'grid'
-                  ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4'
-                  : 'flex flex-col gap-3'
-              }
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
             >
               {timezones.map((tzData) => (
                 <Card key={tzData.name} tzData={tzData} page={page} />
