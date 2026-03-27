@@ -13,9 +13,10 @@ type Props = {
 const Select = ({ field, limit, dateString, optionDisplay, selectVal, handler, _classes }: Props) => {
   return (
     <select
-      className='bg-gray-700 overflow-y-auto text-center rounded-lg p-2 scrollbar-thin 
-        scrollbar-track-gray-700 scrollbar-thumb-gray-800 boder border border-dashed border-gray-500  
-        shadow-[10px_30px_30px_-10px_rgba(0,0,0,0.53)]'
+      className={`h-11 sm:h-12 w-full overflow-y-auto rounded-xl border border-[var(--border-subtle)]
+        bg-[var(--bg-card)] px-3 text-center text-[var(--text-primary)] shadow-sm
+        transition-colors focus:outline-none focus:border-[var(--accent-primary)]/50
+        focus:ring-2 focus:ring-[var(--accent-primary)]/20 ${_classes || ''}`}
       onChange={(e) => {
         handler({ ...dateString, [field]: e.target.value })
       }}

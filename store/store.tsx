@@ -1,6 +1,6 @@
 import { configureStore, createAction, createReducer } from '@reduxjs/toolkit';
 
-import { Timezones } from '../pages/api/functions/timeNow';
+import { Timezones } from '../utils/timeNow';
 
 /**
  * @description - This is the reducer action data type.

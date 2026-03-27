@@ -1,13 +1,72 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+
+@theme {
+  --font-nova-flat: "Nova Flat";
+  --font-proxima-nova: "Proxima Nova";
+  --font-inter: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+}
+
+@plugin "tailwind-scrollbar";
+
+/* Dark theme (default) */
+:root,
+[data-theme="dark"] {
+  --bg-primary: #0a0f1a;
+  --bg-secondary: #0d1421;
+  --bg-card: #111827;
+  --bg-elevated: #1e293b;
+  --accent-primary: #2dd4bf;
+  --accent-secondary: #14b8a6;
+  --accent-muted: rgba(45, 212, 191, 0.15);
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --border-subtle: rgba(148, 163, 184, 0.1);
+  --border-default: rgba(148, 163, 184, 0.2);
+  --glass-bg: rgba(13, 20, 33, 0.8);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+}
+
+/* Light theme - Warm sand with terracotta accents */
+[data-theme="light"] {
+  --bg-primary: #faf7f2;
+  --bg-secondary: #f5efe6;
+  --bg-card: #fffdf9;
+  --bg-elevated: #ece4d8;
+  --accent-primary: #c2703e;
+  --accent-secondary: #a85d32;
+  --accent-muted: rgba(194, 112, 62, 0.12);
+  --text-primary: #292524;
+  --text-secondary: #57534e;
+  --text-muted: #a8a29e;
+  --border-subtle: rgba(180, 100, 50, 0.12);
+  --border-default: rgba(180, 100, 50, 0.22);
+  --glass-bg: rgba(250, 247, 242, 0.88);
+  --shadow-color: rgba(194, 112, 62, 0.06);
+}
 
 html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light theme subtle gradient overlay */
+[data-theme="light"] body,
+[data-theme="light"] #root {
+  background: linear-gradient(180deg,
+      var(--bg-primary) 0%,
+      #f8f3eb 50%,
+      var(--bg-primary) 100%);
+  background-attachment: fixed;
 }
 
 #__next {
@@ -16,18 +75,261 @@ body {
   bottom: 0;
   left: 0;
   right: 0;
+  min-height: 100vh;
 }
 
 a {
   color: inherit;
   text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+a:hover {
+  color: var(--accent-primary);
 }
 
 * {
   box-sizing: border-box;
 }
 
-.curve {
-  border-bottom-right-radius: 100px 30px;
-  border-bottom-left-radius: 100px 30px;
+/* Focus styles for accessibility */
+:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* Selection styles */
+::selection {
+  background-color: var(--accent-muted);
+  color: var(--accent-primary);
+}
+
+/* Scrollbar styles */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-default);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}
+
+/* Utility classes */
+.text-gradient {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.glass-effect {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  transition: background-color 0.3s ease;
+}
+
+/* Animation utilities */
+@keyframes pulse-subtle {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.8;
+  }
+}
+
+.animate-pulse-subtle {
+  animation: pulse-subtle 2s ease-in-out infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out forwards;
+}
+
+/* Theme toggle button styles */
+.theme-toggle {
+  position: relative;
+  width: 56px;
+  height: 28px;
+  border-radius: 14px;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border-default);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.theme-toggle:hover {
+  border-color: var(--accent-primary);
+}
+
+.theme-toggle-circle {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background-color: var(--accent-primary);
+  transition: transform 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+[data-theme="light"] .theme-toggle-circle {
+  transform: translateX(28px);
+}
+
+.theme-toggle-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--bg-primary);
+}
+
+/* Light theme specific enhancements */
+[data-theme="light"] .glass-effect {
+  background: linear-gradient(135deg,
+      rgba(250, 247, 242, 0.94) 0%,
+      rgba(245, 239, 230, 0.9) 100%);
+  box-shadow: 0 1px 3px rgba(194, 112, 62, 0.04), 0 4px 12px rgba(194, 112, 62, 0.03);
+}
+
+/* Subtle grain texture for light mode */
+[data-theme="light"]::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0.02;
+  z-index: 9999;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+}
+
+/* Timezone cards - base styles */
+.timezone-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-default);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: all 0.25s ease;
+}
+
+.timezone-card:hover {
+  border-color: var(--accent-primary);
+  box-shadow: 0 4px 16px var(--shadow-color);
+  transform: translateY(-2px);
+}
+
+/* Polished light theme cards */
+[data-theme="light"] .timezone-card {
+  background: linear-gradient(145deg, #fffefa 0%, #faf8f5 100%);
+  border: 1px solid rgba(180, 100, 50, 0.2);
+  box-shadow:
+    0 1px 2px rgba(194, 112, 62, 0.04),
+    0 4px 12px rgba(194, 112, 62, 0.03);
+}
+
+[data-theme="light"] .timezone-card:hover {
+  border-color: rgba(180, 100, 50, 0.35);
+  box-shadow:
+    0 2px 4px rgba(194, 112, 62, 0.06),
+    0 8px 20px rgba(194, 112, 62, 0.05);
+}
+
+/* Dark theme card enhancements */
+[data-theme="dark"] .timezone-card {
+  background: linear-gradient(145deg, #111827 0%, #0f172a 100%);
+  border: 1px solid rgba(148, 163, 184, 0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .timezone-card:hover {
+  border-color: rgba(45, 212, 191, 0.4);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+/* Polished search input for light theme */
+[data-theme="light"] input[type="text"],
+[data-theme="light"] input[type="number"] {
+  background: #fffefa;
+  border: 1px solid rgba(180, 100, 50, 0.2);
+  transition: all 0.2s ease;
+}
+
+[data-theme="light"] input[type="text"]:focus,
+[data-theme="light"] input[type="number"]:focus {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(194, 112, 62, 0.1);
+}
+
+/* Polished format toggle for light theme */
+[data-theme="light"] button {
+  transition: all 0.2s ease;
+}
+
+/* Subtle inner shadow on cards for depth */
+[data-theme="light"] .card-inner-shadow {
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.8),
+    0 1px 3px rgba(194, 112, 62, 0.04);
+}
+
+/* Light theme time display enhancement */
+[data-theme="light"] .time-display {
+  text-shadow: 0 1px 2px rgba(194, 112, 62, 0.08);
+}
+
+/* Polished dropdown for light theme */
+[data-theme="light"] .dropdown-menu {
+  background: #fffefa;
+  border: 1px solid rgba(41, 37, 36, 0.08);
+  box-shadow:
+    0 4px 6px rgba(194, 112, 62, 0.04),
+    0 10px 24px rgba(194, 112, 62, 0.06);
+}
+
+[data-theme="light"] .dropdown-item:hover {
+  background: linear-gradient(90deg, rgba(194, 112, 62, 0.06) 0%, transparent 100%);
+}
+
+/* Elegant separator for light theme */
+[data-theme="light"] .separator {
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(194, 112, 62, 0.15) 50%,
+      transparent 100%);
+}
+
+/* Subtle active state for format toggle */
+[data-theme="light"] button[aria-pressed="true"],
+[data-theme="light"] button.active {
+  background: linear-gradient(145deg, var(--accent-primary) 0%, var(--accent-secondary) 100%);
+  box-shadow: 0 2px 8px rgba(194, 112, 62, 0.25);
 }

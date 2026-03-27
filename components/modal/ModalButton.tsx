@@ -13,13 +13,15 @@ const ModalButton = ({ text, close, handleClick, classes, disabled }: Props) => 
     <button
       disabled={disabled}
       type="button"
-      className={`mt-3 mx-1 inline-flex justify-center rounded-md border-t border-l border-gray-500 
-                  px-4 py-2 text-base font-medium text-gray-300 focus:outline-none border-dashed
-                  focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 
-                  sm:ml-3 sm:w-auto sm:text-sm transition duration-1000 ease-in-out
-                  shadow-[10px_10px_20px_-5px_rgba(0,0,0,0.53)]
-                  ${close || disabled ? 'bg-gray-800 hover:bg-gray-900' : 'bg-teal-600 hover:bg-teal-800'}
-                  ${disabled ? 'cursor-not-allowed' : ''}  ${classes}`}
+      className={`mt-3 mx-1 inline-flex justify-center rounded-lg border 
+                  px-4 py-2 text-sm font-medium focus:outline-none
+                  focus:ring-2 focus:ring-[var(--accent-primary)]/40 sm:mt-0 
+                  sm:ml-3 sm:w-auto transition-all duration-200
+                  shadow-sm active:scale-95
+                  ${close || disabled
+                    ? 'bg-[var(--bg-card)] border-[var(--border-subtle)] text-[var(--text-secondary)] hover:text-[var(--text-primary)]'
+                    : 'bg-[var(--accent-primary)] border-[var(--accent-primary)] text-[var(--bg-primary)] hover:brightness-95'}
+                  ${disabled ? 'cursor-not-allowed opacity-70' : ''} ${classes}`}
       onClick={handleClick}
     >
       {text}
