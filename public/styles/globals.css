@@ -4,7 +4,7 @@
   --font-nova-flat: "Nova Flat";
   --font-proxima-nova: "Proxima Nova";
   --font-inter: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", "Fira Code", monospace;
+  --font-mono: "Space Mono", "JetBrains Mono", "Fira Code", monospace;
 
   /* Dark theme (default) */
   --color-bg-primary: #0a0f1a;

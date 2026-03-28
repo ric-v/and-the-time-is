@@ -101,12 +101,10 @@ const Card = ({ tzData, page }: Props) => {
   };
 
   const renderPrimaryTime = () => {
-    // Improved regex to find the FIRST occurrence of  HH:MM:SS or HH:MM 
-    // Captures: 1=leading text, 2=hours, 3=minutes, 4=optional seconds, 5=trailing text
-    const match = currentTime.match(/^(.*?)\b(\d{1,2}):(\d{2})(?::(\d{2}))?\b(.*)$/);
+    const match = currentTime.match(/^(.*?(?<!\d))(\d{1,2}):(\d{2})(?::(\d{2}))?((?!\d).*)$/);
     if (!match) {
       return (
-        <span className="font-mono text-2xl md:text-3xl font-light tracking-tight text-(--text-primary)">
+        <span className="font-mono text-[20px] font-normal tracking-tight text-(--text-primary)">
           {currentTime}
         </span>
       );
@@ -115,35 +113,20 @@ const Card = ({ tzData, page }: Props) => {
     const [_, pre, h, m, s, post] = match;
 
     return (
-      <span className="font-mono text-2xl md:text-3xl font-light tracking-tight flex items-baseline">
-        {pre && <span className="text-(--text-secondary) mr-[0.5ch]">{pre}</span>}
-        <span className="text-(--text-secondary)">{h}</span>
+      <span className="font-mono text-[20px] font-normal tracking-tight whitespace-pre">
+        {pre && <span className="text-(--text-secondary)">{pre}</span>}
+        <span className="text-(--text-primary)">{h}</span>
         <span className="text-(--text-muted)">:</span>
-        <span className="text-(--text-primary)">{m}</span>
+        <span className="text-(--text-secondary)">{m}</span>
         {s && (
           <>
             <span className="text-(--text-muted)">:</span>
             <span className="text-(--accent-primary)">{s}</span>
           </>
         )}
-        {post && <span className="text-(--text-secondary) ml-[0.5ch]">{post}</span>}
+        {post && <span className="text-(--text-secondary)">{post}</span>}
       </span>
     );
-  };
-
-  // Get region icon based on timezone
-  const getRegionIcon = () => {
-    const name = tzData.name.toLowerCase();
-    if (name.includes('america') || name.includes('new york') || name.includes('los angeles') || name.includes('chicago')) {
-      return '🌎';
-    } else if (name.includes('europe') || name.includes('london') || name.includes('paris') || name.includes('berlin')) {
-      return '🌍';
-    } else if (name.includes('asia') || name.includes('kolkata') || name.includes('tokyo') || name.includes('singapore')) {
-      return '🌏';
-    } else if (name.includes('australia') || name.includes('sydney') || name.includes('pacific') || name.includes('auckland')) {
-      return '🌊';
-    }
-    return '🌐';
   };
 
   return (
@@ -151,12 +134,18 @@ const Card = ({ tzData, page }: Props) => {
       <div
         ref={setNodeRef}
         style={style}
-        className={`timezone-card group relative rounded-xl p-4 ${hour >= 6 && hour < 18 ? 'border-l-4 border-l-amber-400/20' : 'border-l-4 border-l-indigo-400/20'} ${isDragging ? 'opacity-60 shadow-2xl scale-105 pointer-events-none border-(--accent-primary)' : ''}`}
+        className={`timezone-card group relative rounded-xl p-3 ${
+          hour >= 9 && hour < 18 
+            ? 'border-l-4 border-l-[var(--accent-primary)]' 
+            : hour >= 6 && hour < 21
+              ? 'bg-[var(--bg-secondary)] border-l-4 border-l-amber-400/20'
+              : 'bg-[var(--bg-card)] border-l-4 border-l-indigo-400/20'
+        } ${isDragging ? 'opacity-60 shadow-2xl scale-105 pointer-events-none border-(--accent-primary)' : ''}`}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Header: Icon + Timezone Name + Relative Offset + Actions */}
-        <div className="flex items-center justify-between mb-3 pointer-events-auto">
+        {/* Header: Timezone Name + Drag Handle Actions */}
+        <div className="flex items-center justify-between mb-2 pointer-events-auto">
           <div className="flex items-center gap-1.5 flex-1 min-w-0">
             {/* Drag Handle */}
             <div 
@@ -166,7 +155,6 @@ const Card = ({ tzData, page }: Props) => {
             >
               <svg width="15" height="15" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5.5 3C6.32843 3 7 2.32843 7 1.5C7 0.671573 6.32843 0 5.5 0C4.67157 0 4 0.671573 4 1.5C4 2.32843 4.67157 3 5.5 3ZM9.5 3C10.3284 3 11 2.32843 11 1.5C11 0.671573 10.3284 0 9.5 0C8.67157 0 8 0.671573 8 1.5C8 2.32843 8.67157 3 9.5 3ZM11 7.5C11 8.32843 10.3284 9 9.5 9C8.67157 9 8 8.32843 8 7.5C8 6.67157 8.67157 6 9.5 6C10.3284 6 11 6.67157 11 7.5ZM9.5 15C10.3284 15 11 14.3284 11 13.5C11 12.6716 10.3284 12 9.5 12C8.67157 12 8 12.6716 8 13.5C8 14.3284 8.67157 15 9.5 15ZM7 13.5C7 14.3284 6.32843 15 5.5 15C4.67157 15 4 14.3284 4 13.5C4 12.6716 4.67157 12 5.5 12C6.32843 12 7 12.6716 7 13.5ZM5.5 9C6.32843 9 7 8.32843 7 7.5C7 6.67157 6.32843 6 5.5 6C4.67157 6 4 6.67157 4 7.5C4 8.32843 4.67157 9 5.5 9Z" fill="currentColor" fillRule="evenodd" clipRule="evenodd"></path></svg>
             </div>
-            <span className="text-sm">{getRegionIcon()}</span>
             <input
               type="text"
               value={customName}
@@ -174,9 +162,6 @@ const Card = ({ tzData, page }: Props) => {
               className="flex-1 bg-transparent text-xs font-medium text-(--text-primary) border-none outline-none focus:ring-0 placeholder-(--text-muted) truncate min-w-0"
               placeholder="City name"
             />
-            <span className="text-[10px] font-medium text-(--text-muted) shrink-0">
-              {relativeOffset}
-            </span>
           </div>
 
           <div className={`flex items-center gap-1.5 transition-all duration-200 ${isHovered ? 'opacity-100' : 'opacity-50'}`}>
@@ -218,9 +203,6 @@ const Card = ({ tzData, page }: Props) => {
             <div className="flex items-center gap-2 group/time">
               <div className="flex items-baseline gap-2">
                 {renderPrimaryTime()}
-                <span className="text-[10px] text-(--text-muted)">
-                  {displayDate}
-                </span>
               </div>
               <button
                 onClick={(e) => copyTime(e, true)}
@@ -238,9 +220,14 @@ const Card = ({ tzData, page }: Props) => {
                 )}
               </button>
             </div>
-            <span className="text-[10px] text-(--text-muted)">
-              UTC {displayOffset}
-            </span>
+            <div className="flex flex-col items-end gap-0.5">
+              <span className="text-[10px] text-(--text-muted)">
+                {displayDate}
+              </span>
+              <span className="text-[10px] font-medium text-(--text-muted)">
+                UTC {displayOffset} • {relativeOffset}
+              </span>
+            </div>
           </div>
         </button>
       </div>

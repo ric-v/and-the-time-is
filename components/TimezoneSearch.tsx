@@ -180,21 +180,12 @@ const TimezoneSearch = ({ onTimezoneSelect }: TimezoneSearchProps) => {
                 className="w-full px-4 py-3 text-left hover:bg-[var(--bg-elevated)] transition-colors border-b border-[var(--border-subtle)] last:border-b-0"
               >
                 <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-medium text-[var(--text-primary)]">
-                      {getDisplayName(item)}
-                    </span>
-                    <span className="text-[var(--text-muted)] mx-2">•</span>
-                    <span className="text-sm text-[var(--text-secondary)]">
-                      {item.country}
-                    </span>
-                  </div>
-                  <span className="text-sm font-mono text-[var(--accent-primary)]">
-                    {getDisplayOffset(item)}
+                  <span className="font-medium text-[var(--text-primary)]">
+                    {item.name}
                   </span>
                 </div>
                 <div className="text-xs text-[var(--text-muted)] mt-1 truncate">
-                  {getCurrentTime(item.name, '%Z')} • {getCurrentTime(item.name, '%H:%M')}
+                  {getDisplayName(item)} {item.country ? `• ${item.country}` : ''} • UTC {getDisplayOffset(item)}
                 </div>
               </button>
             ))}

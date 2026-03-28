@@ -38,7 +38,6 @@ const Main = ({ page }: MainProps) => {
   const [timePickerNow] = useState<Date>(() => new Date());
 
   const gridColClasses: Record<number, string> = {
-    1: 'grid-cols-1',
     2: 'grid-cols-1 md:grid-cols-2',
     4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
   };
@@ -158,18 +157,14 @@ const Main = ({ page }: MainProps) => {
           {/* Controls Row */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8">
             <div className="flex items-center gap-4 w-full sm:w-auto">
-              <span className="text-sm font-medium text-(--text-muted) hidden sm:block">Grid</span>
               <div className="flex gap-1 bg-(--bg-card) p-1 rounded-lg border border-(--border-default) w-full sm:w-auto justify-center">
-                {[1, 2, 4].map((col) => (
+                {[2, 4].map((col) => (
                   <button
                     key={col}
                     onClick={() => handleGridColChange(col)}
                     className={`px-3 py-1.5 rounded-md transition-all flex-1 sm:flex-none flex items-center justify-center ${gridCols === col ? 'bg-(--accent-primary) text-white' : 'text-(--text-muted) hover:text-(--text-primary)'}`}
                     title={`${col} Column${col > 1 ? 's' : ''}`}
                   >
-                    {col === 1 && (
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="3" y1="15" x2="21" y2="15"></line></svg>
-                    )}
                     {col === 2 && (
                       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="3" x2="12" y2="21"></line></svg>
                     )}

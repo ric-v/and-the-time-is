@@ -28,6 +28,14 @@ export type Timezones = {
  * @returns {string} currentTime
  */
 export const getCurrentTime = (timezone: string, format: string): string => {
+  if (format === '%s') {
+    const rawDate = new Date();
+    const targetOffsetStr = getUtcOffsetIntl(timezone, rawDate);
+    const [h, m] = targetOffsetStr.replace(/[+-]/, '').split(':').map(Number);
+    const sign = targetOffsetStr.startsWith('-') ? -1 : 1;
+    const offsetMs = sign * (h * 60 + m) * 60000;
+    return Math.floor((rawDate.getTime() + offsetMs) / 1000).toString();
+  }
   return tz(new Date(), format, canonicalizeTimezoneId(timezone));
 };
 
@@ -126,6 +134,14 @@ export const getParsedTime = (timezone: string): string => {
  * @returns {string} formattedTime
  */
 export const getParsedTimeWithFormat = (timezone: string, format: string): string => {
+  if (format === '%s') {
+    const rawDate = new Date(store.getState().storedata.timewasData);
+    const targetOffsetStr = getUtcOffsetIntl(timezone, rawDate);
+    const [h, m] = targetOffsetStr.replace(/[+-]/, '').split(':').map(Number);
+    const sign = targetOffsetStr.startsWith('-') ? -1 : 1;
+    const offsetMs = sign * (h * 60 + m) * 60000;
+    return Math.floor((rawDate.getTime() + offsetMs) / 1000).toString();
+  }
   return tz(
     new Date(store.getState().storedata.timewasData),
     format,
