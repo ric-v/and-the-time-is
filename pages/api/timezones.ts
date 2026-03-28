@@ -7,7 +7,6 @@ const timezoneAliases: Record<string, string> = {
 };
 
 const popularTimezones = new Set([
-  'UTC',
   'Europe/London',
   'America/New_York',
   'Asia/Tokyo',

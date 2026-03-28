@@ -298,41 +298,56 @@ const TimePicker = ({ now, setDateString }: timePickerProps) => {
             <div className="mt-3 grid grid-cols-3 gap-2">
               <label className="flex flex-col gap-1">
                 <span className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">Hour</span>
-                <select
+                <input
+                  type="number"
+                  min="0"
+                  max="23"
+                  step="1"
                   value={selectedDate.getHours()}
-                  onChange={(e) => updateTimePart('hour', Number.parseInt(e.target.value, 10))}
-                  className="h-9 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/50"
-                >
-                  {Array.from({ length: 24 }, (_, idx) => idx).map((hour) => (
-                    <option key={hour} value={hour}>{pad(hour)}</option>
-                  ))}
-                </select>
+                  onChange={(e) => {
+                    const val = Number.parseInt(e.target.value, 10);
+                    if (!Number.isNaN(val) && val >= 0 && val <= 23) {
+                      updateTimePart('hour', val);
+                    }
+                  }}
+                  className="h-9 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/50"
+                />
               </label>
 
               <label className="flex flex-col gap-1">
                 <span className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">Minute</span>
-                <select
+                <input
+                  type="number"
+                  min="0"
+                  max="59"
+                  step="1"
                   value={selectedDate.getMinutes()}
-                  onChange={(e) => updateTimePart('minute', Number.parseInt(e.target.value, 10))}
-                  className="h-9 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/50"
-                >
-                  {Array.from({ length: 60 }, (_, idx) => idx).map((minute) => (
-                    <option key={minute} value={minute}>{pad(minute)}</option>
-                  ))}
-                </select>
+                  onChange={(e) => {
+                    const val = Number.parseInt(e.target.value, 10);
+                    if (!Number.isNaN(val) && val >= 0 && val <= 59) {
+                      updateTimePart('minute', val);
+                    }
+                  }}
+                  className="h-9 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/50"
+                />
               </label>
 
               <label className="flex flex-col gap-1">
                 <span className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">Second</span>
-                <select
+                <input
+                  type="number"
+                  min="0"
+                  max="59"
+                  step="1"
                   value={selectedDate.getSeconds()}
-                  onChange={(e) => updateTimePart('second', Number.parseInt(e.target.value, 10))}
-                  className="h-9 rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/50"
-                >
-                  {Array.from({ length: 60 }, (_, idx) => idx).map((second) => (
-                    <option key={second} value={second}>{pad(second)}</option>
-                  ))}
-                </select>
+                  onChange={(e) => {
+                    const val = Number.parseInt(e.target.value, 10);
+                    if (!Number.isNaN(val) && val >= 0 && val <= 59) {
+                      updateTimePart('second', val);
+                    }
+                  }}
+                  className="h-9 w-full rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)] px-2 text-sm text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent-primary)]/50"
+                />
               </label>
             </div>
           </div>

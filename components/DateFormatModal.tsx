@@ -14,14 +14,15 @@ import ModalTitle from './modal/ModalTitle';
  * @property {React.Dispatch<React.SetStateAction<boolean>>} setSelected
  */
 type Props = {
-  setFormatPickerSelected: React.Dispatch<React.SetStateAction<boolean>>,
-}
+  setFormatPickerSelected: React.Dispatch<React.SetStateAction<boolean>>;
+  onFormatApply?: (format: string) => void;
+};
 
 /**
  * @description - modal window for selected timezone details
  * @param {Props} props
  */
-function DateFormatModal({ setFormatPickerSelected }: Props) {
+function DateFormatModal({ setFormatPickerSelected, onFormatApply }: Props) {
   const defFormatString = "b d Y H:M:S Z (z)";
   const [formattedTime, setFormattedTime] = useState(getCurrentTime(Intl.DateTimeFormat().resolvedOptions().timeZone, store.getState().storedata.dateFormat));
   const [expandInstruction, setExpandInstruction] = useState(false);
@@ -100,14 +101,14 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
     <ModalBase body={
       <>
         <ModalTitle title='Date format modifier' />
-        <p className='text-gray-500 pl-5 text-sm'>update the date time format to suit your choice!</p>
+        <p className='text-(--text-muted) pl-5 text-sm mb-4'>Update the date time format to suit your choice!</p>
 
         {/* add drop down icon */}
         <select
-          className='appearance-none p-2 px-2 m-2 bg-slate-600 focus:bg-slate-700 animate-pulse 
-                    focus:animate-none transition duration-1000 ease-in-out
-                    rounded-full w-full text-gray-300 focus:outline-none focus:shadow-outline
-                    border border-gray-500 border-dashed scrollbar-thin scrollbar-thumb-gray-800 scrollbar-track-gray-700'
+          className='appearance-none p-3 px-4 mb-4 bg-(--bg-secondary) focus:bg-(--bg-elevated) 
+                    transition duration-200 ease-in-out
+                    rounded-lg w-full text-(--text-primary) font-medium focus:outline-none focus:ring-1 focus:ring-(--accent-primary)
+                    border border-(--border-default) cursor-pointer'
           autoFocus
           onChange={(e) => {
             const val = e.target.value;
@@ -130,18 +131,18 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
 
         {
           dateFormat === 'custom' && (
-            <>
+            <div className="mt-2 text-left">
               <button
-                className='text-teal-600 pl-5 text-sm'
+                className='text-(--accent-primary) text-sm font-medium hover:underline mb-2 px-2 transition-all'
                 onClick={() => setExpandInstruction(!expandInstruction)}
               >
-                click here for instructions
+                {expandInstruction ? 'Hide instructions' : 'View documentation variables'}
               </button>
 
-              {expandInstruction && (<>
-                {/* table with timezone details */}
-                <div className="table-responsive border rounded-lg border-gray-600 m-2 p-2">
-                  <table className="table-auto w-full">
+              {expandInstruction && (
+                <div className="border rounded-lg border-(--border-subtle) bg-(--bg-elevated) m-2 overflow-hidden mb-4">
+                  <div className="overflow-y-auto max-h-[300px] p-2 custom-scrollbar">
+                    <table className="w-full">
                     <tbody>
                       <TableHeader heading='Format' />
                       <TableHeader heading='Description' />
@@ -155,21 +156,20 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
                             col3={format.example}
                           />
                       )}
-
                     </tbody>
                   </table>
+                  </div>
                 </div>
-              </>)}
+              )}
 
-              <div className="flex flex-col px-4 pb-4 sm:pb-4">
-                {/* add reset button inside input */}
-                <div className="flex items-center justify-between">
-                  <div className="flex-1">
+              <div className="flex flex-col mb-4">
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 relative">
                     <input
                       type="text"
-                      className="block w-full bg-slate-600 opacity-50 focus:opacity-100 p-4 rounded-full text-white text-sm 
-                              leading-tight focus:outline-none focus:bg-slate-700 focus:text-white"
-                      placeholder="Enter date format"
+                      className="block w-full bg-(--bg-secondary) p-3 px-4 rounded-lg text-(--text-primary) font-mono text-sm 
+                              border border-(--border-default) focus:outline-none focus:border-(--accent-primary) focus:ring-1 focus:ring-(--accent-primary) transition-all"
+                      placeholder="Enter custom date format"
                       defaultValue={defFormatString}
                       value={formatString}
                       onChange={(e) => {
@@ -178,24 +178,33 @@ function DateFormatModal({ setFormatPickerSelected }: Props) {
                       }}
                     />
                   </div>
-                  <BiReset size={24} color='gray' onClick={() => { setFormatString(defFormatString) }} className='cursor-pointer' />
+                  <button 
+                    onClick={() => { setFormatString(defFormatString) }} 
+                    className='p-3 rounded-lg text-(--text-muted) hover:text-(--text-primary) hover:bg-(--bg-elevated) transition-colors border border-transparent'
+                    title="Reset to default"
+                  >
+                    <BiReset size={20} />
+                  </button>
                 </div>
-
               </div>
-            </>
+            </div>
           )
         }
-        <p className='text-gray-500 pl-5 text-sm mt-5 border-t border-gray-600 border-dashed'>DATE FORMAT PREVIEW</p>
-        <p className='text-teal-400 text-center text-xl text-ellipsis font-semibold py-2'>
-          {formattedTime}
-        </p>
+        <div className="mt-6 pt-4 border-t border-(--border-subtle)">
+          <p className='text-(--text-muted) text-xs tracking-widest font-semibold uppercase mb-2'>Preview Output</p>
+          <p className='text-(--accent-primary) text-center text-xl md:text-2xl font-mono tracking-tight font-medium bg-(--bg-secondary) p-4 rounded-xl border border-(--border-default) shadow-inner overflow-hidden text-ellipsis'>
+            {formattedTime}
+          </p>
+        </div>
       </>
     }
       actionBar={
         <>
           <ModalButton text={isModified ? 'Apply as default' : 'Already applied!'} close={false} disabled={!isModified} handleClick={
             () => {
-              store.dispatch({ type: "dateformat/update", payload: generateDateFormat(formatString) });
+              const newFormat = generateDateFormat(formatString);
+              store.dispatch({ type: "dateformat/update", payload: newFormat });
+              if (onFormatApply) onFormatApply(newFormat);
               setFormatPickerSelected(false);
             }
           } />

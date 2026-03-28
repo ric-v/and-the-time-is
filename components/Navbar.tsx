@@ -23,7 +23,7 @@ const Navbar = ({ page }: NavbarProps) => {
               />
             </div>
             <span className="text-sm font-medium tracking-wide text-(--text-primary)">
-              AND THE TIME {page === 'timeis' ? 'IS' : 'WAS'}
+              And The Time {page === 'timeis' ? 'Is' : 'Was'}...
             </span>
           </Link>
 

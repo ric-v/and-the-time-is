@@ -25,7 +25,7 @@ const Footer = ({ page }: FooterProps) => {
               />
             </div>
             <span className="text-sm font-medium text-(--text-secondary)">
-              AND THE TIME {page === 'timeis' ? 'IS' : 'WAS'}
+              And The Time {page === 'timeis' ? 'Is' : 'Was'}...
             </span>
           </div>
 

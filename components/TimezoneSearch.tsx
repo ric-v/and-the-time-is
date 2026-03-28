@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import useSWR from 'swr';
 
-import { Timezones } from '../utils/timeNow';
+import { Timezones, getCurrentTime } from '../utils/timeNow';
 import TimestampModal from './TimestampModal';
 
 const fetcher = (input: RequestInfo, init: RequestInit, ...args: any[]) =>
@@ -194,7 +194,7 @@ const TimezoneSearch = ({ onTimezoneSelect }: TimezoneSearchProps) => {
                   </span>
                 </div>
                 <div className="text-xs text-[var(--text-muted)] mt-1 truncate">
-                  {item.name}
+                  {getCurrentTime(item.name, '%Z')} • {getCurrentTime(item.name, '%H:%M')}
                 </div>
               </button>
             ))}

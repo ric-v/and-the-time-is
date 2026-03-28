@@ -49,6 +49,20 @@ function TimestampModal({ timezone, setSelected }: Props) {
   const relativeOffset = getRelativeOffsetToLocal(timezoneName);
   const todayLabel = getCurrentTime(timezoneName, '%A, %b %d');
 
+  const handleUnpin = () => {
+    store.dispatch({ type: 'timezone/remove', payload: { timezone, dateFormat: '' } });
+    setSelected(null);
+  };
+
+  const handleCopyTime = async () => {
+    const payload = `${displayName}: ${currentTime} (${timezoneName}, UTC ${utcOffset})`;
+    try {
+      await navigator.clipboard.writeText(payload);
+    } catch {
+      // ignore
+    }
+  };
+
   return (
     <ModalBase body={
       <>
@@ -57,7 +71,7 @@ function TimestampModal({ timezone, setSelected }: Props) {
           {todayLabel} • {timezone.country}
         </p>
 
-        <div className="mt-5 rounded-2xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 p-4">
+        <div className="mt-5">
           <div className="text-center">
             <p className="text-xs uppercase tracking-[0.1em] text-[var(--text-muted)]">Current Time</p>
             <p className="font-mono text-3xl md:text-4xl tracking-tight text-[var(--text-primary)] mt-1">
@@ -65,30 +79,45 @@ function TimestampModal({ timezone, setSelected }: Props) {
             </p>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3 text-left">
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] p-3">
-              <p className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">Abbreviation</p>
-              <p className="text-sm font-semibold text-[var(--text-primary)] mt-1">{abbreviation}</p>
+          {/* 3-column meta row */}
+          <div className="mt-4 grid grid-cols-3 gap-2 text-center">
+            <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 p-2">
+              <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">Abbrev</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)] mt-0.5">{abbreviation}</p>
             </div>
-            <div className="rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] p-3">
-              <p className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">UTC Offset</p>
-              <p className="text-sm font-semibold text-[var(--accent-primary)] mt-1">{utcOffset}</p>
+            <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 p-2">
+              <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">UTC Offset</p>
+              <p className="text-sm font-semibold text-[var(--accent-primary)] mt-0.5">{utcOffset}</p>
             </div>
-            <div className="col-span-2 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-card)] p-3">
-              <p className="text-[11px] uppercase tracking-wide text-[var(--text-muted)]">Relative To You</p>
-              <p className="text-sm font-semibold text-[var(--text-primary)] mt-1">{relativeOffset}</p>
+            <div className="rounded-lg border border-[var(--border-subtle)] bg-[var(--bg-secondary)]/40 p-2">
+              <p className="text-[10px] uppercase tracking-wide text-[var(--text-muted)]">Relative</p>
+              <p className="text-sm font-semibold text-[var(--text-primary)] mt-0.5">{relativeOffset}</p>
             </div>
           </div>
-        </div>
 
-        <div className="mt-4 rounded-xl border border-[var(--border-subtle)] bg-[var(--bg-secondary)]/20 px-3 py-2">
-          <p className="text-[11px] uppercase tracking-[0.1em] text-[var(--text-muted)]">IANA Timezone</p>
-          <p className="mt-1 text-sm font-medium text-[var(--text-primary)] break-all">{timezoneName}</p>
+          {/* IANA timezone as subtle code string */}
+          <div className="mt-3 text-center">
+            <p className="text-xs text-[var(--text-muted)]">IANA Timezone</p>
+            <p className="text-xs font-mono text-[var(--text-secondary)] mt-0.5">{timezoneName}</p>
+          </div>
         </div>
       </>
     }
       actionBar={
         <>
+          {isAdded && (
+            <ModalButton 
+              text='Unpin' 
+              close={false} 
+              handleClick={handleUnpin}
+              classes='bg-red-500/10 border-red-500/30 text-red-500 hover:bg-red-500/20'
+            />
+          )}
+          <ModalButton 
+            text='Copy time' 
+            close={false} 
+            handleClick={handleCopyTime}
+          />
           <ModalButton text='Close' close={true} handleClick={
             () => {
               setSelected(null);

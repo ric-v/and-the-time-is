@@ -7,8 +7,8 @@ type Props = {
 const TableHeader = ({ heading }: Props) => {
   return (
     <th>
-      <td className="text-left text-sm text-gray-300">
-        <p className='text-gray-500 text-sm'><b>{heading}</b></p>
+      <td className="text-left py-2 pr-4 text-sm text-(--text-muted)">
+        <p className='font-bold'>{heading}</p>
       </td>
     </th>
   )

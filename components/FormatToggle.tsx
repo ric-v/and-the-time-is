@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { store } from '../store/store';
+import DateFormatModal from './DateFormatModal';
 
 type FormatOption = {
   id: string;
@@ -22,27 +24,51 @@ type FormatToggleProps = {
  * @description Modern format toggle component for switching time display formats
  */
 const FormatToggle = ({ selectedFormat, onFormatChange }: FormatToggleProps) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   const handleFormatChange = (format: string) => {
     onFormatChange(format);
     store.dispatch({ type: 'dateformat/update', payload: format });
   };
 
+  // Determine if the currently selected format matches one of the defaults
+  const isCustomFormat = !formatOptions.find((o) => o.format === selectedFormat);
+
   return (
-    <div className="flex items-center gap-2 p-1 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-subtle)]">
-      {formatOptions.map((option) => (
+    <>
+      <div className="flex items-center gap-2 p-1 bg-(--bg-secondary) rounded-xl border border-(--border-subtle)">
+        {formatOptions.map((option) => (
         <button
           key={option.id}
           onClick={() => handleFormatChange(option.format)}
           className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-            selectedFormat === option.format
-              ? 'bg-[var(--accent-primary)] text-[var(--bg-primary)]'
-              : 'text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-elevated)]'
+            selectedFormat === option.format && !isCustomFormat
+              ? 'bg-(--accent-primary) text-(--bg-primary)'
+              : 'text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-elevated)'
           }`}
         >
           {option.label}
         </button>
       ))}
-    </div>
+      <button
+        onClick={() => setIsModalOpen(true)}
+        className={`px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
+          isCustomFormat
+            ? 'bg-(--accent-primary) text-(--bg-primary)'
+            : 'text-(--text-secondary) hover:text-(--text-primary) hover:bg-(--bg-elevated)'
+        }`}
+      >
+        Custom
+      </button>
+      </div>
+
+      {isModalOpen && (
+        <DateFormatModal
+          setFormatPickerSelected={setIsModalOpen}
+          onFormatApply={(format) => onFormatChange(format)}
+        />
+      )}
+    </>
   );
 };
 

@@ -6,10 +6,11 @@ import { Timezones } from '../utils/timeNow';
  * @description - This is the reducer action data type.
  */
 type actionData = {
-  timezone: Timezones;
-  dateFormat: string;
-  miniNav: string;
-  timewasData: string;
+  timezone?: Timezones;
+  timezones?: Timezones[];
+  dateFormat?: string;
+  miniNav?: string;
+  timewasData?: string;
 }
 
 type storeData = {
@@ -38,6 +39,7 @@ const addTimezone = createAction<actionData>("timezone/add");
  * @returns new state
  */
 const addTimezoneFunc = (state: storeData, action: { payload: actionData; type: string; }) => {
+  if (!action.payload.timezone) return state;
   const tz = action.payload.timezone;
   if (!state.timezones.find((tzData) => tzData.name === tz.name)) {
     // add this timezone to local storage
@@ -58,6 +60,7 @@ const updateTimezone = createAction<actionData>("timezone/update");
  * @returns new state
  */
 const updateTimezoneFunc = (state: storeData, action: { payload: actionData; type: string; }) => {
+  if (!action.payload.timezone) return state;
   const tz = action.payload.timezone;
   if (state.timezones.find((tzData) => tzData.city === tz.city && tzData.country === tz.country)) {
     // add this timezone to local storage
@@ -78,10 +81,11 @@ const removeTimezone = createAction<actionData>("timezone/remove");
  * @returns new state
  */
 const removeTimezoneFunc = (state: storeData, action: { payload: actionData; type: string; }): storeData => {
+  if (!action.payload.timezone) return state;
   // remove this timezone from local storage
   localStorage.setItem(
     "timezones",
-    JSON.stringify(state.timezones.filter((tz) => tz.name !== action.payload.timezone.name)),
+    JSON.stringify(state.timezones.filter((tz) => tz.name !== action.payload.timezone!.name)),
   );
 
   const tzData = action.payload.timezone;
@@ -129,6 +133,21 @@ const pickedDateFunc = (state: storeData, action: { payload: string; type: strin
   return { ...state, timewasData: action.payload };
 };
 
+const reorderTimezones = createAction<actionData>("timezone/reorder");
+/**
+ * @description - update the order of timezones in the store and local storage
+ * 
+ * @param state - current state
+ * @param action - action to be performed
+ * @returns new state
+ */
+const reorderTimezonesFunc = (state: storeData, action: { payload: actionData; type: string; }) => {
+  if (!action.payload.timezones) return state;
+  const newOrder = action.payload.timezones;
+  localStorage.setItem("timezones", JSON.stringify(newOrder));
+  return { ...state, timezones: newOrder };
+};
+
 /**
  * reducer - reducer for the store data
  */
@@ -138,6 +157,7 @@ const reducers = createReducer(initState, (builder) => {
   builder.addCase(addTimezone, addTimezoneFunc);
   builder.addCase(removeTimezone, removeTimezoneFunc);
   builder.addCase(updateTimezone, updateTimezoneFunc);
+  builder.addCase(reorderTimezones, reorderTimezonesFunc);
   builder.addCase(setDateFormat, dateFormatSetFunc);
   builder.addCase(setMiniNav, setMiniNavFunc);
   builder.addCase(setPickedtime, pickedDateFunc);
