@@ -36,3 +36,6 @@ yarn-error.log*
 pages/api/timezone.ts
 pages/api/tz.tsv
 .vscode/
+.kiro/
+old/
+powers/
