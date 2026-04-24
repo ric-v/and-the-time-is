@@ -1,11 +1,7 @@
-import Main from '../components/Main';
-
-type Props = {}
-
-const TimeWas = (props: Props) => {
-  return (
-    <Main page='timewas' />
-  )
-}
+/**
+ * Legacy route: middleware issues a 301 to `/?jump=open`.
+ * This page is never rendered for normal requests.
+ */
+const TimeWas = () => null;
 
 export default TimeWas;

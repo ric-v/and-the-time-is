@@ -1,6 +1,11 @@
 import { configureStore, createAction, createReducer } from '@reduxjs/toolkit';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { Timezones } from '../utils/timeNow';
+import orbReducer from './orbSlice';
+import scrubReducer from './scrubSlice';
+import settingsReducer from './settingsSlice';
+import sessionReducer from './sessionSlice';
 
 /**
  * @description - This is the reducer action data type.
@@ -151,6 +156,20 @@ export const store = configureStore({
     storedata: initState,
   },
   reducer: {
+    // Legacy reducer — kept temporarily for migration
     storedata: reducers,
+    // New Horizon slices
+    orbs: orbReducer,
+    scrub: scrubReducer,
+    settings: settingsReducer,
+    session: sessionReducer,
   },
 });
+
+// Infer types from the store itself
+export type RootState = ReturnType<typeof store.getState>;
+export type AppDispatch = typeof store.dispatch;
+
+// Typed hooks — use these throughout the app instead of plain useDispatch/useSelector
+export const useAppDispatch = useDispatch.withTypes<AppDispatch>();
+export const useAppSelector = useSelector.withTypes<RootState>();

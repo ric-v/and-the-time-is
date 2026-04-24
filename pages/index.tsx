@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
-import Main from "../components/Main";
+import HorizonApp from "../components/horizon/HorizonApp";
 
 const Home: NextPage = () => {
   return (
-    <Main page="timeis" />
+    <HorizonApp />
   );
 };
 

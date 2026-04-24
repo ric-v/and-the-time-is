@@ -12,10 +12,20 @@ type ThemeContextType = {
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+/**
+ * @deprecated The ThemeContext light/dark toggle system is removed in the
+ * Horizon redesign. This hook now returns a safe dark-only fallback so
+ * legacy components (Navbar, ThemeToggle) don't crash during migration.
+ */
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (context === undefined) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    // Return a safe fallback — Horizon has no light/dark toggle.
+    return {
+      theme: 'dark' as Theme,
+      toggleTheme: () => {},
+      setTheme: () => {},
+    };
   }
   return context;
 };

@@ -1,7 +1,7 @@
 import '../public/styles/globals.css';
 import { Provider } from 'react-redux';
 import { store } from '../store/store';
-import { ThemeProvider } from '../context/ThemeContext';
+import { inter, jetbrainsMono, fraunces, ibmPlexMono } from '../utils/fonts';
 
 import type { AppProps } from 'next/dist/pages/_app';
 import Head from 'next/head';
@@ -11,16 +11,17 @@ function AndTheTimeIs({ Component, pageProps }: AppProps) {
     <>
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="Track time across different timezones around the world" />
-        <meta name="theme-color" content="#0a0f1a" media="(prefers-color-scheme: dark)" />
-        <meta name="theme-color" content="#f8fafc" media="(prefers-color-scheme: light)" />
-        <title>And the time is...</title>
+        <meta name="description" content="And the time is — live and scrubbed times across pinned timezones." />
+        <meta name="theme-color" content="#f2ece0" />
+        <title>And the time is</title>
       </Head>
-      <ThemeProvider>
-        <Provider store={store}>
+      <Provider store={store}>
+        <div
+          className={`${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable} ${ibmPlexMono.variable}`}
+        >
           <Component {...pageProps} />
-        </Provider>
-      </ThemeProvider>
+        </div>
+      </Provider>
     </>
   );
 }
