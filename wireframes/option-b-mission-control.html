@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option B — Mission Control</title>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --navy: #0a1628;
+      --panel: #0f1f38;
+      --phosphor: #39ff14;
+      --amber: #ffb000;
+      --text: #c8d6e5;
+      --text-dim: #5a7080;
+    }
+    body {
+      font-family: 'JetBrains Mono', monospace;
+      background: var(--navy);
+      color: var(--text);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      min-height: 800px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .scanlines::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.08) 2px, rgba(0,0,0,0.08) 4px);
+      pointer-events: none;
+      z-index: 50;
+    }
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 20px;
+      background: var(--panel);
+      border-bottom: 1px solid rgba(57, 255, 20, 0.15);
+      z-index: 10;
+    }
+    .brand { font-size: 0.85rem; font-weight: 700; color: var(--phosphor); letter-spacing: 0.05em; }
+    .brand span { color: var(--amber); }
+    .topbar-center { font-size: 0.65rem; color: var(--text-dim); }
+    .topbar-actions { display: flex; gap: 6px; align-items: center; }
+    .btn {
+      padding: 5px 10px;
+      border: 1px solid rgba(57,255,20,0.3);
+      background: transparent;
+      color: var(--phosphor);
+      font-family: inherit;
+      font-size: 0.6rem;
+      border-radius: 2px;
+    }
+    .btn.active { background: rgba(57,255,20,0.15); }
+    .streak-badge {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 10px;
+      background: rgba(255,176,0,0.12);
+      border: 1px solid rgba(255,176,0,0.4);
+      border-radius: 4px;
+      font-size: 0.6rem;
+      color: var(--amber);
+    }
+    .icon-btn {
+      width: 28px; height: 28px;
+      border: 1px solid rgba(57,255,20,0.3);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.75rem;
+      color: var(--phosphor);
+    }
+    .main-layout {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+      position: relative;
+    }
+    .scene {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .ring {
+      position: relative;
+      width: 460px; height: 460px;
+      border: 2px solid rgba(57,255,20,0.25);
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(57,255,20,0.08);
+    }
+    .go-pulse {
+      position: absolute;
+      inset: -8px;
+      border-radius: 50%;
+      background: conic-gradient(from 280deg, transparent 0deg, rgba(57,255,20,0.4) 30deg, rgba(57,255,20,0.6) 60deg, transparent 90deg);
+      animation: pulse-go 2s ease-in-out infinite;
+    }
+    @keyframes pulse-go {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 1; }
+    }
+    .work-wedge {
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      background: conic-gradient(from 90deg, transparent 0deg, rgba(255,176,0,0.15) 45deg, rgba(255,176,0,0.25) 90deg, transparent 135deg);
+    }
+    .globe {
+      position: absolute;
+      width: 140px; height: 140px;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      border: 1px solid rgba(57,255,20,0.2);
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, rgba(57,255,20,0.08), transparent);
+    }
+    .orb-wrap {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .beacon {
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      border: 2px solid var(--phosphor);
+      background: var(--panel);
+      margin: 0 auto 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      box-shadow: 0 0 12px rgba(57,255,20,0.3);
+    }
+    .beacon.asleep { border-color: var(--text-dim); box-shadow: none; color: var(--text-dim); }
+    .beacon.working { border-color: var(--amber); box-shadow: 0 0 12px rgba(255,176,0,0.4); }
+    .orb-label { font-size: 0.55rem; color: var(--phosphor); }
+    .orb-time { font-size: 0.5rem; color: var(--text-dim); }
+    .orb-wrap:nth-child(1) { top: 0%; left: 50%; }
+    .orb-wrap:nth-child(2) { top: 20%; left: 90%; }
+    .orb-wrap:nth-child(3) { top: 55%; left: 100%; }
+    .orb-wrap:nth-child(4) { top: 90%; left: 75%; }
+    .orb-wrap:nth-child(5) { top: 100%; left: 40%; }
+    .orb-wrap:nth-child(6) { top: 75%; left: 5%; }
+    /* Sidebar */
+    .sidebar {
+      width: 280px;
+      background: var(--panel);
+      border-left: 1px solid rgba(57,255,20,0.15);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 10;
+      font-size: 0.65rem;
+    }
+    .panel-title {
+      color: var(--phosphor);
+      font-weight: 700;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
+      border-bottom: 1px solid rgba(57,255,20,0.2);
+      padding-bottom: 6px;
+    }
+    .launch-window {
+      background: rgba(0,0,0,0.3);
+      border: 1px solid rgba(57,255,20,0.25);
+      padding: 12px;
+      border-radius: 4px;
+    }
+    .selected-orbs { margin: 8px 0; line-height: 1.8; }
+    .check { color: var(--phosphor); }
+    .overlap-result {
+      color: var(--amber);
+      font-weight: 700;
+      margin-top: 8px;
+      padding: 8px;
+      background: rgba(255,176,0,0.08);
+      border-left: 3px solid var(--amber);
+    }
+    .challenge-card {
+      background: rgba(57,255,20,0.06);
+      border: 1px dashed rgba(57,255,20,0.3);
+      padding: 10px;
+      border-radius: 4px;
+    }
+    .challenge-card h3 { color: var(--phosphor); font-size: 0.65rem; margin-bottom: 4px; }
+    .scrub-area {
+      padding: 10px 20px 6px;
+      background: var(--panel);
+      border-top: 1px solid rgba(57,255,20,0.1);
+    }
+    .scrub-track {
+      height: 28px;
+      background: rgba(0,0,0,0.4);
+      border: 1px solid rgba(57,255,20,0.2);
+      border-radius: 2px;
+      position: relative;
+    }
+    .scrub-thumb {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 12px; height: 24px;
+      background: var(--phosphor);
+      box-shadow: 0 0 8px var(--phosphor);
+    }
+    .scrub-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.55rem;
+      color: var(--text-dim);
+      margin-top: 3px;
+    }
+    .bottombar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 20px 12px;
+      background: var(--navy);
+      border-top: 1px solid rgba(57,255,20,0.1);
+    }
+    .add-btn {
+      padding: 6px 14px;
+      background: transparent;
+      border: 1px solid var(--phosphor);
+      color: var(--phosphor);
+      font-family: inherit;
+      font-size: 0.65rem;
+    }
+    .chip {
+      padding: 4px 8px;
+      font-size: 0.55rem;
+      border: 1px solid rgba(57,255,20,0.2);
+      color: var(--text-dim);
+    }
+    .chip.active { color: var(--phosphor); border-color: var(--phosphor); }
+    .option-label {
+      position: fixed;
+      top: 16px; left: 16px;
+      background: rgba(10,22,40,0.95);
+      border: 1px solid var(--phosphor);
+      color: var(--text);
+      padding: 12px 16px;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      max-width: 240px;
+      z-index: 100;
+      line-height: 1.5;
+    }
+    .option-label strong { color: var(--phosphor); display: block; margin-bottom: 6px; font-size: 0.75rem; }
+    .option-label ul { margin-left: 14px; }
+    .pin {
+      position: absolute;
+      background: var(--amber);
+      color: var(--navy);
+      font-size: 0.5rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 2px;
+      z-index: 20;
+    }
+    .pin-1 { top: 15%; right: 32%; }
+    .pin-2 { bottom: 30%; left: 12%; }
+  </style>
+</head>
+<body>
+  <div class="option-label" role="note">
+    <strong>Option B — Mission Control</strong>
+    <ul>
+      <li>Launch Window overlap finder for teams</li>
+      <li>Working-hours wedges + status beacons</li>
+      <li>Scheduling streaks & challenge cards</li>
+    </ul>
+  </div>
+
+  <div class="app scanlines">
+    <header class="topbar">
+      <div class="brand">AND THE <span>TIME IS</span> // MC-01</div>
+      <div class="topbar-center">2026-06-06T18:30:00Z · LIVE FEED</div>
+      <nav class="topbar-actions" aria-label="Controls">
+        <div class="streak-badge" aria-label="3 day scheduling streak">🔥 3-day streak</div>
+        <button class="btn active">RING</button>
+        <button class="btn">LIST</button>
+        <div class="icon-btn" aria-label="Settings">⚙</div>
+      </nav>
+    </header>
+
+    <div class="main-layout">
+      <main class="scene" aria-label="Mission control ring">
+        <div class="ring">
+          <div class="go-pulse" aria-hidden="true"></div>
+          <div class="work-wedge" aria-hidden="true"></div>
+          <div class="globe" aria-hidden="true"></div>
+          <div class="orb-wrap">
+            <div class="beacon working" aria-label="NYC awake working hours">☀</div>
+            <div class="orb-label">NYC · LOCAL</div>
+            <div class="orb-time">14:30</div>
+          </div>
+          <div class="orb-wrap">
+            <div class="beacon working">☀</div>
+            <div class="orb-label">UTC</div>
+            <div class="orb-time">18:30</div>
+          </div>
+          <div class="orb-wrap">
+            <div class="beacon asleep">🌙</div>
+            <div class="orb-label">TOKYO</div>
+            <div class="orb-time">03:30</div>
+          </div>
+          <div class="orb-wrap">
+            <div class="beacon working">💼</div>
+            <div class="orb-label">LONDON</div>
+            <div class="orb-time">19:30</div>
+          </div>
+          <div class="orb-wrap">
+            <div class="beacon working">💼</div>
+            <div class="orb-label">BERLIN</div>
+            <div class="orb-time">20:30</div>
+          </div>
+          <div class="orb-wrap">
+            <div class="beacon asleep">🌙</div>
+            <div class="orb-label">SYDNEY</div>
+            <div class="orb-time">04:30</div>
+          </div>
+        </div>
+        <div class="pin pin-1">GO pulse · launch window</div>
+        <div class="pin pin-2">9–5 work wedge</div>
+      </main>
+
+      <aside class="sidebar" aria-label="Launch window panel">
+        <h2 class="panel-title">▸ LAUNCH WINDOW</h2>
+        <div class="launch-window">
+          <div class="selected-orbs">
+            Select orbs:<br>
+            <span class="check">NYC ✓</span> · <span class="check">Tokyo ✓</span> · <span class="check">Berlin ✓</span>
+          </div>
+          <div class="overlap-result">
+            ▶ Next overlap:<br>
+            4h window at 14:00 UTC
+          </div>
+        </div>
+        <div class="challenge-card">
+          <h3>CHALLENGE</h3>
+          Find window for NYC + Tokyo + Berlin
+        </div>
+      </aside>
+    </div>
+
+    <section class="scrub-area" aria-label="Time offset">
+      <div class="scrub-track" role="slider" aria-valuenow="0" aria-label="Scrub time">
+        <div class="scrub-thumb"></div>
+      </div>
+      <div class="scrub-labels"><span>−12H</span><span>LIVE</span><span>+12H</span></div>
+    </section>
+
+    <footer class="bottombar">
+      <div style="display:flex;gap:8px">
+        <button class="add-btn">+ ADD ZONE</button>
+        <button class="btn">SHARE</button>
+      </div>
+      <div style="display:flex;gap:6px">
+        <span class="chip active">LIVE</span>
+        <span class="chip">24H</span>
+        <span class="chip">12H</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

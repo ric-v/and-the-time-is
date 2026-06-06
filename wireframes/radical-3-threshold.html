@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280, initial-scale=1.0">
+  <title>Radical 3 — The Threshold</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --plaster: #f4efe6;
+      --plaster-deep: #e8dfd2;
+      --wood: #6b5344;
+      --wood-dark: #4a3a30;
+      --ember: #c45c26;
+      --ember-glow: rgba(196, 92, 38, 0.35);
+      --shadow: rgba(74, 58, 48, 0.18);
+      --text: #3d3429;
+      --text-dim: #8a7d6e;
+      --led-green: #4caf6a;
+      --led-amber: #d4a017;
+      --led-dim: #5a5a5a;
+      --corridor: #d9cfc0;
+      --floor: #c4b5a2;
+    }
+
+    body {
+      font-family: 'Fraunces', Georgia, serif;
+      background: #2a2520;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .wireframe {
+      width: 1280px;
+      height: 800px;
+      background: var(--plaster);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.45);
+      position: relative;
+    }
+
+    /* ── Top bar ── */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: var(--plaster);
+      border-bottom: 1px solid rgba(107, 83, 68, 0.12);
+      flex-shrink: 0;
+      z-index: 20;
+    }
+    .brand {
+      font-size: 0.9rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      color: var(--wood-dark);
+    }
+    .brand em {
+      font-style: italic;
+      color: var(--ember);
+    }
+    .topbar-meta {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+    .topbar-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid rgba(107, 83, 68, 0.2);
+      border-radius: 6px;
+      background: rgba(255,255,255,0.4);
+      color: var(--wood);
+      font-size: 0.75rem;
+      cursor: default;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Banner ── */
+    .banner {
+      margin: 0 24px;
+      margin-top: 12px;
+      padding: 14px 20px;
+      background: linear-gradient(135deg, rgba(196, 92, 38, 0.08) 0%, rgba(255,255,255,0.6) 100%);
+      border: 1px solid rgba(196, 92, 38, 0.2);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      z-index: 15;
+    }
+    .banner-text {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: var(--wood-dark);
+    }
+    .banner-text span {
+      color: var(--ember);
+    }
+    .banner-sub {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.65rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+    .banner-cta {
+      padding: 8px 16px;
+      background: var(--ember);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-family: 'Fraunces', serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: default;
+      box-shadow: 0 4px 12px var(--ember-glow);
+    }
+
+    /* ── Corridor scene ── */
+    .scene {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      perspective: 900px;
+      perspective-origin: 50% 40%;
+    }
+
+    .corridor {
+      position: absolute;
+      inset: 0;
+      transform-style: preserve-3d;
+    }
+
+    /* Back wall & floor for depth */
+    .corridor-back {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 600px;
+      height: 280px;
+      transform: translate(-50%, -55%) translateZ(-400px) rotateX(2deg);
+      background: linear-gradient(180deg, #c8bdb0 0%, #b8aa9a 100%);
+      border-radius: 4px;
+      box-shadow: inset 0 0 60px rgba(0,0,0,0.08);
+    }
+    .corridor-floor {
+      position: absolute;
+      left: 50%;
+      bottom: 0;
+      width: 900px;
+      height: 200px;
+      transform: translateX(-50%) rotateX(72deg) translateZ(-80px);
+      transform-origin: bottom center;
+      background: linear-gradient(180deg, var(--floor) 0%, #a89888 100%);
+      box-shadow: 0 -8px 40px var(--shadow);
+    }
+    .corridor-ceiling {
+      position: absolute;
+      left: 50%;
+      top: 0;
+      width: 900px;
+      height: 120px;
+      transform: translateX(-50%) rotateX(-60deg) translateZ(-40px);
+      transform-origin: top center;
+      background: linear-gradient(180deg, #ebe4da 0%, var(--plaster-deep) 100%);
+      opacity: 0.7;
+    }
+
+    /* Side walls */
+    .wall-left, .wall-right {
+      position: absolute;
+      top: 0;
+      bottom: 80px;
+      width: 200px;
+      background: linear-gradient(90deg, var(--corridor), var(--plaster-deep));
+    }
+    .wall-left {
+      left: 0;
+      transform: rotateY(18deg);
+      transform-origin: left center;
+    }
+    .wall-right {
+      right: 0;
+      transform: rotateY(-18deg);
+      transform-origin: right center;
+      background: linear-gradient(-90deg, var(--corridor), var(--plaster-deep));
+    }
+
+    /* Door row */
+    .doors-row {
+      position: absolute;
+      left: 50%;
+      top: 52%;
+      transform: translate(-50%, -50%) rotateX(8deg);
+      display: flex;
+      gap: 18px;
+      align-items: flex-end;
+      z-index: 5;
+    }
+
+    .door {
+      width: 108px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: default;
+      transition: transform 0.3s ease, filter 0.4s ease;
+    }
+    .door:hover:not(.locked) {
+      transform: translateY(-4px);
+    }
+    .door.dimmed {
+      filter: brightness(0.55) saturate(0.6);
+    }
+    .door.lit {
+      filter: brightness(1.05);
+    }
+
+    .door-frame {
+      width: 100%;
+      padding: 6px;
+      background: var(--wood);
+      border-radius: 4px 4px 0 0;
+      box-shadow:
+        0 8px 24px var(--shadow),
+        inset 0 1px 0 rgba(255,255,255,0.15);
+      position: relative;
+    }
+
+    .door-panel {
+      width: 100%;
+      height: 140px;
+      border-radius: 2px;
+      position: relative;
+      overflow: hidden;
+      background: var(--wood-dark);
+    }
+
+    /* Frosted glass sky panel */
+    .sky-glass {
+      position: absolute;
+      inset: 8px;
+      border-radius: 3px;
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+    }
+    .sky-gradient {
+      width: 100%;
+      height: 100%;
+      transition: background 0.5s ease;
+    }
+    .sky-glass::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.15) 100%);
+      pointer-events: none;
+    }
+
+    /* Door hardware */
+    .door-knob {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 30% 30%, #d4c4a8, #8a7358);
+      box-shadow: 1px 2px 4px rgba(0,0,0,0.3);
+      z-index: 2;
+    }
+
+    .status-led {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      z-index: 3;
+      transition: background 0.4s ease, box-shadow 0.4s ease;
+    }
+    .status-led.awake {
+      background: var(--led-green);
+      box-shadow: 0 0 8px var(--led-green), 0 0 16px rgba(76, 175, 106, 0.4);
+    }
+    .status-led.winding {
+      background: var(--led-amber);
+      box-shadow: 0 0 8px var(--led-amber), 0 0 12px rgba(212, 160, 23, 0.35);
+    }
+    .status-led.asleep {
+      background: var(--led-dim);
+      box-shadow: none;
+    }
+
+    .door-sill {
+      width: calc(100% + 8px);
+      height: 6px;
+      background: var(--wood-dark);
+      margin-left: -4px;
+      border-radius: 0 0 2px 2px;
+    }
+
+    .door-info {
+      margin-top: 10px;
+      text-align: center;
+    }
+    .door-city {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--wood-dark);
+      letter-spacing: 0.01em;
+    }
+    .door-time {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-dim);
+      margin-top: 2px;
+    }
+
+    /* Ajar door */
+    .door.ajar .door-frame {
+      transform: perspective(400px) rotateY(-12deg);
+      transform-origin: left center;
+    }
+    .door.ajar .door-panel {
+      box-shadow: 4px 0 20px rgba(0,0,0,0.25);
+    }
+    .detail-peek {
+      position: absolute;
+      left: -28px;
+      top: 20px;
+      width: 24px;
+      height: 100px;
+      background: linear-gradient(180deg, #fff8f0 0%, #ffe8d0 100%);
+      border-radius: 2px;
+      box-shadow: inset -4px 0 8px rgba(196, 92, 38, 0.15);
+      z-index: -1;
+    }
+    .detail-peek::after {
+      content: '☕';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 0.9rem;
+      opacity: 0.7;
+    }
+
+    /* Locked door */
+    .door.locked .door-frame {
+      opacity: 0.85;
+    }
+    .door.locked .sky-glass {
+      filter: grayscale(0.8) brightness(0.5);
+    }
+    .lock-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 1.4rem;
+      z-index: 4;
+      opacity: 0.6;
+    }
+    .mystery-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--ember);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-top: 4px;
+    }
+
+    /* ── Annotations ── */
+    .annotation {
+      position: absolute;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.6rem;
+      color: var(--ember);
+      background: rgba(255,255,255,0.92);
+      border: 1px dashed rgba(196, 92, 38, 0.5);
+      border-radius: 6px;
+      padding: 6px 10px;
+      max-width: 180px;
+      line-height: 1.4;
+      z-index: 30;
+      box-shadow: 0 4px 16px var(--shadow);
+    }
+    .annotation::before {
+      content: '';
+      position: absolute;
+      width: 40px;
+      height: 1px;
+      background: var(--ember);
+      opacity: 0.5;
+    }
+    .ann-emotional {
+      top: 140px;
+      left: 24px;
+    }
+    .ann-emotional::before {
+      right: -40px;
+      top: 50%;
+    }
+    .ann-knock {
+      bottom: 180px;
+      right: 24px;
+      text-align: right;
+    }
+    .ann-knock::before {
+      left: -40px;
+      top: 50%;
+    }
+    .ann-gamify {
+      top: 280px;
+      right: 32px;
+    }
+    .ann-gamify::before {
+      left: -48px;
+      top: 60%;
+      width: 48px;
+      transform: rotate(-20deg);
+      transform-origin: right;
+    }
+    .ann-open {
+      bottom: 200px;
+      left: 340px;
+      background: rgba(196, 92, 38, 0.08);
+    }
+    .ann-open::before {
+      right: -30px;
+      top: 30%;
+      width: 30px;
+    }
+    .ann-unvisited {
+      bottom: 200px;
+      right: 180px;
+    }
+    .ann-unvisited::before {
+      left: -30px;
+      top: 30%;
+      width: 30px;
+    }
+
+    /* ── Time scrub ── */
+    .scrub-bar {
+      flex-shrink: 0;
+      padding: 16px 24px 20px;
+      background: var(--plaster-deep);
+      border-top: 1px solid rgba(107, 83, 68, 0.15);
+      z-index: 20;
+    }
+    .scrub-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .scrub-label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--wood-dark);
+    }
+    .scrub-value {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--ember);
+    }
+    .scrub-track-wrap {
+      position: relative;
+      height: 32px;
+      display: flex;
+      align-items: center;
+    }
+    .scrub-track {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(90deg, #2a2520 0%, var(--ember) 50%, #2a2520 100%);
+      border-radius: 3px;
+      outline: none;
+      cursor: pointer;
+    }
+    .scrub-track::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--ember);
+      border: 3px solid white;
+      box-shadow: 0 2px 8px var(--ember-glow);
+      cursor: grab;
+    }
+    .scrub-track::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--ember);
+      border: 3px solid white;
+      box-shadow: 0 2px 8px var(--ember-glow);
+      cursor: grab;
+    }
+    .scrub-hints {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--text-dim);
+    }
+    .legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 10px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.55rem;
+      color: var(--text-dim);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .legend-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+    }
+    .legend-dot.green { background: var(--led-green); }
+    .legend-dot.amber { background: var(--led-amber); }
+    .legend-dot.dim { background: var(--led-dim); }
+
+    /* Wireframe badge */
+    .wf-badge {
+      position: absolute;
+      bottom: 8px;
+      right: 12px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.5rem;
+      color: var(--text-dim);
+      opacity: 0.6;
+      z-index: 5;
+    }
+  </style>
+</head>
+<body>
+  <div class="wireframe">
+    <!-- Top bar -->
+    <header class="topbar">
+      <div class="brand">Radical 3 — <em>The Threshold</em></div>
+      <div class="topbar-meta">Wireframe · 1280 × 800</div>
+      <div class="topbar-actions">
+        <button class="icon-btn" aria-label="Settings">⚙</button>
+        <button class="icon-btn" aria-label="Share">↗</button>
+      </div>
+    </header>
+
+    <!-- Daily prompt banner -->
+    <div class="banner">
+      <div>
+        <div class="banner-text">Who's home? <span>3 of 6</span> doors are awake</div>
+        <div class="banner-sub">Tap a door to knock · Shift time to see the corridor change</div>
+      </div>
+      <button class="banner-cta">Check in</button>
+    </div>
+
+    <!-- Corridor scene -->
+    <div class="scene">
+      <div class="corridor">
+        <div class="corridor-ceiling"></div>
+        <div class="corridor-back"></div>
+        <div class="corridor-floor"></div>
+        <div class="wall-left"></div>
+        <div class="wall-right"></div>
+
+        <div class="doors-row" id="doorsRow">
+          <!-- NYC -->
+          <div class="door" data-tz="America/New_York" data-city="New York">
+            <div class="door-frame">
+              <div class="door-panel">
+                <div class="status-led asleep"></div>
+                <div class="sky-glass"><div class="sky-gradient"></div></div>
+                <div class="door-knob"></div>
+              </div>
+            </div>
+            <div class="door-sill"></div>
+            <div class="door-info">
+              <div class="door-city">New York</div>
+              <div class="door-time">--:--</div>
+            </div>
+          </div>
+
+          <!-- UTC -->
+          <div class="door" data-tz="UTC" data-city="UTC">
+            <div class="door-frame">
+              <div class="door-panel">
+                <div class="status-led asleep"></div>
+                <div class="sky-glass"><div class="sky-gradient"></div></div>
+                <div class="door-knob"></div>
+              </div>
+            </div>
+            <div class="door-sill"></div>
+            <div class="door-info">
+              <div class="door-city">UTC</div>
+              <div class="door-time">--:--</div>
+            </div>
+          </div>
+
+          <!-- Tokyo — ajar -->
+          <div class="door ajar lit" data-tz="Asia/Tokyo" data-city="Tokyo">
+            <div class="door-frame">
+              <div class="detail-peek"></div>
+              <div class="door-panel">
+                <div class="status-led awake"></div>
+                <div class="sky-glass"><div class="sky-gradient"></div></div>
+                <div class="door-knob"></div>
+              </div>
+            </div>
+            <div class="door-sill"></div>
+            <div class="door-info">
+              <div class="door-city">Tokyo</div>
+              <div class="door-time">--:--</div>
+            </div>
+          </div>
+
+          <!-- London -->
+          <div class="door" data-tz="Europe/London" data-city="London">
+            <div class="door-frame">
+              <div class="door-panel">
+                <div class="status-led asleep"></div>
+                <div class="sky-glass"><div class="sky-gradient"></div></div>
+                <div class="door-knob"></div>
+              </div>
+            </div>
+            <div class="door-sill"></div>
+            <div class="door-info">
+              <div class="door-city">London</div>
+              <div class="door-time">--:--</div>
+            </div>
+          </div>
+
+          <!-- Berlin — locked mystery -->
+          <div class="door locked" data-tz="Europe/Berlin" data-city="Berlin" data-locked="true">
+            <div class="door-frame">
+              <div class="door-panel">
+                <div class="status-led asleep"></div>
+                <div class="sky-glass"><div class="sky-gradient"></div></div>
+                <div class="lock-icon">🔒</div>
+              </div>
+            </div>
+            <div class="door-sill"></div>
+            <div class="door-info">
+              <div class="door-city">Berlin</div>
+              <div class="door-time">— — : — —</div>
+              <div class="mystery-label">Unvisited</div>
+            </div>
+          </div>
+
+          <!-- Sydney -->
+          <div class="door" data-tz="Australia/Sydney" data-city="Sydney">
+            <div class="door-frame">
+              <div class="door-panel">
+                <div class="status-led asleep"></div>
+                <div class="sky-glass"><div class="sky-gradient"></div></div>
+                <div class="door-knob"></div>
+              </div>
+            </div>
+            <div class="door-sill"></div>
+            <div class="door-info">
+              <div class="door-city">Sydney</div>
+              <div class="door-time">--:--</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Floating annotations -->
+      <div class="annotation ann-emotional">
+        🏠 Emotional metaphor<br>
+        Each door = a place you care about. The corridor is your daily orbit.
+      </div>
+      <div class="annotation ann-knock">
+        👋 Knock-on-doors UX<br>
+        Hover to knock · Click to enter detail view
+      </div>
+      <div class="annotation ann-gamify">
+        🎲 Gamification<br>
+        Mystery doors unlock as you explore new zones
+      </div>
+      <div class="annotation ann-open">Open for full detail</div>
+      <div class="annotation ann-unvisited">Unvisited zone</div>
+
+      <div class="wf-badge">NO globe · NO ring · NO orbs</div>
+    </div>
+
+    <!-- Time scrub -->
+    <div class="scrub-bar">
+      <div class="scrub-header">
+        <span class="scrub-label">Time scrub — walk the corridor through the day</span>
+        <span class="scrub-value" id="scrubDisplay">Live · now</span>
+      </div>
+      <div class="scrub-track-wrap">
+        <input type="range" class="scrub-track" id="scrubSlider" min="-720" max="720" value="0" step="15">
+      </div>
+      <div class="scrub-hints">
+        <span>−12 h</span>
+        <span>Live</span>
+        <span>+12 h</span>
+      </div>
+      <div class="legend">
+        <div class="legend-item"><span class="legend-dot green"></span> Awake / working</div>
+        <div class="legend-item"><span class="legend-dot amber"></span> Winding down</div>
+        <div class="legend-item"><span class="legend-dot dim"></span> Asleep</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const SCRUB_MINUTES_MIN = -720;
+      const SCRUB_MINUTES_MAX = 720;
+      const AWAKE_START = 7;
+      const AWAKE_END = 18;
+      const WINDING_END = 22;
+
+      const slider = document.getElementById('scrubSlider');
+      const scrubDisplay = document.getElementById('scrubDisplay');
+      const doors = document.querySelectorAll('.door:not([data-locked])');
+      const bannerCount = document.querySelector('.banner-text span');
+
+      function skyGradient(hour) {
+        if (hour >= 5 && hour < 7)  return 'linear-gradient(180deg, #ffb88a 0%, #ffd4a8 40%, #87b8d4 100%)';
+        if (hour >= 7 && hour < 11) return 'linear-gradient(180deg, #7ec8e8 0%, #b8dff0 50%, #fff8e8 100%)';
+        if (hour >= 11 && hour < 16) return 'linear-gradient(180deg, #5aadde 0%, #8ecbf0 60%, #f0e8d0 100%)';
+        if (hour >= 16 && hour < 19) return 'linear-gradient(180deg, #e8a060 0%, #f0c080 40%, #6898c0 100%)';
+        if (hour >= 19 && hour < 21) return 'linear-gradient(180deg, #c06040 0%, #804868 50%, #283858 100%)';
+        if (hour >= 21 || hour < 5)  return 'linear-gradient(180deg, #1a2040 0%, #283060 50%, #0a1020 100%)';
+        return 'linear-gradient(180deg, #5aadde, #283858)';
+      }
+
+      function statusFromHour(hour) {
+        if (hour >= AWAKE_START && hour < AWAKE_END) return 'awake';
+        if (hour >= AWAKE_END && hour < WINDING_END) return 'winding';
+        return 'asleep';
+      }
+
+      function formatTime(date, tz) {
+        return new Intl.DateTimeFormat('en-GB', {
+          timeZone: tz,
+          hour: '2-digit',
+          minute: '2-digit',
+          hour12: false,
+        }).format(date);
+      }
+
+      function localHour(date, tz) {
+        const parts = new Intl.DateTimeFormat('en-GB', {
+          timeZone: tz,
+          hour: 'numeric',
+          hour12: false,
+        }).formatToParts(date);
+        return parseInt(parts.find(p => p.type === 'hour').value, 10);
+      }
+
+      function updateDoors(offsetMinutes) {
+        const base = Date.now() + offsetMinutes * 60_000;
+        const now = new Date(base);
+        let awakeCount = 0;
+
+        doors.forEach(door => {
+          const tz = door.dataset.tz;
+          const hour = localHour(now, tz);
+          const status = statusFromHour(hour);
+          const led = door.querySelector('.status-led');
+          const gradient = door.querySelector('.sky-gradient');
+          const timeEl = door.querySelector('.door-time');
+
+          led.className = 'status-led ' + (status === 'awake' ? 'awake' : status === 'winding' ? 'winding' : 'asleep');
+          gradient.style.background = skyGradient(hour);
+          timeEl.textContent = formatTime(now, tz);
+
+          door.classList.remove('lit', 'dimmed');
+          if (status === 'asleep') {
+            door.classList.add('dimmed');
+          } else {
+            door.classList.add('lit');
+            awakeCount++;
+          }
+        });
+
+        const lockedDoor = document.querySelector('.door[data-locked]');
+        if (lockedDoor) {
+          lockedDoor.classList.add('dimmed');
+        }
+
+        bannerCount.textContent = awakeCount + ' of 6';
+
+        if (offsetMinutes === 0) {
+          scrubDisplay.textContent = 'Live · now';
+        } else {
+          const sign = offsetMinutes > 0 ? '+' : '';
+          const h = Math.floor(Math.abs(offsetMinutes) / 60);
+          const m = Math.abs(offsetMinutes) % 60;
+          scrubDisplay.textContent = sign + (offsetMinutes < 0 ? '-' : '') + h + 'h ' + (m ? m + 'm' : '') + ' from now';
+        }
+      }
+
+      slider.addEventListener('input', () => {
+        updateDoors(parseInt(slider.value, 10));
+      });
+
+      updateDoors(0);
+    })();
+  </script>
+</body>
+</html>

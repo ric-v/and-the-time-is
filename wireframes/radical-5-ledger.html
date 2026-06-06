@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Radical 5 — The Ledger</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --white: #ffffff;
+      --gray-50: #f9fafb;
+      --gray-100: #f3f4f6;
+      --gray-200: #e5e7eb;
+      --gray-300: #d1d5db;
+      --gray-400: #9ca3af;
+      --gray-500: #6b7280;
+      --gray-600: #4b5563;
+      --gray-700: #374151;
+      --gray-900: #111827;
+      --green-50: #ecfdf5;
+      --green-500: #10b981;
+      --green-600: #059669;
+      --blue-50: #eff6ff;
+      --blue-500: #3b82f6;
+      --amber-50: #fffbeb;
+      --amber-500: #f59e0b;
+      --amber-600: #d97706;
+      --radius: 8px;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.06);
+    }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--gray-100);
+      color: var(--gray-900);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      min-height: 800px;
+      height: 100vh;
+      max-height: 800px;
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+      border-left: 1px solid var(--gray-200);
+      border-right: 1px solid var(--gray-200);
+      position: relative;
+    }
+
+    /* Floating annotations */
+    .option-label {
+      position: fixed;
+      top: 16px;
+      left: 16px;
+      background: rgba(17, 24, 39, 0.92);
+      color: var(--gray-100);
+      padding: 12px 16px;
+      border-radius: var(--radius);
+      font-size: 0.7rem;
+      max-width: 260px;
+      z-index: 100;
+      line-height: 1.55;
+      box-shadow: var(--shadow-md);
+    }
+    .option-label strong {
+      font-size: 0.82rem;
+      font-weight: 600;
+      display: block;
+      margin-bottom: 6px;
+      color: var(--white);
+    }
+    .option-label ul { margin-left: 14px; }
+    .option-label li { margin-bottom: 2px; }
+
+    .pin {
+      position: absolute;
+      background: var(--gray-900);
+      color: var(--white);
+      font-size: 0.58rem;
+      font-weight: 500;
+      padding: 4px 10px;
+      border-radius: 4px;
+      white-space: nowrap;
+      z-index: 20;
+      box-shadow: var(--shadow-sm);
+    }
+    .pin::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: var(--gray-900);
+    }
+    .pin-hero { top: 118px; left: 50%; transform: translateX(-50%); }
+    .pin-hero::after { left: 50%; }
+    .pin-clocks { bottom: 52px; right: 24%; }
+
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      border-bottom: 1px solid var(--gray-200);
+      flex-shrink: 0;
+    }
+    .brand {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      letter-spacing: -0.01em;
+    }
+    .brand span { color: var(--gray-400); font-weight: 400; }
+    .topbar-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .btn {
+      padding: 6px 14px;
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+      color: var(--gray-700);
+      font-family: inherit;
+      font-size: 0.72rem;
+      font-weight: 500;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .btn:hover { background: var(--gray-50); border-color: var(--gray-300); }
+    .btn-primary {
+      background: var(--gray-900);
+      color: var(--white);
+      border-color: var(--gray-900);
+    }
+    .btn-primary:hover { background: var(--gray-700); }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border: 1px solid var(--gray-200);
+      background: var(--white);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      color: var(--gray-500);
+      cursor: pointer;
+    }
+    .icon-btn:hover { background: var(--gray-50); }
+
+    /* Gamification pills */
+    .gamification {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      font-weight: 600;
+    }
+    .badge-best {
+      background: var(--green-50);
+      color: var(--green-600);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+    .badge-streak {
+      background: var(--amber-50);
+      color: var(--amber-600);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+    }
+
+    /* Main content */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 32px 48px 16px;
+      position: relative;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .hero h1 {
+      font-size: 1.75rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      color: var(--gray-900);
+      margin-bottom: 6px;
+    }
+    .hero p {
+      font-size: 0.85rem;
+      color: var(--gray-500);
+    }
+
+    /* Participant chips */
+    .participants {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 32px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 14px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--gray-700);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .chip.selected {
+      background: var(--blue-50);
+      border-color: var(--blue-500);
+      color: var(--gray-900);
+    }
+    .chip .check {
+      width: 16px;
+      height: 16px;
+      background: var(--blue-500);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.55rem;
+      font-weight: 700;
+    }
+    .chip-add {
+      border-style: dashed;
+      color: var(--gray-500);
+      background: var(--gray-50);
+    }
+    .chip-add:hover { border-color: var(--gray-400); color: var(--gray-700); }
+
+    /* Results */
+    .results-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+    }
+    .results-header h2 {
+      font-size: 0.72rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gray-400);
+    }
+    .results-count {
+      font-size: 0.72rem;
+      color: var(--gray-500);
+    }
+
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .result-card {
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius);
+      background: var(--white);
+      overflow: hidden;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+    .result-card.expanded {
+      border-color: var(--blue-500);
+      box-shadow: var(--shadow-md);
+    }
+    .result-card.rank-1 {
+      border-color: var(--green-500);
+    }
+    .result-card.rank-1.expanded {
+      border-color: var(--green-500);
+    }
+
+    .result-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 18px;
+      cursor: pointer;
+    }
+    .result-row:hover { background: var(--gray-50); }
+
+    .rank {
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: var(--gray-400);
+      min-width: 28px;
+    }
+    .result-card.rank-1 .rank { color: var(--green-600); }
+
+    .result-info { flex: 1; min-width: 0; }
+
+    .result-title {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--gray-900);
+      margin-bottom: 6px;
+    }
+    .result-meta {
+      font-size: 0.72rem;
+      color: var(--gray-500);
+    }
+
+    .duration-bar-wrap {
+      width: 140px;
+      flex-shrink: 0;
+    }
+    .duration-bar-label {
+      font-size: 0.62rem;
+      color: var(--gray-400);
+      margin-bottom: 4px;
+      text-align: right;
+    }
+    .duration-bar {
+      height: 6px;
+      background: var(--gray-100);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .duration-bar-fill {
+      height: 100%;
+      border-radius: 3px;
+      background: var(--gray-300);
+    }
+    .result-card.rank-1 .duration-bar-fill { background: var(--green-500); }
+    .result-card:not(.rank-1) .duration-bar-fill { background: var(--blue-500); opacity: 0.6; }
+
+    .expand-icon {
+      width: 24px;
+      height: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--gray-400);
+      font-size: 0.7rem;
+      transition: transform 0.2s;
+    }
+    .result-card.expanded .expand-icon { transform: rotate(180deg); }
+
+    /* Timeline proof (Conductor-style) */
+    .timeline-proof {
+      display: none;
+      padding: 0 18px 16px;
+      border-top: 1px solid var(--gray-100);
+      background: var(--gray-50);
+    }
+    .result-card.expanded .timeline-proof { display: block; }
+
+    .timeline-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 0 10px;
+    }
+    .timeline-header span {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--gray-400);
+    }
+    .timeline-window {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--green-600);
+      background: var(--green-50);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+
+    .timeline-tracks {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .track {
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      align-items: center;
+      gap: 10px;
+    }
+    .track-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      color: var(--gray-600);
+      text-align: right;
+    }
+    .track-bar {
+      position: relative;
+      height: 22px;
+      background: var(--white);
+      border: 1px solid var(--gray-200);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .track-hours {
+      position: absolute;
+      inset: 0;
+      display: flex;
+    }
+    .hour-block {
+      flex: 1;
+      border-right: 1px solid var(--gray-100);
+      font-size: 0.45rem;
+      color: var(--gray-300);
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 1px;
+    }
+    .hour-block:last-child { border-right: none; }
+    .work-window {
+      position: absolute;
+      top: 2px;
+      bottom: 2px;
+      background: rgba(16, 185, 129, 0.2);
+      border: 1px solid rgba(16, 185, 129, 0.5);
+      border-radius: 2px;
+    }
+    .overlap-window {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      background: var(--green-500);
+      opacity: 0.35;
+      border-radius: 2px;
+    }
+    .track-bar .overlap-window { top: 1px; bottom: 1px; opacity: 0.5; }
+
+    .timeline-legend {
+      display: flex;
+      gap: 16px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid var(--gray-200);
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.62rem;
+      color: var(--gray-500);
+    }
+    .legend-swatch {
+      width: 12px;
+      height: 8px;
+      border-radius: 2px;
+    }
+    .legend-swatch.work { background: rgba(16, 185, 129, 0.25); border: 1px solid rgba(16, 185, 129, 0.5); }
+    .legend-swatch.overlap { background: var(--green-500); opacity: 0.5; }
+
+    /* Clock strip */
+    .clock-strip {
+      border-top: 1px solid var(--gray-200);
+      background: var(--gray-50);
+      flex-shrink: 0;
+      transition: max-height 0.25s ease;
+      overflow: hidden;
+    }
+    .clock-strip.collapsed { max-height: 36px; }
+    .clock-strip:not(.collapsed) { max-height: 120px; }
+
+    .clock-strip-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 24px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .clock-strip-header:hover { background: var(--gray-100); }
+    .clock-strip-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--gray-400);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .clock-strip-label .secondary-tag {
+      font-weight: 400;
+      text-transform: none;
+      letter-spacing: 0;
+      color: var(--gray-400);
+      font-size: 0.6rem;
+    }
+    .toggle-chevron {
+      font-size: 0.65rem;
+      color: var(--gray-400);
+      transition: transform 0.2s;
+    }
+    .clock-strip.collapsed .toggle-chevron { transform: rotate(180deg); }
+
+    .clocks-row {
+      display: flex;
+      gap: 0;
+      padding: 0 24px 12px;
+      overflow-x: auto;
+    }
+    .clock-strip.collapsed .clocks-row { display: none; }
+
+    .clock-item {
+      flex: 1;
+      min-width: 120px;
+      padding: 8px 16px;
+      border-right: 1px solid var(--gray-200);
+      text-align: center;
+    }
+    .clock-item:last-child { border-right: none; }
+    .clock-city {
+      font-size: 0.62rem;
+      font-weight: 500;
+      color: var(--gray-400);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 2px;
+    }
+    .clock-time {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--gray-700);
+      font-variant-numeric: tabular-nums;
+      letter-spacing: -0.02em;
+    }
+    .clock-date {
+      font-size: 0.58rem;
+      color: var(--gray-400);
+      margin-top: 1px;
+    }
+  </style>
+</head>
+<body>
+  <div class="option-label" role="note" aria-label="Wireframe annotations">
+    <strong>Radical 5 — The Ledger</strong>
+    <ul>
+      <li>Outcome-first product: find meeting windows, not clocks</li>
+      <li>Clocks are proof, not hero — collapsed strip at bottom</li>
+      <li>No globe, ring, or orbs — schedule-first inverted UX</li>
+      <li>Calendly meets world-clock productivity aesthetic</li>
+    </ul>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">The Ledger <span>· by And The Time Is</span></div>
+      <div class="gamification">
+        <span class="badge badge-best">★ Best window today</span>
+        <span class="badge badge-streak">🔥 3-day streak</span>
+      </div>
+      <nav class="topbar-actions" aria-label="Actions">
+        <button class="btn btn-primary" type="button">Share results</button>
+        <button class="icon-btn" type="button" aria-label="Settings">⚙</button>
+      </nav>
+    </header>
+
+    <main class="main">
+      <div class="pin pin-hero">Outcome-first — scheduling is the product</div>
+
+      <section class="hero" aria-labelledby="hero-heading">
+        <h1 id="hero-heading">Find a window</h1>
+        <p>Ranked overlap windows across your team's timezones</p>
+      </section>
+
+      <div class="participants" role="group" aria-label="Participants">
+        <button class="chip selected" type="button" aria-pressed="true">
+          <span class="check">✓</span> NYC
+        </button>
+        <button class="chip selected" type="button" aria-pressed="true">
+          <span class="check">✓</span> London
+        </button>
+        <button class="chip selected" type="button" aria-pressed="true">
+          <span class="check">✓</span> Berlin
+        </button>
+        <button class="chip selected" type="button" aria-pressed="true">
+          <span class="check">✓</span> Tokyo
+        </button>
+        <button class="chip chip-add" type="button">+ add participant</button>
+      </div>
+
+      <section class="results" aria-labelledby="results-heading">
+        <div class="results-header">
+          <h2 id="results-heading">Ranked windows</h2>
+          <span class="results-count">4 participants · 6 results</span>
+        </div>
+
+        <div class="results-list">
+          <!-- #1 expanded -->
+          <article class="result-card rank-1 expanded" id="result-1">
+            <div class="result-row" role="button" tabindex="0" aria-expanded="true" aria-controls="timeline-1">
+              <span class="rank">#1</span>
+              <div class="result-info">
+                <div class="result-title">4h window · Today 14:00–18:00 UTC</div>
+                <div class="result-meta">All 4 in work hours · Score 94</div>
+              </div>
+              <div class="duration-bar-wrap">
+                <div class="duration-bar-label">4h</div>
+                <div class="duration-bar"><div class="duration-bar-fill" style="width: 100%"></div></div>
+              </div>
+              <span class="expand-icon" aria-hidden="true">▼</span>
+            </div>
+            <div class="timeline-proof" id="timeline-1">
+              <div class="timeline-header">
+                <span>Timeline proof</span>
+                <span class="timeline-window">14:00 – 18:00 UTC overlap</span>
+              </div>
+              <div class="timeline-tracks">
+                <div class="track">
+                  <span class="track-label">NYC</span>
+                  <div class="track-bar">
+                    <div class="track-hours">
+                      <div class="hour-block">6</div>
+                      <div class="hour-block">7</div>
+                      <div class="hour-block">8</div>
+                      <div class="hour-block">9</div>
+                      <div class="hour-block">10</div>
+                      <div class="hour-block">11</div>
+                      <div class="hour-block">12</div>
+                      <div class="hour-block">13</div>
+                    </div>
+                    <div class="work-window" style="left: 25%; width: 50%"></div>
+                    <div class="overlap-window" style="left: 25%; width: 50%"></div>
+                  </div>
+                </div>
+                <div class="track">
+                  <span class="track-label">London</span>
+                  <div class="track-bar">
+                    <div class="track-hours">
+                      <div class="hour-block">11</div>
+                      <div class="hour-block">12</div>
+                      <div class="hour-block">13</div>
+                      <div class="hour-block">14</div>
+                      <div class="hour-block">15</div>
+                      <div class="hour-block">16</div>
+                      <div class="hour-block">17</div>
+                      <div class="hour-block">18</div>
+                    </div>
+                    <div class="work-window" style="left: 12%; width: 62%"></div>
+                    <div class="overlap-window" style="left: 12%; width: 62%"></div>
+                  </div>
+                </div>
+                <div class="track">
+                  <span class="track-label">Berlin</span>
+                  <div class="track-bar">
+                    <div class="track-hours">
+                      <div class="hour-block">12</div>
+                      <div class="hour-block">13</div>
+                      <div class="hour-block">14</div>
+                      <div class="hour-block">15</div>
+                      <div class="hour-block">16</div>
+                      <div class="hour-block">17</div>
+                      <div class="hour-block">18</div>
+                      <div class="hour-block">19</div>
+                    </div>
+                    <div class="work-window" style="left: 8%; width: 58%"></div>
+                    <div class="overlap-window" style="left: 8%; width: 58%"></div>
+                  </div>
+                </div>
+                <div class="track">
+                  <span class="track-label">Tokyo</span>
+                  <div class="track-bar">
+                    <div class="track-hours">
+                      <div class="hour-block">19</div>
+                      <div class="hour-block">20</div>
+                      <div class="hour-block">21</div>
+                      <div class="hour-block">22</div>
+                      <div class="hour-block">23</div>
+                      <div class="hour-block">0</div>
+                      <div class="hour-block">1</div>
+                      <div class="hour-block">2</div>
+                    </div>
+                    <div class="work-window" style="left: 0%; width: 37%"></div>
+                    <div class="overlap-window" style="left: 0%; width: 12%"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="timeline-legend">
+                <span class="legend-item"><span class="legend-swatch work"></span> Work hours</span>
+                <span class="legend-item"><span class="legend-swatch overlap"></span> Overlap window</span>
+              </div>
+            </div>
+          </article>
+
+          <!-- #2 -->
+          <article class="result-card" id="result-2">
+            <div class="result-row" role="button" tabindex="0" aria-expanded="false">
+              <span class="rank">#2</span>
+              <div class="result-info">
+                <div class="result-title">2h window · Tomorrow 09:00–11:00 UTC</div>
+                <div class="result-meta">3 of 4 in work hours · Score 71</div>
+              </div>
+              <div class="duration-bar-wrap">
+                <div class="duration-bar-label">2h</div>
+                <div class="duration-bar"><div class="duration-bar-fill" style="width: 50%"></div></div>
+              </div>
+              <span class="expand-icon" aria-hidden="true">▼</span>
+            </div>
+            <div class="timeline-proof">
+              <div class="timeline-header">
+                <span>Timeline proof</span>
+                <span class="timeline-window">09:00 – 11:00 UTC overlap</span>
+              </div>
+              <div class="timeline-tracks">
+                <div class="track"><span class="track-label">NYC</span><div class="track-bar"><div class="overlap-window" style="left: 20%; width: 25%"></div></div></div>
+                <div class="track"><span class="track-label">London</span><div class="track-bar"><div class="overlap-window" style="left: 35%; width: 25%"></div></div></div>
+                <div class="track"><span class="track-label">Tokyo</span><div class="track-bar"><div class="overlap-window" style="left: 60%; width: 25%"></div></div></div>
+              </div>
+            </div>
+          </article>
+
+          <!-- #3 -->
+          <article class="result-card" id="result-3">
+            <div class="result-row" role="button" tabindex="0" aria-expanded="false">
+              <span class="rank">#3</span>
+              <div class="result-info">
+                <div class="result-title">1.5h window · Mon 15:30–17:00 UTC</div>
+                <div class="result-meta">3 of 4 in work hours · Score 58</div>
+              </div>
+              <div class="duration-bar-wrap">
+                <div class="duration-bar-label">1.5h</div>
+                <div class="duration-bar"><div class="duration-bar-fill" style="width: 37%"></div></div>
+              </div>
+              <span class="expand-icon" aria-hidden="true">▼</span>
+            </div>
+            <div class="timeline-proof"></div>
+          </article>
+        </div>
+      </section>
+    </main>
+
+    <aside class="clock-strip collapsed" id="clock-strip" aria-label="Reference clocks">
+      <div class="pin pin-clocks">Clocks are proof, not hero</div>
+      <div class="clock-strip-header" id="clock-toggle" role="button" tabindex="0" aria-expanded="false">
+        <span class="clock-strip-label">
+          Reference clocks
+          <span class="secondary-tag">— secondary, collapsible</span>
+        </span>
+        <span class="toggle-chevron" aria-hidden="true">▼</span>
+      </div>
+      <div class="clocks-row">
+        <div class="clock-item">
+          <div class="clock-city">NYC</div>
+          <div class="clock-time">10:24</div>
+          <div class="clock-date">Sat Jun 6</div>
+        </div>
+        <div class="clock-item">
+          <div class="clock-city">London</div>
+          <div class="clock-time">15:24</div>
+          <div class="clock-date">Sat Jun 6</div>
+        </div>
+        <div class="clock-item">
+          <div class="clock-city">Berlin</div>
+          <div class="clock-time">16:24</div>
+          <div class="clock-date">Sat Jun 6</div>
+        </div>
+        <div class="clock-item">
+          <div class="clock-city">Tokyo</div>
+          <div class="clock-time">23:24</div>
+          <div class="clock-date">Sat Jun 6</div>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <script>
+    (function () {
+      var strip = document.getElementById('clock-strip');
+      var toggle = document.getElementById('clock-toggle');
+      toggle.addEventListener('click', function () {
+        var collapsed = strip.classList.toggle('collapsed');
+        toggle.setAttribute('aria-expanded', String(!collapsed));
+      });
+      toggle.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggle.click();
+        }
+      });
+
+      document.querySelectorAll('.result-row').forEach(function (row) {
+        row.addEventListener('click', function () {
+          var card = row.closest('.result-card');
+          var expanded = card.classList.toggle('expanded');
+          row.setAttribute('aria-expanded', String(expanded));
+        });
+        row.addEventListener('keydown', function (e) {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            row.click();
+          }
+        });
+      });
+
+      document.querySelectorAll('.chip:not(.chip-add)').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          var selected = chip.classList.toggle('selected');
+          chip.setAttribute('aria-pressed', String(selected));
+          var check = chip.querySelector('.check');
+          if (selected && !check) {
+            check = document.createElement('span');
+            check.className = 'check';
+            check.textContent = '✓';
+            chip.insertBefore(check, chip.firstChild);
+          } else if (!selected && check) {
+            check.remove();
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=1280">
+  <title>Radical 1 — The Conductor | And the time is</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #1a1a1e;
+      --bg-elevated: #222228;
+      --bg-track: #2a2a32;
+      --border: #3a3a44;
+      --text: #e8e8ec;
+      --text-muted: #9898a4;
+      --accent: #4ade80;
+      --accent-dim: rgba(74, 222, 128, 0.18);
+      --accent-glow: rgba(74, 222, 128, 0.35);
+      --night: #141418;
+      --day: #4a4a58;
+      --work: rgba(74, 222, 128, 0.42);
+      --playhead: #f472b6;
+      --badge-bg: #2d2d36;
+      --font: 'JetBrains Mono', ui-monospace, monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { font-size: 14px; }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: auto;
+    }
+
+    /* ── Top bar ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      background: var(--bg-elevated);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .brand {
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: -0.02em;
+    }
+
+    .brand span { color: var(--text-muted); font-weight: 400; }
+
+    .top-bar__center {
+      color: var(--text-muted);
+      font-size: 0.85rem;
+    }
+
+    .top-bar__actions {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn {
+      font-family: var(--font);
+      font-size: 0.75rem;
+      padding: 0.4rem 0.75rem;
+      border: 1px solid var(--border);
+      background: var(--bg-track);
+      color: var(--text);
+      border-radius: 4px;
+      cursor: default;
+    }
+
+    .btn:hover { border-color: var(--text-muted); }
+
+    .btn--ghost {
+      background: transparent;
+    }
+
+    /* ── Concept label ── */
+    .concept-label {
+      padding: 0.5rem 1.25rem;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      background: var(--accent-dim);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    /* ── Main mixer area ── */
+    .mixer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 1rem 1.25rem 0;
+      position: relative;
+      min-height: 520px;
+    }
+
+    .timeline-ruler {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      margin-bottom: 0.35rem;
+      padding-right: 0;
+    }
+
+    .timeline-ruler__spacer { }
+
+    .timeline-ruler__hours {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      padding: 0 0 0.25rem;
+    }
+
+    .tracks {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      position: relative;
+    }
+
+    /* Overlap band + playhead span full track height */
+    .tracks-overlay {
+      position: absolute;
+      top: 0;
+      left: 140px;
+      right: 0;
+      bottom: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .overlap-band {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 54.17%;  /* 13:00 */
+      width: 16.67%; /* 4 hours = 4/24 */
+      background: var(--accent-dim);
+      border-left: 2px solid var(--accent);
+      border-right: 2px solid var(--accent);
+    }
+
+    .overlap-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: var(--bg-elevated);
+      border: 1px solid var(--accent);
+      color: var(--accent);
+      font-size: 0.65rem;
+      padding: 0.35rem 0.6rem;
+      border-radius: 4px;
+      white-space: nowrap;
+      font-weight: 500;
+    }
+
+    .playhead {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 58.33%; /* 14:00 */
+      width: 2px;
+      background: var(--playhead);
+      box-shadow: 0 0 8px var(--playhead);
+      z-index: 3;
+    }
+
+    .playhead::before {
+      content: '▶';
+      position: absolute;
+      top: -2px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.55rem;
+      color: var(--playhead);
+    }
+
+    .playhead-tag {
+      position: absolute;
+      top: -1.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.6rem;
+      color: var(--playhead);
+      background: var(--bg-elevated);
+      padding: 0.15rem 0.35rem;
+      border-radius: 3px;
+      white-space: nowrap;
+    }
+
+    /* Single track row */
+    .track {
+      display: grid;
+      grid-template-columns: 140px 1fr;
+      min-height: 56px;
+      align-items: stretch;
+    }
+
+    .track__label {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding: 0.5rem 0.75rem 0.5rem 0;
+      border-right: 1px solid var(--border);
+    }
+
+    .track__name {
+      font-size: 0.8rem;
+      font-weight: 500;
+    }
+
+    .track__name--local::after {
+      content: ' · local';
+      color: var(--accent);
+      font-weight: 400;
+      font-size: 0.65rem;
+    }
+
+    .track__time {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 0.15rem;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .track__offset {
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      margin-top: 0.1rem;
+    }
+
+    .track__lane {
+      position: relative;
+      background: var(--bg-track);
+      border-radius: 2px;
+      overflow: hidden;
+      min-height: 56px;
+    }
+
+    /* 24h day/night gradient (local midnight → midnight) */
+    .track__dayband {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(
+        to right,
+        var(--night) 0%,
+        var(--night) 20%,
+        var(--day) 30%,
+        var(--day) 70%,
+        var(--night) 80%,
+        var(--night) 100%
+      );
+    }
+
+    /* Work hours overlay — position varies per zone (9–17 local) */
+    .track__work {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      background: var(--work);
+      border-top: 2px solid var(--accent);
+      border-bottom: 2px solid rgba(74, 222, 128, 0.25);
+    }
+
+    /* Work band positions (% of 24h local): start = hour/24*100, width = 8/24*100 */
+    .track__work--nyc    { left: 37.5%;  width: 33.33%; } /* 09–17 EDT, UTC-4 → maps on shared UTC ruler differently; lane is LOCAL */
+    .track__work--utc    { left: 37.5%;  width: 33.33%; }
+    .track__work--tokyo  { left: 37.5%;  width: 33.33%; }
+    .track__work--london { left: 37.5%;  width: 33.33%; }
+    .track__work--berlin { left: 37.5%;  width: 33.33%; }
+    .track__work--sydney { left: 37.5%;  width: 33.33%; }
+
+    /* Highlight tracks in overlap group */
+    .track--overlap .track__lane {
+      outline: 1px solid rgba(74, 222, 128, 0.3);
+    }
+
+    .track__tickmarks {
+      position: absolute;
+      inset: 0;
+      background: repeating-linear-gradient(
+        to right,
+        transparent,
+        transparent calc(100% / 24 - 1px),
+        rgba(255,255,255,0.04) calc(100% / 24 - 1px),
+        rgba(255,255,255,0.04) calc(100% / 24)
+      );
+      pointer-events: none;
+    }
+
+    /* ── Floating annotation badges ── */
+    .annotations {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .badge {
+      position: absolute;
+      max-width: 200px;
+      background: var(--badge-bg);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      padding: 0.5rem 0.65rem;
+      border-radius: 4px;
+      font-size: 0.65rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    }
+
+    .badge strong {
+      display: block;
+      color: var(--text);
+      font-size: 0.7rem;
+      margin-bottom: 0.2rem;
+    }
+
+    .badge--timeline { top: 0.5rem; right: 1rem; }
+    .badge--playhead { top: 38%; right: 2rem; border-left-color: var(--playhead); }
+    .badge--snap { bottom: 28%; left: calc(140px + 52%); border-left-color: var(--accent); }
+
+    /* ── Bottom transport ── */
+    .transport {
+      flex-shrink: 0;
+      padding: 1rem 1.25rem 1.25rem;
+      background: var(--bg-elevated);
+      border-top: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .scrub {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.35rem;
+    }
+
+    .scrub__label {
+      font-size: 0.65rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .scrub__track {
+      position: relative;
+      height: 28px;
+      background: var(--bg-track);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .scrub__fill {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 58.33%;
+      background: linear-gradient(to right, var(--accent-dim), transparent);
+    }
+
+    .scrub__thumb {
+      position: absolute;
+      left: 58.33%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 14px;
+      height: 22px;
+      background: var(--playhead);
+      border-radius: 3px;
+      box-shadow: 0 0 6px var(--playhead);
+    }
+
+    .scrub__times {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+    }
+
+    .scrub__current {
+      color: var(--playhead);
+      font-weight: 600;
+    }
+
+    .cta {
+      font-family: var(--font);
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 0.75rem 1.25rem;
+      background: var(--accent);
+      color: #0a0a0c;
+      border: none;
+      border-radius: 6px;
+      cursor: default;
+      white-space: nowrap;
+      letter-spacing: -0.01em;
+    }
+
+    .cta:hover { filter: brightness(1.08); }
+
+    /* Wireframe frame hint */
+    .frame-hint {
+      text-align: center;
+      font-size: 0.6rem;
+      color: var(--text-muted);
+      padding: 0.35rem;
+      opacity: 0.6;
+    }
+
+    @media (max-width: 900px) {
+      .badge { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="top-bar" role="banner">
+    <div class="brand" aria-label="Application name">And the time is <span>/ Conductor</span></div>
+    <div class="top-bar__center" aria-live="polite">
+      <time datetime="2026-06-06">Fri 6 Jun 2026</time>
+    </div>
+    <nav class="top-bar__actions" aria-label="Primary actions">
+      <button type="button" class="btn" aria-label="Add timezone zone">+ Add zone</button>
+      <button type="button" class="btn btn--ghost" aria-label="Open settings">⚙ Settings</button>
+    </nav>
+  </header>
+
+  <p class="concept-label" role="doc-subtitle">Radical 1 — The Conductor</p>
+
+  <main class="mixer" role="main" aria-label="Multi-track timezone mixer">
+
+    <!-- Hour ruler (UTC reference) -->
+    <div class="timeline-ruler" aria-hidden="true">
+      <div class="timeline-ruler__spacer"></div>
+      <div class="timeline-ruler__hours">
+        <span>00</span><span>02</span><span>04</span><span>06</span><span>08</span><span>10</span>
+        <span>12</span><span>14</span><span>16</span><span>18</span><span>20</span><span>22</span><span>24</span>
+      </div>
+    </div>
+
+    <section class="tracks" aria-label="Timezone tracks">
+
+      <!-- Overlap + playhead overlay -->
+      <div class="tracks-overlay" aria-hidden="true">
+        <div class="overlap-band" title="NYC + London + Berlin work overlap">
+          <span class="overlap-label">4h overlap — snap here</span>
+        </div>
+        <div class="playhead" role="presentation">
+          <span class="playhead-tag">14:00 UTC</span>
+        </div>
+      </div>
+
+      <!-- NYC (local) -->
+      <article class="track track--overlap" aria-label="New York track">
+        <div class="track__label">
+          <span class="track__name track__name--local">NYC</span>
+          <span class="track__time">10:00</span>
+          <span class="track__offset">UTC−4 · EDT</span>
+        </div>
+        <div class="track__lane">
+          <div class="track__dayband"></div>
+          <div class="track__work track__work--nyc" title="Work hours 09:00–17:00 local"></div>
+          <div class="track__tickmarks"></div>
+        </div>
+      </article>
+
+      <!-- UTC -->
+      <article class="track" aria-label="UTC track">
+        <div class="track__label">
+          <span class="track__name">UTC</span>
+          <span class="track__time">14:00</span>
+          <span class="track__offset">+00:00</span>
+        </div>
+        <div class="track__lane">
+          <div class="track__dayband"></div>
+          <div class="track__work track__work--utc" title="Work hours 09:00–17:00"></div>
+          <div class="track__tickmarks"></div>
+        </div>
+      </article>
+
+      <!-- Tokyo -->
+      <article class="track" aria-label="Tokyo track">
+        <div class="track__label">
+          <span class="track__name">Tokyo</span>
+          <span class="track__time">23:00</span>
+          <span class="track__offset">UTC+9 · JST</span>
+        </div>
+        <div class="track__lane">
+          <div class="track__dayband"></div>
+          <div class="track__work track__work--tokyo" title="Work hours 09:00–17:00 local"></div>
+          <div class="track__tickmarks"></div>
+        </div>
+      </article>
+
+      <!-- London -->
+      <article class="track track--overlap" aria-label="London track">
+        <div class="track__label">
+          <span class="track__name">London</span>
+          <span class="track__time">15:00</span>
+          <span class="track__offset">UTC+1 · BST</span>
+        </div>
+        <div class="track__lane">
+          <div class="track__dayband"></div>
+          <div class="track__work track__work--london" title="Work hours 09:00–17:00 local"></div>
+          <div class="track__tickmarks"></div>
+        </div>
+      </article>
+
+      <!-- Berlin -->
+      <article class="track track--overlap" aria-label="Berlin track">
+        <div class="track__label">
+          <span class="track__name">Berlin</span>
+          <span class="track__time">16:00</span>
+          <span class="track__offset">UTC+2 · CEST</span>
+        </div>
+        <div class="track__lane">
+          <div class="track__dayband"></div>
+          <div class="track__work track__work--berlin" title="Work hours 09:00–17:00 local"></div>
+          <div class="track__tickmarks"></div>
+        </div>
+      </article>
+
+      <!-- Sydney -->
+      <article class="track" aria-label="Sydney track">
+        <div class="track__label">
+          <span class="track__name">Sydney</span>
+          <span class="track__time">00:00</span>
+          <span class="track__offset">UTC+10 · AEST · +1d</span>
+        </div>
+        <div class="track__lane">
+          <div class="track__dayband"></div>
+          <div class="track__work track__work--sydney" title="Work hours 09:00–17:00 local"></div>
+          <div class="track__tickmarks"></div>
+        </div>
+      </article>
+
+    </section>
+
+    <!-- Floating wireframe annotations -->
+    <aside class="annotations" aria-label="Wireframe annotations">
+      <div class="badge badge--timeline">
+        <strong>Timeline-first UI</strong>
+        Each zone is a track lane — scan overlap across cities without a globe or ring.
+      </div>
+      <div class="badge badge--playhead">
+        <strong>Playhead scrub</strong>
+        Drag the playhead to audition any moment; all tracks update in sync.
+      </div>
+      <div class="badge badge--snap">
+        <strong>Overlap snap</strong>
+        Green bands gamify finding shared work windows — snap playhead to schedule.
+      </div>
+    </aside>
+
+  </main>
+
+  <footer class="transport" role="contentinfo" aria-label="Transport controls">
+    <div class="scrub" role="group" aria-label="Playhead scrub slider">
+      <span class="scrub__label">Playhead position</span>
+      <div class="scrub__track" role="slider" aria-valuemin="0" aria-valuemax="24" aria-valuenow="14" aria-valuetext="14:00 UTC">
+        <div class="scrub__fill"></div>
+        <div class="scrub__thumb"></div>
+      </div>
+      <div class="scrub__times">
+        <span>00:00</span>
+        <span class="scrub__current">14:00 UTC</span>
+        <span>24:00</span>
+      </div>
+    </div>
+    <button type="button" class="cta" aria-label="Mix a meeting from current playhead position">Mix a meeting</button>
+  </footer>
+
+  <p class="frame-hint" aria-hidden="true">Wireframe · 1280 × 800 · The Conductor</p>
+
+</body>
+</html>

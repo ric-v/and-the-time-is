@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Option A — Observatory Evolved</title>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --paper: #f2ece0;
+      --paper-light: #f8f4eb;
+      --ink: #1a1714;
+      --ink-muted: #7a7772;
+      --ember: #d4502c;
+      --ember-soft: rgba(212, 80, 44, 0.25);
+      --glass: rgba(255, 252, 247, 0.72);
+    }
+    body {
+      font-family: 'IBM Plex Mono', monospace;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      overflow: hidden;
+    }
+    .app {
+      max-width: 1280px;
+      margin: 0 auto;
+      min-height: 800px;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: var(--paper);
+    }
+    .app::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 1;
+    }
+    /* Top bar */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 24px;
+      background: linear-gradient(180deg, var(--paper-light) 0%, var(--paper) 100%);
+      border-bottom: 1px solid rgba(26, 23, 20, 0.08);
+      box-shadow: 0 1px 0 rgba(0,0,0,0.05);
+      z-index: 10;
+      position: relative;
+    }
+    .brand {
+      font-family: 'Fraunces', serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+    .brand span { color: var(--ember); }
+    .topbar-center { font-size: 0.75rem; color: var(--ink-muted); }
+    .topbar-actions { display: flex; gap: 8px; align-items: center; }
+    .btn {
+      padding: 6px 12px;
+      border: 1px solid rgba(26,23,20,0.12);
+      background: var(--glass);
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-family: inherit;
+      cursor: default;
+    }
+    .btn.active { background: var(--ink); color: var(--paper); }
+    .icon-btn {
+      width: 32px; height: 32px;
+      border: 1px solid rgba(26,23,20,0.12);
+      border-radius: 50%;
+      background: var(--glass);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+    }
+    /* Scene */
+    .scene {
+      flex: 1;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      z-index: 2;
+    }
+    .sky-wash {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg,
+        #c4d4e8 0%,
+        #e8ddd0 35%,
+        #f2ece0 60%,
+        #1a1f35 85%,
+        #0d1220 100%
+      );
+      opacity: 0.5;
+    }
+    .stars {
+      position: absolute;
+      top: 0; right: 0;
+      width: 45%; height: 40%;
+      background-image:
+        radial-gradient(1px 1px at 20% 30%, rgba(255,255,255,0.6) 0%, transparent 100%),
+        radial-gradient(1px 1px at 60% 20%, rgba(255,255,255,0.4) 0%, transparent 100%),
+        radial-gradient(1px 1px at 80% 50%, rgba(255,255,255,0.5) 0%, transparent 100%),
+        radial-gradient(1px 1px at 40% 60%, rgba(255,255,255,0.3) 0%, transparent 100%),
+        radial-gradient(1.5px 1.5px at 70% 35%, rgba(255,255,255,0.7) 0%, transparent 100%);
+    }
+    .globe {
+      position: absolute;
+      width: 180px; height: 180px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #8ba4b8 0%, #5a7080 40%, #2a3540 60%, #1a2030 100%);
+      clip-path: polygon(50% 0%, 100% 0%, 100% 100%, 50% 100%, 50% 50%, 0% 50%, 0% 0%);
+      opacity: 0.35;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .globe::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: linear-gradient(90deg, transparent 48%, rgba(212,80,44,0.15) 50%, transparent 52%);
+    }
+    .ring {
+      position: relative;
+      width: 520px; height: 520px;
+      border: 2px solid rgba(26,23,20,0.15);
+      border-radius: 50%;
+    }
+    .ring::before {
+      content: '';
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      border: 1px dashed rgba(212,80,44,0.2);
+    }
+    .scrub-trail {
+      position: absolute;
+      inset: -6px;
+      border-radius: 50%;
+      background: conic-gradient(from 200deg, transparent 0deg, rgba(212,80,44,0.12) 40deg, rgba(212,80,44,0.25) 80deg, transparent 120deg);
+    }
+    .orb-wrap {
+      position: absolute;
+      transform: translate(-50%, -50%);
+      text-align: center;
+    }
+    .orb {
+      width: 52px; height: 52px;
+      border-radius: 50%;
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.5);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,0.8), 0 4px 12px rgba(0,0,0,0.1);
+      margin: 0 auto 4px;
+    }
+    .orb.day { background: linear-gradient(145deg, rgba(240,230,140,0.9), rgba(218,165,32,0.85)); }
+    .orb.night { background: linear-gradient(145deg, rgba(74,85,104,0.9), rgba(45,55,72,0.85)); }
+    .orb.local {
+      box-shadow: 0 0 0 3px var(--ember-soft), 0 4px 16px rgba(212,80,44,0.3), inset 0 1px 0 rgba(255,255,255,0.6);
+      animation: breathe 3s ease-in-out infinite;
+    }
+    @keyframes breathe {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.06); }
+    }
+    .orb-label { font-size: 0.6rem; font-weight: 500; color: var(--ink); }
+    .orb-time { font-size: 0.55rem; color: var(--ink-muted); }
+    /* Orb positions on ring */
+    .orb-wrap:nth-child(1) { top: 0%; left: 50%; }
+    .orb-wrap:nth-child(2) { top: 18%; left: 88%; }
+    .orb-wrap:nth-child(3) { top: 50%; left: 100%; }
+    .orb-wrap:nth-child(4) { top: 82%; left: 88%; }
+    .orb-wrap:nth-child(5) { top: 100%; left: 50%; }
+    .orb-wrap:nth-child(6) { top: 82%; left: 12%; }
+    /* Scrub */
+    .scrub-area {
+      padding: 12px 24px 8px;
+      z-index: 10;
+      position: relative;
+    }
+    .scrub-track {
+      height: 36px;
+      background: rgba(26,23,20,0.06);
+      border-radius: 18px;
+      position: relative;
+      border: 1px solid rgba(26,23,20,0.08);
+    }
+    .scrub-thumb {
+      position: absolute;
+      left: 50%; top: 50%;
+      transform: translate(-50%, -50%);
+      width: 20px; height: 20px;
+      background: var(--ember);
+      border-radius: 50%;
+      box-shadow: 0 2px 8px var(--ember-soft);
+    }
+    .scrub-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.6rem;
+      color: var(--ink-muted);
+      margin-top: 4px;
+    }
+    /* Bottom bar */
+    .bottombar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 24px 16px;
+      border-top: 1px solid rgba(26,23,20,0.08);
+      z-index: 10;
+      position: relative;
+    }
+    .bottombar-left { display: flex; gap: 8px; }
+    .chip {
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.65rem;
+      border: 1px solid rgba(26,23,20,0.1);
+      background: var(--glass);
+    }
+    .chip.active { background: var(--ember); color: white; border-color: var(--ember); }
+    .add-btn {
+      padding: 8px 16px;
+      background: var(--ink);
+      color: var(--paper);
+      border: none;
+      border-radius: 8px;
+      font-family: inherit;
+      font-size: 0.7rem;
+    }
+    /* Annotations */
+    .option-label {
+      position: fixed;
+      top: 16px; left: 16px;
+      background: rgba(26,23,20,0.92);
+      color: var(--paper);
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 0.7rem;
+      max-width: 240px;
+      z-index: 100;
+      line-height: 1.5;
+    }
+    .option-label strong {
+      font-family: 'Fraunces', serif;
+      font-size: 0.85rem;
+      display: block;
+      margin-bottom: 6px;
+      color: #f0c4b8;
+    }
+    .option-label ul { margin-left: 14px; }
+    .pin {
+      position: absolute;
+      background: var(--ember);
+      color: white;
+      font-size: 0.55rem;
+      padding: 3px 8px;
+      border-radius: 4px;
+      white-space: nowrap;
+      z-index: 20;
+    }
+    .pin::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 50%;
+      transform: translateX(-50%);
+      border: 4px solid transparent;
+      border-top-color: var(--ember);
+    }
+    .pin-1 { top: 28%; left: 62%; }
+    .pin-2 { bottom: 38%; right: 18%; }
+    .pin-3 { top: 55%; left: 8%; }
+  </style>
+</head>
+<body>
+  <div class="option-label" role="note" aria-label="Wireframe annotations">
+    <strong>Option A — Observatory Evolved</strong>
+    <ul>
+      <li>Premium instrument aesthetic — no gamification</li>
+      <li>Frosted glass orbs with day/night gradients</li>
+      <li>Scrub trail arc + star field sky wash</li>
+    </ul>
+  </div>
+
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">And The <span>Time Is</span></div>
+      <div class="topbar-center" aria-live="polite">Saturday, Jun 6, 2026 · Live</div>
+      <nav class="topbar-actions" aria-label="View controls">
+        <button class="btn active" aria-pressed="true">Ring</button>
+        <button class="btn" aria-pressed="false">List</button>
+        <div class="icon-btn" aria-label="Settings">⚙</div>
+      </nav>
+    </header>
+
+    <main class="scene" aria-label="Timezone observatory">
+      <div class="sky-wash"></div>
+      <div class="stars" aria-hidden="true"></div>
+      <div class="globe" aria-hidden="true"></div>
+      <div class="ring">
+        <div class="scrub-trail" aria-hidden="true"></div>
+        <div class="orb-wrap">
+          <div class="orb day local" aria-label="Local NYC 2:30 PM"></div>
+          <div class="orb-label">NYC · Local</div>
+          <div class="orb-time">2:30 PM</div>
+        </div>
+        <div class="orb-wrap">
+          <div class="orb day" aria-label="UTC 6:30 PM"></div>
+          <div class="orb-label">UTC</div>
+          <div class="orb-time">6:30 PM</div>
+        </div>
+        <div class="orb-wrap">
+          <div class="orb night" aria-label="Tokyo 3:30 AM"></div>
+          <div class="orb-label">Tokyo</div>
+          <div class="orb-time">3:30 AM</div>
+        </div>
+        <div class="orb-wrap">
+          <div class="orb night" aria-label="London 7:30 PM"></div>
+          <div class="orb-label">London</div>
+          <div class="orb-time">7:30 PM</div>
+        </div>
+        <div class="orb-wrap">
+          <div class="orb night" aria-label="Berlin 8:30 PM"></div>
+          <div class="orb-label">Berlin</div>
+          <div class="orb-time">8:30 PM</div>
+        </div>
+        <div class="orb-wrap">
+          <div class="orb night" aria-label="Sydney 4:30 AM"></div>
+          <div class="orb-label">Sydney</div>
+          <div class="orb-time">4:30 AM</div>
+        </div>
+      </div>
+      <div class="pin pin-1">Scrub trail arc</div>
+      <div class="pin pin-2">Low-poly globe + terminator</div>
+      <div class="pin pin-3">Star field (night sky)</div>
+    </main>
+
+    <section class="scrub-area" aria-label="Time scrub control">
+      <div class="scrub-track" role="slider" aria-valuemin="-720" aria-valuemax="720" aria-valuenow="0" aria-label="Time offset">
+        <div class="scrub-thumb"></div>
+      </div>
+      <div class="scrub-labels">
+        <span>−12h</span>
+        <span>Live · now</span>
+        <span>+12h</span>
+      </div>
+    </section>
+
+    <footer class="bottombar">
+      <div class="bottombar-left">
+        <button class="add-btn">+ Add zone</button>
+        <button class="btn">Share</button>
+      </div>
+      <div class="bottombar-left">
+        <span class="chip active">Live</span>
+        <span class="chip">24h</span>
+        <span class="chip">12h</span>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>And The Time Is — Wireframe Options</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Fraunces:wght@600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #f5f3ef;
+      color: #1a1714;
+      line-height: 1.6;
+      padding: 40px 24px 64px;
+    }
+    .container { max-width: 960px; margin: 0 auto; }
+    header { margin-bottom: 40px; }
+    h1 {
+      font-family: 'Fraunces', serif;
+      font-size: 2rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .subtitle { color: #5a574f; font-size: 0.95rem; }
+    .notice {
+      margin-top: 16px;
+      padding: 10px 14px;
+      background: #fff8e6;
+      border: 1px solid #e8d5a0;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: #6b5a20;
+    }
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      margin-bottom: 48px;
+    }
+    .card {
+      background: white;
+      border: 1px solid rgba(26,23,20,0.1);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: box-shadow 0.2s, transform 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    .card:hover {
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+    .card-preview {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      border-bottom: 1px solid rgba(26,23,20,0.06);
+    }
+    .card-preview.a { background: linear-gradient(135deg, #f2ece0, #e8ddd0); }
+    .card-preview.b { background: linear-gradient(135deg, #0a1628, #0f1f38); color: #39ff14; }
+    .card-preview.c { background: linear-gradient(135deg, #2d1b4e, #0b0d1a); color: #a78bfa; }
+    .card-preview.d { background: linear-gradient(135deg, #2a1a3a, #0a0a12); color: #ff00aa; }
+    .card-preview.r1 { background: linear-gradient(135deg, #2a1810, #b86b1f); color: #f5e0b8; }
+    .card-preview.r2 { background: linear-gradient(135deg, #0f2233, #1e6b8a); color: #ffd166; }
+    .card-preview.r3 { background: linear-gradient(135deg, #3a3228, #8a7355); color: #fff4dc; }
+    .card-preview.r4 { background: linear-gradient(135deg, #180f28, #c43a5c); color: #ffc4d4; }
+    .card-preview.r5 { background: linear-gradient(135deg, #e8e2d8, #1f4d3a); color: #d8f0e4; }
+    .card-preview.r6 { background: linear-gradient(135deg, #e8a38a, #e8856e); color: #fff8f0; }
+    .card-body { padding: 16px 18px 20px; }
+    .card-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #7a7772;
+      margin-bottom: 4px;
+    }
+    .card-title {
+      font-family: 'Fraunces', serif;
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .card-desc { font-size: 0.85rem; color: #5a574f; }
+    .card-link {
+      display: inline-block;
+      margin-top: 12px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: #d4502c;
+    }
+    h2 {
+      font-family: 'Fraunces', serif;
+      font-size: 1.35rem;
+      margin-bottom: 16px;
+    }
+    section + section { margin-top: 48px; }
+    .section-lead {
+      font-size: 0.9rem;
+      color: #5a574f;
+      margin: -8px 0 20px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(26,23,20,0.1);
+      font-size: 0.85rem;
+    }
+    th, td {
+      padding: 12px 16px;
+      text-align: left;
+      border-bottom: 1px solid rgba(26,23,20,0.06);
+    }
+    th {
+      background: #faf8f5;
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: #5a574f;
+    }
+    tr:last-child td { border-bottom: none; }
+    td:first-child { font-weight: 500; color: #1a1714; }
+    .rating { display: flex; gap: 3px; }
+    .dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      background: #e0ddd6;
+    }
+    .dot.on { background: #d4502c; }
+    .dot.on.alt { background: #39ff14; }
+    .dot.on.cosmic { background: #a78bfa; }
+    .dot.on.arcade { background: #ff00aa; }
+    .dot.on.r1 { background: #b86b1f; }
+    .dot.on.r2 { background: #1e6b8a; }
+    .dot.on.r3 { background: #8a7355; }
+    .dot.on.r4 { background: #c43a5c; }
+    .dot.on.r5 { background: #1f4d3a; }
+    .dot.on.r6 { background: #e8856e; }
+    footer {
+      margin-top: 48px;
+      font-size: 0.8rem;
+      color: #9a9690;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>And The Time Is — Visual Direction Wireframes</h1>
+      <p class="subtitle">Ten visual directions for evaluation: four Horizon skins (A–D) on the globe-and-ring foundation, plus six radical concepts (1–6) that leave the observatory metaphor behind.</p>
+      <p class="notice" role="note"><strong>Note:</strong> Wireframes for evaluation — not production code. Open each option in a new tab to compare layouts side-by-side.</p>
+    </header>
+
+    <section aria-label="Radical concepts">
+      <h2>Radical Concepts — Beyond Globe &amp; Ring</h2>
+      <p class="section-lead">Alternative interaction models — no rotating ring, no wireframe globe.</p>
+      <div class="cards">
+        <a class="card" href="radical-1-conductor.html">
+          <div class="card-preview r1" aria-hidden="true">🎼</div>
+          <div class="card-body">
+            <div class="card-label">Concept 1</div>
+            <div class="card-title">The Conductor</div>
+            <p class="card-desc">Timeline mixer — horizontal lanes per timezone, scrubber as crossfader, overlap windows as harmonic beats.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+
+        <a class="card" href="radical-2-relay.html">
+          <div class="card-preview r2" aria-hidden="true">🚇</div>
+          <div class="card-body">
+            <div class="card-label">Concept 2</div>
+            <div class="card-title">The Relay</div>
+            <p class="card-desc">Transit map — zones as stations on interconnected lines, handoffs and transfer windows instead of orbital positions.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+
+        <a class="card" href="radical-3-threshold.html">
+          <div class="card-preview r3" aria-hidden="true">🚪</div>
+          <div class="card-body">
+            <div class="card-label">Concept 3</div>
+            <div class="card-title">The Threshold</div>
+            <p class="card-desc">Door corridor — each timezone is a doorway with light spilling through; walk the hall to compare moments across zones.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+
+        <a class="card" href="radical-4-pulse.html">
+          <div class="card-preview r4" aria-hidden="true">🔗</div>
+          <div class="card-body">
+            <div class="card-label">Concept 4</div>
+            <div class="card-title">The Pulse</div>
+            <p class="card-desc">Relationship graph — people and places as nodes, time drift as edge tension, meeting windows as pulsing links.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+
+        <a class="card" href="radical-5-ledger.html">
+          <div class="card-preview r5" aria-hidden="true">📒</div>
+          <div class="card-body">
+            <div class="card-label">Concept 5</div>
+            <div class="card-title">The Ledger</div>
+            <p class="card-desc">Schedule-first — dense tabular day view, timezone columns as accounts, availability as debits and credits.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+
+        <a class="card" href="radical-6-the-pass.html">
+          <div class="card-preview r6" aria-hidden="true">🏂</div>
+          <div class="card-body">
+            <div class="card-label">Concept 6</div>
+            <div class="card-title">The Pass</div>
+            <p class="card-desc">Alto-inspired parallax ride — scrub to snowboard through the day, landmarks as cities, birds, tricks, aurora overlap.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section aria-label="Radical comparison matrix">
+      <h2>Radical Comparison Matrix</h2>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Dimension</th>
+            <th scope="col">1 · Conductor</th>
+            <th scope="col">2 · Relay</th>
+            <th scope="col">3 · Threshold</th>
+            <th scope="col">4 · Pulse</th>
+            <th scope="col">5 · Ledger</th>
+            <th scope="col">6 · The Pass</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Scheduling power</td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r5"></span><span class="dot on r5"></span><span class="dot on r5"></span><span class="dot on r5"></span><span class="dot on r5"></span></div></td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+          </tr>
+          <tr>
+            <td>Glance appeal</td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span></div></td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on r5"></span><span class="dot on r5"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span></div></td>
+          </tr>
+          <tr>
+            <td>Shareability</td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span></div></td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on r5"></span><span class="dot on r5"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot"></span></div></td>
+          </tr>
+          <tr>
+            <td>Dev risk</td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on r5"></span><span class="dot on r5"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot"></span></div></td>
+          </tr>
+          <tr>
+            <td>Breaks from Horizon</td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span><span class="dot on r1"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span><span class="dot on r2"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span><span class="dot on r3"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot on r4"></span><span class="dot on r4"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on r5"></span><span class="dot on r5"></span><span class="dot on r5"></span><span class="dot on r5"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span><span class="dot on r6"></span></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section aria-label="Horizon skin options">
+      <h2>Horizon Skins (Globe + Ring)</h2>
+      <p class="section-lead">Same 3D observatory core — different visual skin and gamification layer.</p>
+      <div class="cards">
+        <a class="card" href="option-a-observatory-evolved.html">
+          <div class="card-preview a" aria-hidden="true">🔭</div>
+          <div class="card-body">
+            <div class="card-label">Option A</div>
+            <div class="card-title">Observatory Evolved</div>
+            <p class="card-desc">Premium parchment instrument. Frosted glass orbs, paper grain, star field sky wash. Professional feel — no gamification.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+
+        <a class="card" href="option-b-mission-control.html">
+          <div class="card-preview b" aria-hidden="true">🛰</div>
+          <div class="card-body">
+            <div class="card-label">Option B</div>
+            <div class="card-title">Mission Control</div>
+            <p class="card-desc">Dark command center with phosphor green HUD. Launch Window overlap finder, working-hours wedges, scheduling streaks.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+
+        <a class="card" href="option-c-cosmic-collector.html">
+          <div class="card-preview c" aria-hidden="true">🪐</div>
+          <div class="card-body">
+            <div class="card-label">Option C</div>
+            <div class="card-title">Cosmic Collector</div>
+            <p class="card-desc">Deep space nebula with mini-planet orbs. Passport stamp collection, achievement badges, discovery flares.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+
+        <a class="card" href="option-d-time-arcade.html">
+          <div class="card-preview d" aria-hidden="true">🕹</div>
+          <div class="card-body">
+            <div class="card-label">Option D</div>
+            <div class="card-title">Time Arcade</div>
+            <p class="card-desc">Retro CRT cabinet with neon pink/cyan. Combo meter, daily quests, emoji token orbs, INSERT COIN date jump.</p>
+            <span class="card-link">View wireframe →</span>
+          </div>
+        </a>
+      </div>
+    </section>
+
+    <section aria-label="Comparison matrix">
+      <h2>Comparison Matrix</h2>
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Dimension</th>
+            <th scope="col">A · Observatory</th>
+            <th scope="col">B · Mission Control</th>
+            <th scope="col">C · Cosmic Collector</th>
+            <th scope="col">D · Time Arcade</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Visual punch</td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot on cosmic"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on arcade"></span><span class="dot on arcade"></span><span class="dot on arcade"></span><span class="dot on arcade"></span><span class="dot on arcade"></span></div></td>
+          </tr>
+          <tr>
+            <td>Scheduling utility</td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span></div></td>
+            <td><div class="rating" aria-label="1 of 5"><span class="dot on cosmic"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="1 of 5"><span class="dot on arcade"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+          </tr>
+          <tr>
+            <td>Gamification depth</td>
+            <td><div class="rating" aria-label="0 of 5"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot on cosmic"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on arcade"></span><span class="dot on arcade"></span><span class="dot on arcade"></span><span class="dot on arcade"></span><span class="dot"></span></div></td>
+          </tr>
+          <tr>
+            <td>Professional / enterprise fit</td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="1 of 5"><span class="dot on arcade"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+          </tr>
+          <tr>
+            <td>Accessibility / readability</td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></div></td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on arcade"></span><span class="dot on arcade"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+          </tr>
+          <tr>
+            <td>Build complexity</td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on"></span><span class="dot on"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="4 of 5"><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot on cosmic"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="3 of 5"><span class="dot on arcade"></span><span class="dot on arcade"></span><span class="dot on arcade"></span><span class="dot"></span><span class="dot"></span></div></td>
+          </tr>
+          <tr>
+            <td>Closest to current product</td>
+            <td><div class="rating" aria-label="5 of 5"><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span><span class="dot on"></span></div></td>
+            <td><div class="rating" aria-label="2 of 5"><span class="dot on alt"></span><span class="dot on alt"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="1 of 5"><span class="dot on cosmic"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+            <td><div class="rating" aria-label="1 of 5"><span class="dot on arcade"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div></td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer>
+      And The Time Is · Wireframe evaluation set · Jun 2026
+    </footer>
+  </div>
+</body>
+</html>
