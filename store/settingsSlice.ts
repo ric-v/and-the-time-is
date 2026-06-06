@@ -1,10 +1,22 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-export type DisplayFormat = '24h' | '12h' | 'iso' | 'unix';
+export type DisplayFormat =
+  | 'local'
+  | '24h'
+  | '12h'
+  | 'iso'
+  | 'unix'
+  | 'ymd24'
+  | 'ymd12'
+  | 'mdy24'
+  | 'mdy12'
+  | 'readable';
 export type ReducedMotionOverride = 'auto' | 'on' | 'off';
+export type ThemeMode = 'light' | 'dark';
 
 export interface HorizonSettings {
   displayFormat: DisplayFormat;
+  themeMode: ThemeMode;
   orbDrift: boolean;
   globeAutoRotation: boolean;                     // default true, disabled if reduced motion active
   rememberScrubPosition: boolean;
@@ -20,7 +32,8 @@ export interface HorizonSettings {
 const MAX_RECENT_SEARCHES = 5;
 
 const initialState: HorizonSettings = {
-  displayFormat: '24h',
+  displayFormat: 'local',
+  themeMode: 'light',
   orbDrift: true,
   globeAutoRotation: true,
   rememberScrubPosition: false,
@@ -39,6 +52,9 @@ const settingsSlice = createSlice({
   reducers: {
     setDisplayFormat(state, action: PayloadAction<DisplayFormat>) {
       state.displayFormat = action.payload;
+    },
+    setThemeMode(state, action: PayloadAction<ThemeMode>) {
+      state.themeMode = action.payload;
     },
     setOrbDrift(state, action: PayloadAction<boolean>) {
       state.orbDrift = action.payload;
@@ -80,6 +96,7 @@ const settingsSlice = createSlice({
 
 export const {
   setDisplayFormat,
+  setThemeMode,
   setOrbDrift,
   setGlobeAutoRotation,
   setReducedMotion,

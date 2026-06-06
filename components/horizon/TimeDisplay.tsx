@@ -12,11 +12,10 @@
  * - Letter-spacing 0.02em
  * - Colon separators at 40% opacity
  *
- * Handles all four display formats:
+ * Handles all display formats:
  * - 24h: HH:MM:SS — digit hierarchy applied
  * - 12h: h:MM:SS AM/PM — digit hierarchy applied, AM/PM at seconds emphasis
- * - ISO: full ISO string — rendered in monospace, no hierarchy (already compact)
- * - Unix: integer — rendered in monospace, no hierarchy
+ * - ISO/Unix + preset date formats: rendered as full string in monospace
  *
  * Requirements: 10.1, 10.2, 10.4, 10.5, 16.3, 16.4, 16.6
  */
@@ -150,11 +149,18 @@ function parseFormattedTime(
   format: DisplayFormat,
 ): TimePart[] {
   switch (format) {
+    case 'local':
+      return parse24h(formatted);
     case '24h':
       return parse24h(formatted);
     case '12h':
       return parse12h(formatted);
     case 'iso':
+    case 'ymd24':
+    case 'ymd12':
+    case 'mdy24':
+    case 'mdy12':
+    case 'readable':
       return parseISO(formatted);
     case 'unix':
       return parseUnix(formatted);
@@ -190,7 +196,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
         letterSpacing: '0.02em',
         fontFamily: isMonoFormat
           ? 'var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace)'
-          : 'var(--font-inter, ui-sans-serif, system-ui, -apple-system, sans-serif)',
+          : undefined,
         fontSize: effectiveFontSize,
         fontWeight,
         lineHeight: 1.4,

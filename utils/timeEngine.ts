@@ -227,7 +227,19 @@ export function formatTime(
   displayedTime: Date,
   format: DisplayFormat,
 ): string {
+  const p = getLocalDateTimeParts(ianaName, displayedTime);
+  const hour24 = Number.parseInt(p.hour, 10);
+  const period = hour24 >= 12 ? 'PM' : 'AM';
+  const hour12 = hour24 === 0 ? 12 : hour24 > 12 ? hour24 - 12 : hour24;
+
   switch (format) {
+    case 'local':
+      return new Intl.DateTimeFormat(undefined, {
+        timeZone: ianaName,
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+      }).format(displayedTime);
     case '24h':
       return format24h(ianaName, displayedTime);
     case '12h':
@@ -236,5 +248,24 @@ export function formatTime(
       return formatISO8601(ianaName, displayedTime);
     case 'unix':
       return String(formatUnix(displayedTime));
+    case 'ymd24':
+      return `${p.year}-${p.month}-${p.day} ${p.hour}:${p.minute}:${p.second}`;
+    case 'ymd12':
+      return `${p.year}-${p.month}-${p.day} ${hour12}:${p.minute}:${p.second} ${period}`;
+    case 'mdy24':
+      return `${p.month}/${p.day}/${p.year} ${p.hour}:${p.minute}:${p.second}`;
+    case 'mdy12':
+      return `${p.month}/${p.day}/${p.year} ${hour12}:${p.minute}:${p.second} ${period}`;
+    case 'readable':
+      return new Intl.DateTimeFormat(undefined, {
+        timeZone: ianaName,
+        weekday: 'short',
+        month: 'short',
+        day: '2-digit',
+        year: 'numeric',
+        hour: 'numeric',
+        minute: '2-digit',
+        second: '2-digit',
+      }).format(displayedTime);
   }
 }

@@ -1724,6 +1724,7 @@ body.horizon-obs-root {
   align-items: baseline;
   gap: 8px;
   min-width: 0;
+  overflow: hidden;
 }
 
 .horizon-observatory .obs-simple-t-main {
@@ -1734,6 +1735,19 @@ body.horizon-obs-root {
   letter-spacing: -0.025em;
   color: var(--ink, #141414);
   line-height: 1;
+}
+
+/* Non 24h/12h formats: keep same column alignment, compact content in-place. */
+.horizon-observatory .obs-simple-t-main.obs-simple-t-long {
+  font-family: var(--font-ibm-mono), monospace;
+  font-weight: 450;
+  font-size: 13px;
+  letter-spacing: 0.02em;
+  line-height: 1.25;
+  white-space: nowrap;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .horizon-observatory .obs-simple-colon {

@@ -17,6 +17,7 @@ import {
   Vector3,
   Color,
 } from '../../utils/three-imports';
+import type { ThemeMode } from '../../store/settingsSlice';
 
 const GLOBE_CORE_RADIUS = 0.7;
 const LINE_RADIUS = 0.72;
@@ -27,6 +28,8 @@ export class WireframeGlobe {
 
   private latLongLines: Group;
   private coreMesh: Mesh;
+  private lineMaterials: LineBasicMaterial[] = [];
+  private axisMaterial: LineBasicMaterial | null = null;
   private cumulativeRotation = 0;
 
   constructor() {
@@ -53,6 +56,7 @@ export class WireframeGlobe {
         transparent: true,
         opacity: 0.28,
       });
+      this.lineMaterials.push(mat);
       const line = new Line(geo, mat);
       line.rotation.y = angle;
       this.latLongLines.add(line);
@@ -72,6 +76,7 @@ export class WireframeGlobe {
         transparent: true,
         opacity,
       });
+      this.lineMaterials.push(mat);
       this.latLongLines.add(new Line(geo, mat));
     }
 
@@ -86,7 +91,25 @@ export class WireframeGlobe {
       transparent: true,
       opacity: 0.4,
     });
+    this.axisMaterial = axisMat;
     this.group.add(new Line(axisGeo, axisMat));
+    this.setTheme('light');
+  }
+
+  public setTheme(themeMode: ThemeMode): void {
+    const isDark = themeMode === 'dark';
+    const coreMaterial = this.coreMesh.material as MeshBasicMaterial;
+    coreMaterial.color.set(isDark ? 0x1a2338 : 0xf2ece0);
+    coreMaterial.opacity = isDark ? 0.7 : 0.55;
+
+    for (const lineMaterial of this.lineMaterials) {
+      lineMaterial.color.set(isDark ? 0xe7edf8 : 0x141414);
+    }
+
+    if (this.axisMaterial) {
+      this.axisMaterial.color.set(isDark ? 0xf59a8f : 0xf07f73);
+      this.axisMaterial.opacity = isDark ? 0.55 : 0.4;
+    }
   }
 
   public update(

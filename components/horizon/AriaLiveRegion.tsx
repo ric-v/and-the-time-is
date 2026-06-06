@@ -26,6 +26,8 @@ function formatOffset(minutes: number): string {
  */
 function formatLabel(fmt: DisplayFormat): string {
   switch (fmt) {
+    case 'local':
+      return 'local default';
     case '24h':
       return '24-hour';
     case '12h':
@@ -34,6 +36,16 @@ function formatLabel(fmt: DisplayFormat): string {
       return 'ISO 8601';
     case 'unix':
       return 'Unix timestamp';
+    case 'ymd24':
+      return 'year-month-day 24-hour';
+    case 'ymd12':
+      return 'year-month-day 12-hour';
+    case 'mdy24':
+      return 'month-day-year 24-hour';
+    case 'mdy12':
+      return 'month-day-year 12-hour';
+    case 'readable':
+      return 'readable date time';
     default:
       return fmt;
   }

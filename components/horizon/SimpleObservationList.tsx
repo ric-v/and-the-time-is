@@ -46,6 +46,11 @@ function formatUtcOffsetLabel(ianaName: string, time: Date): string {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+/** HH:MM (+ optional sec) only — wide Fraunces column is safe. */
+function isClockOnlyFormat(fmt: DisplayFormat): boolean {
+  return fmt === '24h' || fmt === '12h';
+}
+
 interface SimpleObservationListProps {
   /** Per-orb label data from the scene orchestrator (same source as ring labels). */
   labelByOrb: Map<string, OrbLabelData>;
@@ -154,10 +159,17 @@ const SimpleRow: React.FC<SimpleRowProps> = ({
     );
     timeSec = <span className="obs-simple-sec">{pad(s)}</span>;
     timeAmpm = <span className="obs-simple-ampm">{ap}</span>;
-  } else if (displayFormat === 'iso' || displayFormat === 'unix') {
-    timeMain = (
-      <span className="obs-simple-iso">{data.formattedTime}</span>
-    );
+  } else if (
+    displayFormat === 'iso' ||
+    displayFormat === 'unix' ||
+    displayFormat === 'local' ||
+    displayFormat === 'ymd24' ||
+    displayFormat === 'ymd12' ||
+    displayFormat === 'mdy24' ||
+    displayFormat === 'mdy12' ||
+    displayFormat === 'readable'
+  ) {
+    timeMain = data.formattedTime;
     timeSec = null;
     timeAmpm = null;
   } else {
@@ -176,14 +188,16 @@ const SimpleRow: React.FC<SimpleRowProps> = ({
     ? 'Local'
     : data.relativeOffset || 'Same';
 
+  const clockOnly = isClockOnlyFormat(displayFormat);
+
   return (
     <button
       type="button"
-      className={`observatory-simple-row${orb.isLocal ? ' is-local' : ''}`}
+      className={`observatory-simple-row${orb.isLocal ? ' is-local' : ''}${clockOnly ? '' : ' is-full-datetime'}`}
       onClick={onOpen}
     >
       <div className="observatory-simple-row-time">
-        <span className="obs-simple-t-main">{timeMain}</span>
+        <span className={`obs-simple-t-main${clockOnly ? '' : ' obs-simple-t-long'}`}>{timeMain}</span>
         {timeSec}
         {timeAmpm}
       </div>

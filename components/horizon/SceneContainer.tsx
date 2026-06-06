@@ -16,7 +16,6 @@ import { useAppSelector, useAppDispatch } from '../../store/store';
 import { store } from '../../store/store';
 import { setExpandedOrb } from '../../store/sessionSlice';
 import SimpleObservationList from './SimpleObservationList';
-import ObservationDome from './ObservationDome';
 import { removeOrb } from '../../store/orbSlice';
 import OrbButton from './OrbButton';
 import OrbLabel from './OrbLabel';
@@ -73,6 +72,7 @@ const SceneContainer: React.FC = () => {
   const dispatch = useAppDispatch();
   const orbs = useAppSelector((s) => s.orbs.list);
   const horizonViewMode = useAppSelector((s) => s.session.horizonViewMode);
+  const themeMode = useAppSelector((s) => s.settings.themeMode);
 
   const { orbLabelData, updateScene, clusterHover } = useSceneOrchestrator();
 
@@ -211,6 +211,7 @@ const SceneContainer: React.FC = () => {
     sceneRef.current = scene;
 
     const globe = new WireframeGlobe();
+    globe.setTheme(themeMode);
     const horizonRing = new HorizonRing();
     const sceneLighting = new SceneLighting();
     scene.add(sceneLighting.group);
@@ -275,7 +276,7 @@ const SceneContainer: React.FC = () => {
         zoneOrbs: new Map(),
       };
     };
-  }, [animate, handleResize, handleVisibilityChange]);
+  }, [animate, handleResize, handleVisibilityChange, themeMode]);
 
   useEffect(() => {
     const scene = sceneRef.current;
@@ -299,6 +300,12 @@ const SceneContainer: React.FC = () => {
       }
     }
   }, [orbs]);
+
+  useEffect(() => {
+    const globe = renderersRef.current.globe;
+    if (!globe) return;
+    globe.setTheme(themeMode);
+  }, [themeMode]);
 
   useEffect(() => {
     if (horizonViewMode !== 'full') return;
@@ -428,7 +435,6 @@ const SceneContainer: React.FC = () => {
       {horizonViewMode === 'simple' && (
         <>
           <SimpleObservationList labelByOrb={orbLabelData} />
-          <ObservationDome />
         </>
       )}
     </div>

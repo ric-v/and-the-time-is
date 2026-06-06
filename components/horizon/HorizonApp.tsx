@@ -24,6 +24,7 @@ const HorizonApp: React.FC = () => {
   const commandPaletteOpen = useAppSelector((s) => s.session.commandPaletteOpen);
   const dateJumpOpen = useAppSelector((s) => s.session.dateJumpOpen);
   const horizonViewMode = useAppSelector((s) => s.session.horizonViewMode);
+  const themeMode = useAppSelector((s) => s.settings.themeMode);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const displayedTime = useDisplayedTime();
@@ -33,7 +34,7 @@ const HorizonApp: React.FC = () => {
   );
 
   useFirstRunSeeding();
-  useObservatorySkyWash(rootRef, displayedTime, localIana);
+  useObservatorySkyWash(rootRef, displayedTime, localIana, themeMode);
 
   const handleGlobalKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -60,13 +61,21 @@ const HorizonApp: React.FC = () => {
     return () => {
       document.documentElement.classList.remove('horizon-obs-root');
       document.body.classList.remove('horizon-obs-root');
+      document.documentElement.classList.remove('horizon-obs-dark');
+      document.body.classList.remove('horizon-obs-dark');
     };
   }, []);
+
+  useEffect(() => {
+    const isDark = themeMode === 'dark';
+    document.documentElement.classList.toggle('horizon-obs-dark', isDark);
+    document.body.classList.toggle('horizon-obs-dark', isDark);
+  }, [themeMode]);
 
   return (
     <div
       ref={rootRef}
-      className={`horizon-observatory ${horizonViewMode === 'simple' ? 'observatory-simple-mode' : ''} ${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable} ${ibmPlexMono.variable}`}
+      className={`horizon-observatory ${horizonViewMode === 'simple' ? 'observatory-simple-mode' : ''} ${themeMode === 'dark' ? 'observatory-theme-dark' : 'observatory-theme-light'} ${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable} ${ibmPlexMono.variable}`}
       style={{
         width: '100vw',
         height: '100vh',

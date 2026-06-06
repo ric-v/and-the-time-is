@@ -1,7 +1,7 @@
 /**
- * FormatControl — Segmented control for switching the global display format.
+ * FormatControl — preset selector for global display format.
  *
- * Renders four options: 24h, 12h, ISO, Unix.
+ * Renders multiple presets, including locale-default and date+time variants.
  * Dispatches setDisplayFormat to settingsSlice on selection.
  * When Unix is selected, shows a small "UTC-referenced" hint.
  *
@@ -36,10 +36,16 @@ export interface FormatControlProps {
 // ---------------------------------------------------------------------------
 
 const FORMAT_OPTIONS: FormatOption[] = [
+  { value: 'local', label: 'Local (default)' },
   { value: '24h', label: '24h' },
   { value: '12h', label: '12h' },
   { value: 'iso', label: 'ISO' },
   { value: 'unix', label: 'Unix' },
+  { value: 'ymd24', label: 'YYYY-MM-DD HH:MM:SS' },
+  { value: 'ymd12', label: 'YYYY-MM-DD hh:MM:SS AM/PM' },
+  { value: 'mdy24', label: 'MM/DD/YYYY HH:MM:SS' },
+  { value: 'mdy12', label: 'MM/DD/YYYY hh:MM:SS AM/PM' },
+  { value: 'readable', label: 'Readable (weekday + date + time)' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -55,81 +61,31 @@ const FormatControl: React.FC<FormatControlProps> = ({ compact = false }) => {
   };
 
   return (
-    <div
-      role="radiogroup"
-      aria-label="Time display format"
-      style={{ display: 'inline-flex', flexDirection: 'column', gap: 6 }}
-    >
-      <div
+    <div style={{ display: 'inline-flex', flexDirection: 'column', gap: 6, minWidth: compact ? 220 : 280 }}>
+      <select
+        aria-label="Time display format"
+        value={displayFormat}
+        onChange={(e) => handleSelect(e.target.value as DisplayFormat)}
         style={{
-          display: 'inline-flex',
-          alignItems: 'center',
-          gap: 0,
-          padding: 2,
+          appearance: 'none',
+          padding: compact ? '6px 10px' : '8px 12px',
           borderRadius: 10,
-          background: 'rgba(255, 255, 255, 0.06)',
           border: '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
-          backdropFilter: 'blur(8px)',
-          WebkitBackdropFilter: 'blur(8px)',
+          background: 'var(--chrome-glass, rgba(255,255,255,0.03))',
+          color: 'var(--chrome-text-primary, rgba(255,255,255,0.92))',
+          fontSize: compact ? 12 : 13,
+          lineHeight: 1.4,
+          fontFamily: 'var(--font-ibm-mono, ui-monospace, monospace)',
+          cursor: 'pointer',
         }}
       >
-        {FORMAT_OPTIONS.map((option) => {
-          const isSelected = displayFormat === option.value;
+        {FORMAT_OPTIONS.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
 
-          return (
-            <button
-              key={option.value}
-              type="button"
-              role="radio"
-              aria-checked={isSelected}
-              aria-label={`${option.label} format`}
-              onClick={() => handleSelect(option.value)}
-              style={{
-                position: 'relative',
-                padding: compact ? '4px 10px' : '6px 14px',
-                fontSize: compact ? 11 : 13,
-                fontWeight: isSelected ? 500 : 400,
-                lineHeight: 1.4,
-                color: isSelected
-                  ? 'var(--format-on-accent, var(--chrome-text-primary, rgba(255,255,255,0.92)))'
-                  : 'var(--chrome-text-secondary, rgba(255,255,255,0.62))',
-                background: isSelected
-                  ? 'var(--accent, #f4c572)'
-                  : 'transparent',
-                border: 'none',
-                borderRadius: 8,
-                cursor: 'pointer',
-                transition: 'all 150ms ease-out',
-                whiteSpace: 'nowrap',
-                fontFamily:
-                  option.value === 'iso' || option.value === 'unix'
-                    ? 'var(--font-mono, ui-monospace, monospace)'
-                    : 'var(--font-inter, ui-sans-serif, system-ui, sans-serif)',
-                // Selected segment uses dark text on accent background
-                ...(isSelected && {
-                  color: 'rgba(20, 18, 14, 0.9)',
-                }),
-              }}
-              onMouseEnter={(e) => {
-                if (!isSelected) {
-                  (e.currentTarget as HTMLElement).style.background =
-                    'rgba(255, 255, 255, 0.08)';
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!isSelected) {
-                  (e.currentTarget as HTMLElement).style.background =
-                    'transparent';
-                }
-              }}
-            >
-              {option.label}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* "UTC-referenced" hint when Unix format is selected */}
       {displayFormat === 'unix' && (
         <span
           style={{

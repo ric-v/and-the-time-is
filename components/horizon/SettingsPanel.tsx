@@ -9,8 +9,9 @@ import {
   setReducedMotion,
   setRememberScrub,
   setAnchorOrb,
+  setThemeMode,
 } from '../../store/settingsSlice';
-import type { ReducedMotionOverride } from '../../store/settingsSlice';
+import type { ReducedMotionOverride, ThemeMode } from '../../store/settingsSlice';
 import { clearAllHorizonData } from '../../utils/persistenceManager';
 import { showToast } from './Toast';
 import FormatControl from './FormatControl';
@@ -218,6 +219,11 @@ const REDUCED_MOTION_OPTIONS = [
   { value: 'off', label: 'Never' },
 ];
 
+const THEME_MODE_OPTIONS = [
+  { value: 'light', label: 'Light' },
+  { value: 'dark', label: 'Dark' },
+];
+
 const SettingsPanel: React.FC = () => {
   const dispatch = useAppDispatch();
   const settingsOpen = useAppSelector((s) => s.session.settingsOpen);
@@ -251,6 +257,10 @@ const SettingsPanel: React.FC = () => {
 
   const handleRememberScrubChange = useCallback(
     (checked: boolean) => dispatch(setRememberScrub(checked)),
+    [dispatch],
+  );
+  const handleThemeModeChange = useCallback(
+    (value: string) => dispatch(setThemeMode(value as ThemeMode)),
     [dispatch],
   );
 
@@ -375,6 +385,17 @@ const SettingsPanel: React.FC = () => {
         >
           {/* Display section */}
           <Section title="Display">
+            <SettingRow
+              label="Theme"
+              description="Dark mode adapts chrome accent by local hour"
+            >
+              <SegmentedSelector
+                value={settings.themeMode}
+                options={THEME_MODE_OPTIONS}
+                onChange={handleThemeModeChange}
+                ariaLabel="Theme mode"
+              />
+            </SettingRow>
             <SettingRow label="Time format">
               <FormatControl compact />
             </SettingRow>

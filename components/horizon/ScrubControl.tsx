@@ -132,6 +132,10 @@ function scrubStatusFromOffset(offset: number): { paused: boolean; label: string
 // Component
 // ---------------------------------------------------------------------------
 
+function isClockOnlyDisplayFormat(fmt: DisplayFormat): boolean {
+  return fmt === '24h' || fmt === '12h';
+}
+
 export default function ScrubControl() {
   const dispatch = useAppDispatch();
   const offset = useAppSelector((s) => s.scrub.offset);
@@ -177,6 +181,8 @@ export default function ScrubControl() {
     [localIana, displayedTime, displayFormat],
   );
 
+  const clockOnlyReadout = isClockOnlyDisplayFormat(displayFormat);
+
   const scrubDateLine = useMemo(
     () => formatLongScrubDateLine(displayedTime, localIana, localCityLabel),
     [displayedTime, localIana, localCityLabel],
@@ -208,7 +214,16 @@ export default function ScrubControl() {
       const h12 = hh % 12 || 12;
       return { main: `${h12}`, colon1: ':', m: mm, colon2: ':', s: ss, ap };
     }
-    if (displayFormat === 'iso' || displayFormat === 'unix') {
+    if (
+      displayFormat === 'iso' ||
+      displayFormat === 'unix' ||
+      displayFormat === 'local' ||
+      displayFormat === 'ymd24' ||
+      displayFormat === 'ymd12' ||
+      displayFormat === 'mdy24' ||
+      displayFormat === 'mdy12' ||
+      displayFormat === 'readable'
+    ) {
       return { main: null as string | null, colon1: '', m: '', colon2: '', s: '', ap: '' };
     }
     return {
@@ -503,14 +518,24 @@ export default function ScrubControl() {
             </>
           ) : (
             <>
-              <div className="observatory-scrub-time-display" style={{ marginTop: 6 }}>
-                {displayFormat === 'iso' || displayFormat === 'unix' ? (
+              <div
+                className={`observatory-scrub-time-display${clockOnlyReadout ? '' : ' is-full-datetime-readout'}`}
+                style={{ marginTop: 6 }}
+              >
+                {!clockOnlyReadout ? (
                   <TimeDisplay
                     formattedTime={formattedTime}
                     displayFormat={displayFormat}
-                    fontSize={displayFormat === 'unix' ? 20 : 22}
-                    fontWeight={300}
+                    fontSize={displayFormat === 'unix' ? 14 : 13}
+                    fontWeight={450}
                     color="var(--ink, #141414)"
+                    style={{
+                      maxWidth: '100%',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                      display: 'block',
+                    }}
                   />
                 ) : (
                   <>
