@@ -71,14 +71,12 @@ const AriaLiveRegion: React.FC = () => {
   const scrubOffset = useAppSelector((s) => s.scrub.offset);
   const scrubbingInProgress = useAppSelector((s) => s.scrub.scrubbingInProgress);
   const orbList = useAppSelector((s) => s.orbs.list);
-  const anchorOrbId = useAppSelector((s) => s.settings.anchorOrbId);
   const displayFormat = useAppSelector((s) => s.settings.displayFormat);
 
   // Refs to track previous values for diffing
   const prevScrubOffset = useRef(scrubOffset);
   const prevScrubbingInProgress = useRef(scrubbingInProgress);
   const prevOrbList = useRef<Orb[]>(orbList);
-  const prevAnchorOrbId = useRef(anchorOrbId);
   const prevDisplayFormat = useRef(displayFormat);
   const isInitialMount = useRef(true);
 
@@ -128,25 +126,6 @@ const AriaLiveRegion: React.FC = () => {
 
     prevOrbList.current = orbList;
   }, [orbList, announce]);
-
-  // -----------------------------------------------------------------------
-  // Announce anchor changes
-  // -----------------------------------------------------------------------
-  useEffect(() => {
-    if (isInitialMount.current) return;
-
-    if (anchorOrbId !== prevAnchorOrbId.current) {
-      if (anchorOrbId === null) {
-        announce('Anchor reset to local timezone');
-      } else {
-        const anchorOrb = orbList.find((o) => o.id === anchorOrbId);
-        const label = anchorOrb?.label ?? 'selected zone';
-        announce(`Anchor set to ${label}`);
-      }
-    }
-
-    prevAnchorOrbId.current = anchorOrbId;
-  }, [anchorOrbId, orbList, announce]);
 
   // -----------------------------------------------------------------------
   // Announce format changes

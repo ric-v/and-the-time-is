@@ -3,7 +3,7 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 
 /* ---------------------------------------------------------------------------
- * OverlayBackdrop — shared overlay container for all Horizon overlays
+ * OverlayBackdrop — shared overlay container for Pass modals
  *
  * Requirements: 17.1 (overlay chrome styling from UI-UX-Spec Section 9)
  *
@@ -146,6 +146,10 @@ const OverlayBackdrop: React.FC<OverlayBackdropProps> = ({
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingTop: 'env(safe-area-inset-top, 0px)',
+    paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+    paddingLeft: 'env(safe-area-inset-left, 0px)',
+    paddingRight: 'env(safe-area-inset-right, 0px)',
     // Observatory: parchment blur; legacy fallback for non-observatory shells
     background: 'var(--obs-backdrop-bg, rgba(8, 10, 22, 0.55))',
     backdropFilter: 'var(--obs-backdrop-filter, blur(12px))',

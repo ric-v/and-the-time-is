@@ -5,7 +5,7 @@
  * localStorage under the `horizon.*` namespace:
  *
  *   horizon.orbs       → JSON array of Orb objects
- *   horizon.settings   → JSON HorizonSettings object
+ *   horizon.settings   → JSON AppSettings object
  *   horizon.apiCache   → { data: TimezoneResult[], timestamp: number }
  *
  * Handles localStorage unavailability gracefully — the app continues
@@ -15,7 +15,7 @@
  */
 
 import type { Orb } from '../store/orbSlice';
-import type { HorizonSettings } from '../store/settingsSlice';
+import type { AppSettings } from '../store/settingsSlice';
 import type { RootState } from '../store/store';
 
 // ---------------------------------------------------------------------------
@@ -129,13 +129,13 @@ export function loadOrbs(): Orb[] | null {
  * Partial settings are returned as-is — the caller should merge with
  * defaults.
  */
-export function loadSettings(): Partial<HorizonSettings> | null {
+export function loadSettings(): Partial<AppSettings> | null {
   const raw = safeGetItem(STORAGE_KEYS.settings);
   if (raw === null) return null;
   try {
     const parsed = JSON.parse(raw);
     if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-      return parsed as Partial<HorizonSettings>;
+      return parsed as Partial<AppSettings>;
     }
     return null;
   } catch {

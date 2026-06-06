@@ -175,23 +175,9 @@ const TabButton: React.FC<{
     role="tab"
     aria-selected={isActive}
     onClick={onClick}
-    style={{
-      flex: 1,
-      height: 36,
-      padding: '0 16px',
-      fontSize: 13,
-      fontWeight: isActive ? 500 : 400,
-      lineHeight: 1.4,
-      color: isActive
-        ? 'rgba(20, 18, 14, 0.9)'
-        : 'var(--chrome-text-secondary, rgba(255,255,255,0.62))',
-      background: isActive ? 'var(--accent, #f4c572)' : 'transparent',
-      border: 'none',
-      borderRadius: 8,
-      cursor: 'pointer',
-      transition: 'all 150ms ease-out',
-      whiteSpace: 'nowrap',
-    }}
+    className="obs-segmented-btn"
+    aria-checked={isActive}
+    style={{ flex: 1, height: 36 }}
   >
     {label}
   </button>
@@ -446,40 +432,36 @@ const DateJumpDialog: React.FC = () => {
         role="dialog"
         aria-modal="true"
         aria-label="Jump to date"
+        className="obs-panel"
         style={{
           width: 640,
           maxWidth: '100vw',
           maxHeight: 640,
           display: 'flex',
           flexDirection: 'column',
-          background: 'var(--chrome-glass, rgba(12, 14, 28, 0.35))',
-          backdropFilter: 'blur(28px) saturate(140%)',
-          WebkitBackdropFilter: 'blur(28px) saturate(140%)',
-          borderRadius: 20,
-          border: '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
           overflow: 'hidden',
+          paddingTop: 'env(safe-area-inset-top, 0px)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
         <div
           style={{
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             padding: '16px 20px 12px',
-            borderBottom:
-              '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
+            borderBottom: '0.5px solid var(--rule-soft)',
             flexShrink: 0,
           }}
         >
           <h2
             style={{
+              fontFamily: 'var(--font-display)',
               fontSize: 22,
               lineHeight: 1.35,
               fontWeight: 400,
-              color:
-                'var(--chrome-text-primary, rgba(255,255,255,0.92))',
+              color: 'var(--ink)',
               margin: 0,
             }}
           >
@@ -489,30 +471,7 @@ const DateJumpDialog: React.FC = () => {
             type="button"
             onClick={handleClose}
             aria-label="Close date jump dialog"
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              width: 28,
-              height: 28,
-              borderRadius: 8,
-              background: 'transparent',
-              border: 'none',
-              cursor: 'pointer',
-              color:
-                'var(--chrome-text-secondary, rgba(255,255,255,0.62))',
-              fontSize: 18,
-              lineHeight: 1,
-              transition: 'background 100ms ease-out',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background =
-                'rgba(255,255,255,0.06)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background =
-                'transparent';
-            }}
+            className="obs-panel-close"
           >
             ×
           </button>
@@ -533,15 +492,8 @@ const DateJumpDialog: React.FC = () => {
           <div
             role="tablist"
             aria-label="Input format"
-            style={{
-              display: 'flex',
-              gap: 0,
-              padding: 2,
-              borderRadius: 10,
-              background: 'rgba(255, 255, 255, 0.06)',
-              border:
-                '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
-            }}
+            className="obs-segmented"
+            style={{ display: 'flex' }}
           >
             <TabButton
               label="Picker"
@@ -650,28 +602,8 @@ const DateJumpDialog: React.FC = () => {
           <button
             type="button"
             onClick={handleClose}
-            style={{
-              height: 36,
-              padding: '0 16px',
-              borderRadius: 18,
-              border:
-                '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
-              background: 'transparent',
-              color:
-                'var(--chrome-text-primary, rgba(255,255,255,0.92))',
-              fontSize: 13,
-              fontWeight: 500,
-              cursor: 'pointer',
-              transition: 'background 100ms ease-out',
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLElement).style.background =
-                'rgba(255,255,255,0.06)';
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLElement).style.background =
-                'transparent';
-            }}
+            className="obs-btn-ghost"
+            style={{ height: 36, padding: '0 16px', fontSize: 13, letterSpacing: '0.02em', textTransform: 'none' }}
           >
             Cancel
           </button>
@@ -679,22 +611,15 @@ const DateJumpDialog: React.FC = () => {
             type="button"
             onClick={handleJump}
             disabled={!isValid}
+            className="obs-btn-primary"
             style={{
               height: 36,
               padding: '0 20px',
-              borderRadius: 18,
-              border: 'none',
-              background: isValid
-                ? 'var(--accent, #f4c572)'
-                : 'rgba(255,255,255,0.08)',
-              color: isValid
-                ? 'rgba(20, 18, 14, 0.9)'
-                : 'var(--chrome-text-muted, rgba(255,255,255,0.38))',
               fontSize: 13,
-              fontWeight: 600,
-              cursor: isValid ? 'pointer' : 'not-allowed',
-              transition: 'all 150ms ease-out',
+              letterSpacing: '0.02em',
+              textTransform: 'none',
               opacity: isValid ? 1 : 0.6,
+              cursor: isValid ? 'pointer' : 'not-allowed',
             }}
           >
             Jump

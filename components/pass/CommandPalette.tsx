@@ -10,6 +10,7 @@ import { getSkyState, SIX_STATE_PALETTE } from '../../utils/skyPaletteEngine';
 import { getCurrentTime } from '../../utils/timeNow';
 import { searchTimezones, isUsingFallback, type TimezoneResult } from '../../utils/timezoneCache';
 import OverlayBackdrop from './OverlayBackdrop';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 /* ---------------------------------------------------------------------------
  * CommandPalette — keyboard-first add-zone overlay
@@ -57,6 +58,7 @@ const CommandPalette: React.FC = () => {
   const inputRef = useRef<HTMLInputElement>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const isMobile = useIsMobile();
 
   const pinnedIanaNames = useMemo(
     () => new Set(pinnedOrbs.map((o) => o.ianaName)),
@@ -246,30 +248,8 @@ const CommandPalette: React.FC = () => {
         onClick={() => handleSelect(tz)}
         onMouseEnter={() => setSelectedIndex(index)}
         aria-label={`${tz.city}, ${tz.country}, ${ianaName}${isPinned ? ' (already added)' : ''}`}
-        style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: 12,
-          width: '100%',
-          height: 48,
-          padding: '0 12px',
-          borderRadius: 8,
-          border: 'none',
-          cursor: isPinned ? 'default' : 'pointer',
-          background: isSelected
-            ? 'var(--accent-soft, rgba(244, 197, 114, 0.18))'
-            : 'transparent',
-          borderLeft: isSelected
-            ? '3px solid var(--accent, #f4c572)'
-            : '3px solid transparent',
-          color: 'var(--chrome-text-primary, rgba(255,255,255,0.92))',
-          opacity: isPinned ? 0.5 : 1,
-          transition: 'background 100ms ease-out',
-          textAlign: 'left',
-          flexShrink: 0,
-        }}
+        className={`command-palette-row${isSelected ? ' is-selected' : ''}${isPinned ? ' is-pinned' : ''}`}
       >
-        {/* Leading dot — sky palette zenith color swatch */}
         <span
           style={{
             width: 10,
@@ -277,15 +257,15 @@ const CommandPalette: React.FC = () => {
             borderRadius: '50%',
             background: palette.zenith,
             flexShrink: 0,
-            border: '1px solid rgba(255,255,255,0.15)',
+            border: '0.5px solid var(--rule-soft)',
           }}
           aria-hidden="true"
         />
 
-        {/* City · Country + IANA name */}
         <div style={{ flex: 1, minWidth: 0, overflow: 'hidden' }}>
           <div
             style={{
+              fontFamily: 'var(--font-ui)',
               fontSize: 15,
               lineHeight: 1.5,
               fontWeight: 500,
@@ -295,10 +275,10 @@ const CommandPalette: React.FC = () => {
             }}
           >
             {tz.city}
-            <span style={{ color: 'var(--chrome-text-muted, rgba(255,255,255,0.38))' }}>
+            <span style={{ color: 'var(--ink-muted)' }}>
               {' · '}
             </span>
-            <span style={{ color: 'var(--chrome-text-secondary, rgba(255,255,255,0.62))' }}>
+            <span style={{ color: 'var(--ink-soft)' }}>
               {tz.country}
             </span>
             {isPinned && (
@@ -307,7 +287,7 @@ const CommandPalette: React.FC = () => {
                   marginLeft: 8,
                   fontSize: 11,
                   fontWeight: 500,
-                  color: 'var(--accent, #f4c572)',
+                  color: 'var(--ember)',
                   letterSpacing: '0.04em',
                 }}
               >
@@ -319,8 +299,8 @@ const CommandPalette: React.FC = () => {
             style={{
               fontSize: 11,
               lineHeight: 1.4,
-              fontFamily: 'var(--font-mono, ui-monospace, monospace)',
-              color: 'var(--chrome-text-muted, rgba(255,255,255,0.38))',
+              fontFamily: 'var(--font-meta)',
+              color: 'var(--ink-muted)',
               whiteSpace: 'nowrap',
               overflow: 'hidden',
               textOverflow: 'ellipsis',
@@ -330,22 +310,21 @@ const CommandPalette: React.FC = () => {
           </div>
         </div>
 
-        {/* Abbreviation + UTC offset */}
         <div
           style={{
             textAlign: 'right',
             flexShrink: 0,
             fontSize: 13,
             lineHeight: 1.45,
-            fontFamily: 'var(--font-mono, ui-monospace, monospace)',
-            color: 'var(--chrome-text-secondary, rgba(255,255,255,0.62))',
+            fontFamily: 'var(--font-meta)',
+            color: 'var(--ink-soft)',
             whiteSpace: 'nowrap',
           }}
         >
           {abbreviation && (
             <span style={{ marginRight: 6 }}>{abbreviation}</span>
           )}
-          <span style={{ color: 'var(--chrome-text-muted, rgba(255,255,255,0.38))' }}>
+          <span style={{ color: 'var(--ink-muted)' }}>
             UTC{utcOffset}
           </span>
         </div>
@@ -368,37 +347,16 @@ const CommandPalette: React.FC = () => {
         aria-modal="true"
         aria-label="Add timezone"
         onKeyDown={handleKeyDown}
-        style={{
-          width: '100%',
-          maxWidth: 560,
-          maxHeight: 480,
-          display: 'flex',
-          flexDirection: 'column',
-          background: 'var(--chrome-glass, rgba(12, 14, 28, 0.35))',
-          backdropFilter: 'blur(20px) saturate(140%)',
-          WebkitBackdropFilter: 'blur(20px) saturate(140%)',
-          borderRadius: 20,
-          border: '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
-          overflow: 'hidden',
-          marginTop: '30vh',
-        }}
+        className="obs-panel command-palette-dialog"
       >
-        {/* Search input */}
-        <div
-          style={{
-            padding: '0 16px',
-            flexShrink: 0,
-            borderBottom: '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
-          }}
-        >
+        <div className="command-palette-search">
           <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            {/* Search icon */}
             <svg
               width="16"
               height="16"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="var(--chrome-text-muted, rgba(255,255,255,0.38))"
+              stroke="var(--ink-muted)"
               strokeWidth="1.5"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -417,18 +375,7 @@ const CommandPalette: React.FC = () => {
               aria-label="Search timezones"
               autoComplete="off"
               spellCheck={false}
-              style={{
-                width: '100%',
-                height: 48,
-                background: 'transparent',
-                border: 'none',
-                outline: 'none',
-                fontSize: 15,
-                lineHeight: 1.5,
-                fontWeight: 400,
-                color: 'var(--chrome-text-primary, rgba(255,255,255,0.92))',
-                caretColor: 'var(--accent, #f4c572)',
-              }}
+              className="command-palette-input"
             />
           </div>
         </div>
@@ -451,12 +398,13 @@ const CommandPalette: React.FC = () => {
                 <div style={{ marginBottom: 4 }}>
                   <div
                     style={{
+                      fontFamily: 'var(--font-meta)',
                       fontSize: 11,
                       lineHeight: 1.4,
                       fontWeight: 500,
                       textTransform: 'uppercase',
                       letterSpacing: '0.08em',
-                      color: 'var(--chrome-text-muted, rgba(255,255,255,0.38))',
+                      color: 'var(--ink-muted)',
                       padding: '8px 12px 4px',
                     }}
                   >
@@ -497,7 +445,7 @@ const CommandPalette: React.FC = () => {
                 padding: '24px 12px',
                 textAlign: 'center',
                 fontSize: 13,
-                color: 'var(--chrome-text-muted, rgba(255,255,255,0.38))',
+                color: 'var(--ink-muted)',
               }}
             >
               Searching…
@@ -508,7 +456,7 @@ const CommandPalette: React.FC = () => {
                 padding: '24px 12px',
                 textAlign: 'center',
                 fontSize: 13,
-                color: 'var(--chrome-text-muted, rgba(255,255,255,0.38))',
+                color: 'var(--ink-muted)',
               }}
             >
               No timezones found for &ldquo;{query}&rdquo;
@@ -521,11 +469,12 @@ const CommandPalette: React.FC = () => {
           <div
             style={{
               padding: '6px 16px',
-              borderTop: '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
+              borderTop: '0.5px solid var(--rule-soft)',
+              fontFamily: 'var(--font-meta)',
               fontSize: 11,
               lineHeight: 1.4,
               fontWeight: 500,
-              color: 'var(--accent, #f4c572)',
+              color: 'var(--ember)',
               textAlign: 'center',
               display: 'flex',
               alignItems: 'center',
@@ -560,26 +509,15 @@ const CommandPalette: React.FC = () => {
           </div>
         )}
 
-        {/* Keyboard hint footer */}
-        <div
-          style={{
-            padding: '8px 16px',
-            borderTop: '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
-            fontSize: 11,
-            lineHeight: 1.4,
-            fontWeight: 500,
-            color: 'var(--chrome-text-muted, rgba(255,255,255,0.38))',
-            textAlign: 'center',
-            flexShrink: 0,
-            letterSpacing: '0.02em',
-          }}
-        >
-          <span>↑↓ to navigate</span>
-          <span style={{ margin: '0 12px', opacity: 0.4 }}>·</span>
-          <span>↵ to add</span>
-          <span style={{ margin: '0 12px', opacity: 0.4 }}>·</span>
-          <span>esc to close</span>
-        </div>
+        {!isMobile && (
+          <div className="command-palette-footer">
+            <span>↑↓ to navigate</span>
+            <span style={{ margin: '0 12px', opacity: 0.4 }}>·</span>
+            <span>↵ to add</span>
+            <span style={{ margin: '0 12px', opacity: 0.4 }}>·</span>
+            <span>esc to close</span>
+          </div>
+        )}
       </div>
     </OverlayBackdrop>
   );

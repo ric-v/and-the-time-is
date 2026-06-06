@@ -11,7 +11,7 @@
  */
 
 import type { Orb } from '../store/orbSlice';
-import type { DisplayFormat, HorizonSettings } from '../store/settingsSlice';
+import type { DisplayFormat, AppSettings } from '../store/settingsSlice';
 import { canonicalizeTimezoneId, type Timezones } from './timeNow';
 import { isLocalStorageAvailable, safeGetItem, safeSetItem } from './persistenceManager';
 
@@ -90,7 +90,7 @@ export function migrateLegacyData(): boolean {
 
     // Read existing settings (if any) and merge the format
     const existingSettingsRaw = safeGetItem('horizon.settings');
-    let settings: Partial<HorizonSettings> = {};
+    let settings: Partial<AppSettings> = {};
     if (existingSettingsRaw) {
       try {
         settings = JSON.parse(existingSettingsRaw);

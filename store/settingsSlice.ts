@@ -12,35 +12,31 @@ export type DisplayFormat =
   | 'mdy12'
   | 'readable';
 export type ReducedMotionOverride = 'auto' | 'on' | 'off';
-export type ThemeMode = 'light' | 'dark';
 
-export interface HorizonSettings {
+/** Persisted app settings (storage key remains horizon.settings for compatibility). */
+export interface AppSettings {
   displayFormat: DisplayFormat;
-  themeMode: ThemeMode;
-  orbDrift: boolean;
-  globeAutoRotation: boolean;                     // default true, disabled if reduced motion active
   rememberScrubPosition: boolean;
   reducedMotionOverride: ReducedMotionOverride;
-  anchorOrbId: string | null;                     // null = Local Orb
-  cameraAngle: { azimuth: number; elevation: number };
-  coachMarkDismissed: boolean;
-  recentSearches: string[];                       // max 5 IANA names
-  lastScrubOffset: number;                        // minutes, only if rememberScrubPosition
-  lastScrubTimestamp: number;                     // Unix ms, for expiry check
+  recentSearches: string[];
+  lastScrubOffset: number;
+  lastScrubTimestamp: number;
+  /** Legacy fields — ignored by Pass UI, kept for migration from older saves. */
+  themeMode?: 'light' | 'dark';
+  orbDrift?: boolean;
+  globeAutoRotation?: boolean;
+  anchorOrbId?: string | null;
+  cameraAngle?: { azimuth: number; elevation: number };
+  coachMarkDismissed?: boolean;
+  cameraOrbitHintDismissed?: boolean;
 }
 
 const MAX_RECENT_SEARCHES = 5;
 
-const initialState: HorizonSettings = {
+const initialState: AppSettings = {
   displayFormat: 'local',
-  themeMode: 'light',
-  orbDrift: true,
-  globeAutoRotation: true,
   rememberScrubPosition: false,
   reducedMotionOverride: 'auto',
-  anchorOrbId: null,
-  cameraAngle: { azimuth: 0, elevation: 12 },
-  coachMarkDismissed: false,
   recentSearches: [],
   lastScrubOffset: 0,
   lastScrubTimestamp: 0,
@@ -53,59 +49,38 @@ const settingsSlice = createSlice({
     setDisplayFormat(state, action: PayloadAction<DisplayFormat>) {
       state.displayFormat = action.payload;
     },
-    setThemeMode(state, action: PayloadAction<ThemeMode>) {
-      state.themeMode = action.payload;
-    },
-    setOrbDrift(state, action: PayloadAction<boolean>) {
-      state.orbDrift = action.payload;
-    },
-    setGlobeAutoRotation(state, action: PayloadAction<boolean>) {
-      state.globeAutoRotation = action.payload;
-    },
     setReducedMotion(state, action: PayloadAction<ReducedMotionOverride>) {
       state.reducedMotionOverride = action.payload;
-    },
-    setAnchorOrb(state, action: PayloadAction<string | null>) {
-      state.anchorOrbId = action.payload;
     },
     setRememberScrub(state, action: PayloadAction<boolean>) {
       state.rememberScrubPosition = action.payload;
     },
-    dismissCoachMark(state) {
-      state.coachMarkDismissed = true;
-    },
     addRecentSearch(state, action: PayloadAction<string>) {
-      // Remove if already present, then prepend; cap at MAX_RECENT_SEARCHES
       state.recentSearches = [
         action.payload,
         ...state.recentSearches.filter((s) => s !== action.payload),
       ].slice(0, MAX_RECENT_SEARCHES);
     },
-    setCameraAngle(state, action: PayloadAction<{ azimuth: number; elevation: number }>) {
-      state.cameraAngle = action.payload;
-    },
     setLastScrubPosition(state, action: PayloadAction<{ offset: number; timestamp: number }>) {
       state.lastScrubOffset = action.payload.offset;
       state.lastScrubTimestamp = action.payload.timestamp;
     },
-    loadSettings(_state, action: PayloadAction<HorizonSettings>) {
-      return action.payload;
+    loadSettings(_state, action: PayloadAction<AppSettings>) {
+      return { ...initialState, ...action.payload };
     },
   },
 });
 
 export const {
   setDisplayFormat,
-  setThemeMode,
-  setOrbDrift,
-  setGlobeAutoRotation,
   setReducedMotion,
-  setAnchorOrb,
   setRememberScrub,
-  dismissCoachMark,
   addRecentSearch,
-  setCameraAngle,
   setLastScrubPosition,
   loadSettings,
 } = settingsSlice.actions;
+
+/** @deprecated Use AppSettings */
+export type HorizonSettings = AppSettings;
+
 export default settingsSlice.reducer;

@@ -15,7 +15,7 @@ import { useEffect, useRef } from 'react';
 import { useAppDispatch } from '../store/store';
 import { store } from '../store/store';
 import { setOrbList, type Orb } from '../store/orbSlice';
-import { loadSettings as loadSettingsAction, type HorizonSettings } from '../store/settingsSlice';
+import { loadSettings as loadSettingsAction, type AppSettings } from '../store/settingsSlice';
 import { setScrubOffset } from '../store/scrubSlice';
 import { setDateJumpOpen } from '../store/sessionSlice';
 import { migrateLegacyData } from '../utils/migrationManager';
@@ -319,7 +319,7 @@ export function useFirstRunSeeding(): void {
       // The loadSettings action in settingsSlice replaces the entire state,
       // so we merge with the current (default) state to fill any missing keys.
       const currentDefaults = store.getState().settings;
-      const merged: HorizonSettings = { ...currentDefaults, ...persistedSettings };
+      const merged: AppSettings = { ...currentDefaults, ...persistedSettings };
       dispatch(loadSettingsAction(merged));
     }
 

@@ -13,9 +13,9 @@ npm run prod     # Static export (next export)
 
 ## Project Overview
 
-**And The Time Is** is a timezone dashboard that shows world time on a 3D observatory — a rotating ring with zone orbs representing pinned timezones, a wireframe globe, and a sky palette that shifts by local hour. Live at http://timeis.astrx.dev.
+**And The Time Is** is a timezone dashboard with an Alto-inspired **Pass** theme — parallax mountain layers, landmark pins for pinned timezones, drag-to-scrub time travel, and sky palettes driven by local hour. Live at http://timeis.astrx.dev.
 
-The codebase is in active migration from a legacy card-grid UI to the **Horizon** 3D system. The Horizon system is the primary focus; legacy components are deprecated but still present.
+Legacy card-grid UI under `components/` is deprecated; do not extend it.
 
 ## Architecture
 
@@ -26,14 +26,14 @@ Five slices in `store/`:
 | Slice | Persisted | Purpose |
 |---|---|---|
 | `orbs` | yes | User-pinned timezone list (`Orb[]`) |
-| `settings` | yes | Display format, camera, motion preferences |
+| `settings` | yes | Display format, motion, scrub memory |
 | `scrub` | no | Time travel offset in signed minutes |
-| `session` | no | Ephemeral UI state (open modals, expanded orb) |
+| `session` | no | Ephemeral UI state (open modals) |
 | `storedata` | legacy | Old card-grid data — do not extend |
 
 Always use typed hooks from `store/store.tsx`: `useAppDispatch`, `useAppSelector`.
 
-Auto-persistence is wired in `utils/persistenceManager.ts` — it subscribes to Redux and writes `orbs` and `settings` to localStorage under `horizon.*` keys on every change.
+Auto-persistence is wired in `utils/persistenceManager.ts` — it subscribes to Redux and writes `orbs` and `settings` to localStorage under `horizon.*` keys on every change (keys kept for backward compatibility).
 
 ### Time Model
 
@@ -41,20 +41,18 @@ Auto-persistence is wired in `utils/persistenceManager.ts` — it subscribes to 
 - Scrub offset = 0 → live (ticks every 1s)
 - Scrub offset ≠ 0 → frozen moment
 
-All time math lives in `utils/timeEngine.ts`. Use its functions exclusively — do not reimplement ring angle or UTC offset calculations.
-
-**Ring angle**: `(hour * 60 + minute) / 1440 * 360` where 0° = midnight, 180° = noon.
+All time math lives in `utils/timeEngine.ts`. Use its functions exclusively — do not reimplement UTC offset or format calculations.
 
 UTC offsets are **DST-aware** via `Intl.DateTimeFormat` — never use hardcoded offset tables.
 
-### 3D Rendering
+### Pass Scene
 
-Three.js is imported via `utils/three-imports.ts` (tree-shaken barrel — always import from there, not directly from `three`). Scene orchestration lives in `hooks/useSceneOrchestrator.ts`. The canvas is in `components/horizon/SceneContainer.tsx`, which projects 3D orb positions to 2D React overlays on every frame.
+The main UI is 2D/CSS parallax (no Three.js). Scene orchestration lives in `components/pass/PassScene.tsx`. Landmarks are laid out along the track via `utils/passLayoutEngine.ts` from Redux `orbs`.
 
 ### Initialization Sequence
 
 `hooks/useFirstRunSeeding.ts` runs on mount:
-1. Run legacy → Horizon migration (`utils/migrationManager.ts`)
+1. Run legacy → Pass migration (`utils/migrationManager.ts`)
 2. Load persisted orbs, or parse URL share params (`utils/horizonUrlParams.ts`)
 3. Seed defaults for first-time users (Local + UTC + 2 geographically opposite zones)
 4. Load persisted settings
@@ -63,14 +61,12 @@ Three.js is imported via `utils/three-imports.ts` (tree-shaken barrel — always
 ### Component Layout
 
 ```
-components/horizon/   ← Active Horizon UI
-  HorizonApp.tsx      ← Root: keyboard handlers, modal orchestration
-  SceneContainer.tsx  ← WebGL canvas + React overlay projection
-  TopBar / BottomBar  ← Persistent chrome
-  Orb*.tsx            ← Orb button, label, detail view
-  ScrubControl.tsx    ← Time-travel slider
-  CommandPalette / DateJumpDialog / SettingsPanel  ← Modal panels
-  HorizonRing.ts / WireframeGlobe.ts / ZoneOrb.ts ← Three.js objects
+components/pass/      ← Active Pass UI
+  PassApp.tsx         ← Root: keyboard handlers, modal orchestration
+  PassScene.tsx       ← Parallax scene + drag scrub
+  PassTopBar / PassScrubBar / PassDetailPanel
+  CommandPalette / DateJumpDialog / SettingsPanel
+public/styles/pass.css
 components/           ← Legacy card UI (deprecated, do not extend)
 ```
 
@@ -78,13 +74,13 @@ components/           ← Legacy card UI (deprecated, do not extend)
 
 | File | Purpose |
 |---|---|
-| `utils/timeEngine.ts` | All time/ring/offset/format computation |
-| `utils/skyPaletteEngine.ts` | Sky color selection (6-state for orbs, 24-state for globe) |
+| `utils/timeEngine.ts` | All time/offset/format computation |
+| `utils/skyPaletteEngine.ts` | Sky color selection by local hour |
+| `utils/passLayoutEngine.ts` | Landmark positions along the pass |
 | `utils/persistenceManager.ts` | Safe localStorage wrappers, auto-persistence, cache |
 | `utils/migrationManager.ts` | One-time legacy data migration |
 | `utils/horizonUrlParams.ts` | Share link encoding/decoding |
-| `utils/three-imports.ts` | Tree-shaken Three.js barrel — import Three from here |
-| `utils/fonts.ts` | next/font/google config (Inter, JetBrains Mono, Fraunces, IBM Plex Mono) |
+| `utils/fonts.ts` | Nunito + JetBrains Mono via next/font |
 
 ### Middleware
 
@@ -97,4 +93,3 @@ components/           ← Legacy card UI (deprecated, do not extend)
 - **Local Orb**: always present, cannot be removed.
 - **Safe localStorage**: use `safeGetItem`/`safeSetItem` from `persistenceManager.ts` — handles private browsing and quota errors.
 - **Accessibility**: new UI components need ARIA labels, keyboard navigation. Use `hooks/useFocusTrap.ts` for modals, `hooks/useAriaAnnouncer.ts` for live announcements. Honor `prefers-reduced-motion` via `hooks/useReducedMotion.ts`.
-- **PRD references**: comments like `// Req 3.2` reference `horizon_prd.md` sections — maintain these when modifying related logic.

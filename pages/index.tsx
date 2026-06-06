@@ -1,9 +1,9 @@
 import type { NextPage } from "next";
-import HorizonApp from "../components/horizon/HorizonApp";
+import PassApp from "../components/pass/PassApp";
 
 const Home: NextPage = () => {
   return (
-    <HorizonApp />
+    <PassApp />
   );
 };
 

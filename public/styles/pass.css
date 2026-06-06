@@ -1,0 +1,1200 @@
+/* The Pass — Alto-inspired theme */
+
+.pass-root {
+  --sil-dark: #1a1a2e;
+  --sil-mid: #2d2d44;
+  --sil-light: #3d3d5c;
+  --ui-fg: rgba(255, 255, 255, 0.92);
+  --ui-dim: rgba(255, 255, 255, 0.55);
+  --ui-bg: rgba(26, 26, 46, 0.55);
+  --lantern-green: #6ecf8a;
+  --lantern-amber: #e8b84a;
+  --lantern-dim: #4a4a5a;
+  --combo-gold: #ffd166;
+  --pass-flash: #fff8e8;
+
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  position: relative;
+  font-family: var(--font-nunito), 'Nunito', system-ui, sans-serif;
+  background: #0b1033;
+}
+
+.pass-scene {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+  cursor: grab;
+  user-select: none;
+  touch-action: pan-x;
+}
+
+.pass-scene.dragging {
+  cursor: grabbing;
+}
+
+.pass-scene.is-riding .pass-layer-ground {
+  filter: brightness(1.03);
+}
+
+/* ── 3D viewport ── */
+.pass-scene-viewport {
+  position: absolute;
+  inset: 0;
+  perspective: 1100px;
+  perspective-origin: 50% 58%;
+  transform-style: preserve-3d;
+  overflow: hidden;
+}
+
+.pass-scene-viewport::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 35;
+  box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.35);
+}
+
+/* ── Sky layers ── */
+.pass-sky {
+  position: absolute;
+  inset: 0;
+  transition: opacity 1.4s ease;
+  z-index: 0;
+}
+
+.pass-sky-dawn {
+  background: linear-gradient(180deg, #4a3a6e 0%, #c87868 55%, #e8a38a 88%);
+  opacity: 0;
+}
+
+.pass-sky-day {
+  background: linear-gradient(180deg, #4a9fdb 0%, #6fb8e8 35%, #b8d8ee 78%);
+  opacity: 0;
+}
+
+.pass-sky-dusk {
+  background: linear-gradient(180deg, #3d2a5a 0%, #a85868 45%, #e8856e 85%);
+  opacity: 0;
+}
+
+.pass-sky-night {
+  background: linear-gradient(180deg, #050818 0%, #0b1033 40%, #2a2048 78%);
+  opacity: 0;
+}
+
+/* ── Atmosphere ── */
+.pass-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.pass-celestial {
+  position: absolute;
+  z-index: 2;
+  transition: opacity 1.2s ease;
+}
+
+.pass-sun {
+  top: 10%;
+  right: 18%;
+}
+
+.pass-moon {
+  top: 8%;
+  left: 14%;
+}
+
+.pass-celestial-disc {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  position: relative;
+  z-index: 2;
+}
+
+.pass-sun-disc {
+  background: radial-gradient(circle at 35% 35%, #fff8e0, #ffd166 55%, #f4a040);
+  box-shadow: 0 0 40px rgba(255, 209, 102, 0.6);
+}
+
+.pass-moon-disc {
+  background: radial-gradient(circle at 38% 38%, #f0f0ff, #c8c8e8 60%, #9898b8);
+  box-shadow: 0 0 30px rgba(200, 200, 255, 0.35);
+}
+
+.pass-celestial-glow {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(24px);
+  z-index: 1;
+}
+
+.pass-sun-glow {
+  width: 140px;
+  height: 140px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255, 200, 100, 0.35);
+}
+
+.pass-moon-glow {
+  width: 100px;
+  height: 100px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(180, 190, 255, 0.2);
+}
+
+.pass-cloud-layer {
+  position: absolute;
+  left: 0;
+  width: 200%;
+  height: 80px;
+  pointer-events: none;
+  z-index: 3;
+  transform-style: preserve-3d;
+}
+
+.pass-cloud-layer > .pass-cloud-drift {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  display: flex;
+}
+
+.pass-cloud-far {
+  top: 10%;
+}
+
+.pass-cloud-mid {
+  top: 16%;
+}
+
+.pass-cloud-near {
+  top: 22%;
+}
+
+.pass-cloud-drift {
+  animation: pass-cloud-drift 90s linear infinite;
+}
+
+@keyframes pass-cloud-drift {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-220px);
+  }
+}
+
+.pass-cloud-unit {
+  position: absolute;
+  width: 200px;
+  height: 60px;
+}
+
+.pass-cloud-svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.08));
+}
+
+.pass-sky-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 30%, transparent 35%, rgba(0, 0, 0, 0.45) 100%);
+  z-index: 4;
+}
+
+.pass-ground-fog {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 45%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(11, 16, 51, 0.15) 40%,
+    rgba(11, 16, 51, 0.55) 100%
+  );
+  z-index: 12;
+  pointer-events: none;
+}
+
+.pass-aurora {
+  position: absolute;
+  top: 6%;
+  left: 0;
+  right: 0;
+  height: 140px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(110, 207, 138, 0.12) 15%,
+    rgba(120, 180, 255, 0.28) 35%,
+    rgba(200, 140, 255, 0.22) 55%,
+    rgba(110, 207, 138, 0.15) 75%,
+    transparent 100%
+  );
+  filter: blur(28px);
+  z-index: 2;
+  animation: pass-aurora-shimmer 8s ease-in-out infinite;
+}
+
+.pass-aurora.on {
+  opacity: 1;
+}
+
+@keyframes pass-aurora-shimmer {
+  0%,
+  100% {
+    transform: translateX(0) scaleY(1);
+  }
+  50% {
+    transform: translateX(20px) scaleY(1.08);
+  }
+}
+
+.pass-effects-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 28;
+}
+
+/* ── Parallax layers ── */
+.pass-layer {
+  position: absolute;
+  left: 0;
+  right: 0;
+  will-change: transform;
+  transform-style: preserve-3d;
+}
+
+.pass-track-inner {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.pass-layer-mountains {
+  bottom: 32%;
+  height: 28%;
+  z-index: 5;
+}
+
+.pass-layer-mid {
+  bottom: 18%;
+  height: 34%;
+  z-index: 8;
+}
+
+.pass-layer-trees {
+  bottom: 10%;
+  height: 24%;
+  z-index: 11;
+}
+
+.pass-layer-ground {
+  bottom: 0;
+  height: 32%;
+  z-index: 14;
+}
+
+.pass-mountain-strip,
+.pass-hill-strip,
+.pass-tree-strip,
+.pass-slope-strip {
+  position: absolute;
+  bottom: 0;
+  height: 100%;
+}
+
+.pass-mountain-strip svg,
+.pass-hill-strip svg,
+.pass-tree-strip svg,
+.pass-slope-strip svg {
+  display: block;
+  height: 100%;
+  width: 100%;
+}
+
+/* ── Decorations ── */
+.pass-decor {
+  position: absolute;
+  bottom: 8px;
+  transform-origin: bottom center;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.pass-decor-trees {
+  bottom: 12px;
+  z-index: 2;
+}
+
+.pass-decor svg {
+  display: block;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+/* ── Landmarks ── */
+.pass-landmarks-container {
+  position: absolute;
+  inset: 0;
+  z-index: 6;
+}
+
+.pass-landmark {
+  position: absolute;
+  bottom: 52px;
+  transform: translateX(-50%);
+  z-index: 6;
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  transition: transform 0.2s ease;
+}
+
+.pass-landmark:hover {
+  transform: translateX(-50%) scale(1.06);
+}
+
+.pass-landmark.is-local .pass-landmark-pedestal {
+  background: radial-gradient(ellipse, rgba(255, 209, 102, 0.35) 0%, transparent 70%);
+}
+
+.pass-landmark-pedestal {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90px;
+  height: 24px;
+  background: radial-gradient(ellipse, rgba(110, 207, 138, 0.2) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.pass-landmark-body {
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 6px 14px rgba(0, 0, 0, 0.35));
+}
+
+.pass-landmark-body svg {
+  display: block;
+}
+
+.pass-landmark-chip {
+  position: absolute;
+  top: -42px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  background: var(--ui-bg);
+  padding: 5px 10px;
+  border-radius: 6px;
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.25);
+}
+
+.pass-landmark-city {
+  font-size: 0.52rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ui-dim);
+}
+
+.pass-landmark-time {
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--ui-fg);
+  font-feature-settings: 'tnum' 1;
+}
+
+.pass-lantern {
+  position: absolute;
+  top: -8px;
+  right: -6px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  z-index: 3;
+  animation: pass-lantern-pulse 2.5s ease-in-out infinite;
+}
+
+.pass-lantern.awake {
+  background: var(--lantern-green);
+  box-shadow: 0 0 10px var(--lantern-green), 0 0 20px rgba(110, 207, 138, 0.4);
+}
+
+.pass-lantern.winding {
+  background: var(--lantern-amber);
+  box-shadow: 0 0 8px var(--lantern-amber);
+}
+
+.pass-lantern.sleep {
+  background: var(--lantern-dim);
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes pass-lantern-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 0.85;
+  }
+}
+
+/* ── Rider ── */
+.pass-rider-wrap {
+  position: absolute;
+  bottom: 13.5%;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  pointer-events: none;
+  transform-style: preserve-3d;
+}
+
+.pass-rider-shadow {
+  position: absolute;
+  bottom: -6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 56px;
+  height: 12px;
+  background: radial-gradient(ellipse, rgba(0, 0, 0, 0.45) 0%, transparent 70%);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.pass-rider {
+  position: relative;
+  width: 52px;
+  height: 60px;
+  z-index: 1;
+  transform-style: preserve-3d;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4));
+  transition: transform 0.08s ease-out;
+}
+
+.pass-rider.riding {
+  animation: pass-ride-bob 0.35s ease-in-out infinite;
+}
+
+@keyframes pass-ride-bob {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 80px) rotate(var(--lean, 0deg));
+  }
+  50% {
+    transform: translate3d(0, -3px, 80px) rotate(var(--lean, 0deg));
+  }
+}
+
+.pass-rider.jumping {
+  animation: pass-jump-arc 0.65s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+
+.pass-rider.grinding {
+  animation: pass-grind-pose 0.8s ease forwards;
+}
+
+@keyframes pass-jump-arc {
+  0% {
+    transform: translate3d(0, 0, 80px) rotate(0deg);
+  }
+  35% {
+    transform: translate3d(0, -80px, 120px) rotate(-18deg);
+  }
+  70% {
+    transform: translate3d(0, -32px, 90px) rotate(8deg);
+  }
+  100% {
+    transform: translate3d(0, 0, 80px) rotate(0deg);
+  }
+}
+
+@keyframes pass-grind-pose {
+  0% {
+    transform: translate3d(0, -24px, 100px) rotate(-35deg) scaleX(1.1);
+  }
+  50% {
+    transform: translate3d(0, -10px, 95px) rotate(-42deg) scaleX(1.15);
+  }
+  100% {
+    transform: translate3d(0, 0, 80px) rotate(-5deg) scaleX(1);
+  }
+}
+
+.pass-rider svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Birds ── */
+.pass-bird {
+  position: absolute;
+  z-index: 18;
+  pointer-events: none;
+  opacity: 0.9;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.pass-bird svg {
+  width: 28px;
+  height: 16px;
+}
+
+/* ── PASS flash ── */
+.pass-flash {
+  position: absolute;
+  top: 42%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.6);
+  font-family: var(--font-nunito), 'Nunito', sans-serif;
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--pass-flash);
+  text-shadow: 0 2px 24px rgba(255, 255, 255, 0.4);
+  opacity: 0;
+  pointer-events: none;
+  z-index: 25;
+}
+
+.pass-flash.show {
+  animation: pass-pop 0.9s ease forwards;
+}
+
+@keyframes pass-pop {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  70% {
+    opacity: 0.85;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -60%) scale(0.9);
+  }
+}
+
+/* ── Combo badge ── */
+.pass-combo-badge {
+  position: absolute;
+  top: 88px;
+  right: 24px;
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--combo-gold);
+  background: rgba(26, 26, 46, 0.65);
+  padding: 6px 12px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 209, 102, 0.35);
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.25s, transform 0.25s;
+  z-index: 40;
+  backdrop-filter: blur(8px);
+}
+
+.pass-combo-badge.on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ── Chrome ── */
+.pass-chrome {
+  position: absolute;
+  z-index: 50;
+  pointer-events: none;
+}
+
+.pass-chrome > * {
+  pointer-events: auto;
+}
+
+.pass-brand {
+  top: 16px;
+  left: 20px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ui-fg);
+  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.5);
+}
+
+.pass-top-actions {
+  top: 14px;
+  right: 20px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.pass-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: var(--ui-bg);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--ui-fg);
+  padding: 0;
+}
+
+.pass-icon-btn:hover {
+  background: rgba(26, 26, 46, 0.75);
+}
+
+.pass-settings-dot::after {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--ui-fg);
+  box-shadow: -6px 0 0 var(--ui-fg), 6px 0 0 var(--ui-fg);
+}
+
+.pass-add-btn {
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ui-dim);
+  background: var(--ui-bg);
+  padding: 6px 12px;
+  border-radius: 4px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  cursor: pointer;
+  height: 28px;
+}
+
+.pass-add-btn:hover {
+  color: var(--ui-fg);
+}
+
+/* ── Scrub bar ── */
+.pass-scrub-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 56px;
+  background: linear-gradient(transparent, rgba(5, 8, 24, 0.85));
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 0 24px 14px;
+  pointer-events: none;
+}
+
+.pass-scrub-bar > * {
+  pointer-events: auto;
+}
+
+.pass-scrub-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: var(--ui-dim);
+}
+
+.pass-scrub-time {
+  font-size: 0.78rem;
+  color: var(--ui-fg);
+  font-weight: 500;
+}
+
+.pass-scrub-offset {
+  color: var(--ui-dim);
+}
+
+.pass-scrub-track-wrap {
+  position: relative;
+  height: 6px;
+}
+
+.pass-scrub-golden {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  background: rgba(255, 209, 102, 0.35);
+  border-radius: 3px;
+  pointer-events: none;
+}
+
+.pass-scrub-track {
+  width: 100%;
+  height: 6px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 3px;
+  outline: none;
+  cursor: pointer;
+}
+
+.pass-scrub-track::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ui-fg);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+  cursor: grab;
+}
+
+.pass-scrub-track::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--ui-fg);
+  border: none;
+  cursor: grab;
+}
+
+/* ── Detail panel ── */
+.pass-detail-panel {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: rgba(26, 26, 46, 0.94);
+  backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  padding: 20px 28px 28px;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 60;
+}
+
+.pass-detail-panel.open {
+  transform: translateY(0);
+}
+
+.pass-detail-close {
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  background: none;
+  border: none;
+  color: var(--ui-dim);
+  font-size: 1.2rem;
+  cursor: pointer;
+  line-height: 1;
+  padding: 4px 8px;
+}
+
+.pass-detail-close:hover {
+  color: var(--ui-fg);
+}
+
+.pass-detail-city {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--ui-fg);
+  margin-bottom: 4px;
+}
+
+.pass-detail-iana {
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ui-dim);
+  margin-bottom: 12px;
+}
+
+.pass-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px;
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  font-size: 0.72rem;
+  color: var(--ui-fg);
+}
+
+.pass-detail-row span {
+  color: var(--ui-dim);
+}
+
+.pass-detail-actions {
+  margin-top: 16px;
+  display: flex;
+  gap: 10px;
+}
+
+.pass-detail-remove {
+  font-family: var(--font-mono), 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #ff8a8a;
+  background: rgba(255, 100, 100, 0.12);
+  border: 1px solid rgba(255, 100, 100, 0.3);
+  padding: 8px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.pass-detail-remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Pass-themed settings overlay */
+.pass-root .obs-panel.settings-panel {
+  background: rgba(26, 26, 46, 0.95);
+  backdrop-filter: blur(16px);
+  border-left: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--ui-fg, rgba(255, 255, 255, 0.92));
+  --ink: rgba(255, 255, 255, 0.92);
+  --ink-muted: rgba(255, 255, 255, 0.55);
+  --rule-soft: rgba(255, 255, 255, 0.12);
+  --font-ui: var(--font-nunito), 'Nunito', system-ui, sans-serif;
+  --font-display: var(--font-nunito), 'Nunito', system-ui, sans-serif;
+  --font-meta: var(--font-mono), 'JetBrains Mono', monospace;
+}
+
+.pass-root .overlay-backdrop {
+  background: rgba(11, 16, 51, 0.55);
+}
+
+/* Shared overlay panels (command palette, date jump, settings) */
+.pass-root {
+  --ink: rgba(255, 255, 255, 0.92);
+  --ink-soft: rgba(255, 255, 255, 0.78);
+  --ink-muted: rgba(255, 255, 255, 0.55);
+  --rule-soft: rgba(255, 255, 255, 0.12);
+  --ember: #e8b84a;
+  --danger-soft: rgba(255, 100, 100, 0.12);
+  --danger-text: #ff8a8a;
+  --font-ui: var(--font-nunito), 'Nunito', system-ui, sans-serif;
+  --font-display: var(--font-nunito), 'Nunito', system-ui, sans-serif;
+  --font-meta: var(--font-mono), 'JetBrains Mono', monospace;
+}
+
+.pass-root .obs-panel {
+  background: rgba(26, 26, 46, 0.96);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--ink);
+  border-radius: 8px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.45);
+}
+
+.pass-root .obs-panel.command-palette-dialog {
+  width: min(560px, calc(100vw - 32px));
+  max-height: min(520px, calc(100vh - 64px));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pass-root .command-palette-search {
+  padding: 14px 16px;
+  border-bottom: 0.5px solid var(--rule-soft);
+}
+
+.pass-root .command-palette-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--ink);
+}
+
+.pass-root .command-palette-input::placeholder {
+  color: var(--ink-muted);
+}
+
+.pass-root .command-palette-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-align: left;
+  border-radius: 6px;
+  color: var(--ink);
+}
+
+.pass-root .command-palette-row.is-selected {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.pass-root .command-palette-row.is-pinned {
+  opacity: 0.55;
+}
+
+.pass-root .command-palette-footer {
+  padding: 10px 16px;
+  border-top: 0.5px solid var(--rule-soft);
+  font-family: var(--font-meta);
+  font-size: 11px;
+  color: var(--ink-muted);
+  text-align: center;
+}
+
+.pass-root .obs-panel-close {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.5px solid var(--rule-soft);
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.pass-root .obs-panel-close:hover {
+  color: var(--ink);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
+.pass-root .obs-panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pass-root .obs-panel-section-title {
+  font-family: var(--font-meta);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+  margin: 0 0 4px;
+}
+
+.pass-root .obs-toggle {
+  width: 44px;
+  height: 24px;
+  border-radius: 12px;
+  border: 0.5px solid var(--rule-soft);
+  background: rgba(255, 255, 255, 0.08);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+}
+
+.pass-root .obs-toggle[aria-checked='true'] {
+  background: rgba(110, 207, 138, 0.35);
+  border-color: rgba(110, 207, 138, 0.5);
+}
+
+.pass-root .obs-toggle-knob {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 150ms ease;
+}
+
+.pass-root .obs-toggle[aria-checked='true'] .obs-toggle-knob {
+  transform: translateX(20px);
+}
+
+.pass-root .obs-segmented {
+  display: inline-flex;
+  border: 0.5px solid var(--rule-soft);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.pass-root .obs-segmented-btn {
+  padding: 6px 12px;
+  border: none;
+  background: transparent;
+  color: var(--ink-muted);
+  font-family: var(--font-ui);
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.pass-root .obs-segmented-btn[aria-checked='true'] {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--ink);
+}
+
+.pass-root .obs-btn-ghost,
+.pass-root .obs-btn-primary,
+.pass-root .obs-btn-danger {
+  padding: 8px 14px;
+  border-radius: 4px;
+  font-family: var(--font-ui);
+  font-size: 13px;
+  cursor: pointer;
+  border: 0.5px solid var(--rule-soft);
+}
+
+.pass-root .obs-btn-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+}
+
+.pass-root .obs-btn-primary {
+  background: rgba(110, 207, 138, 0.25);
+  border-color: rgba(110, 207, 138, 0.45);
+  color: var(--ink);
+}
+
+.pass-root .obs-btn-danger {
+  background: var(--danger-soft);
+  border-color: rgba(255, 100, 100, 0.35);
+  color: var(--danger-text);
+}
+
+@media (max-width: 767px) {
+  .pass-root .obs-panel.command-palette-dialog,
+  .pass-root .command-palette-panel .obs-panel {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100vh !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+  }
+
+  .pass-root .obs-panel:not(.settings-panel) {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    border-radius: 0 !important;
+  }
+}
+
+/* ── Reduced motion ── */
+@media (prefers-reduced-motion: reduce) {
+  .pass-sky,
+  .pass-aurora,
+  .pass-celestial {
+    transition: none;
+  }
+  .pass-layer {
+    transition: none !important;
+  }
+  .pass-rider.jumping,
+  .pass-rider.grinding,
+  .pass-rider.riding {
+    animation: none;
+  }
+  .pass-flash.show {
+    animation: none;
+    opacity: 1;
+  }
+  .pass-combo-badge,
+  .pass-detail-panel {
+    transition: none;
+  }
+  .pass-lantern {
+    animation: none;
+  }
+  .pass-cloud-drift {
+    animation: none;
+  }
+  .pass-aurora {
+    animation: none;
+  }
+}
+
+.pass-root.pass-reduced-motion .pass-sky,
+.pass-root.pass-reduced-motion .pass-aurora,
+.pass-root.pass-reduced-motion .pass-celestial {
+  transition: none;
+}
+
+.pass-root.pass-reduced-motion .pass-layer {
+  transition: none !important;
+}
+
+.pass-root.pass-reduced-motion .pass-rider.jumping,
+.pass-root.pass-reduced-motion .pass-rider.grinding,
+.pass-root.pass-reduced-motion .pass-rider.riding {
+  animation: none;
+}
+
+.pass-root.pass-reduced-motion .pass-flash.show {
+  animation: none;
+  opacity: 1;
+}
+
+.pass-root.pass-reduced-motion .pass-combo-badge,
+.pass-root.pass-reduced-motion .pass-detail-panel {
+  transition: none;
+}
+
+.pass-root.pass-reduced-motion .pass-lantern {
+  animation: none;
+}
+
+.pass-root.pass-reduced-motion .pass-cloud-drift {
+  animation: none;
+}
+
+.pass-root.pass-reduced-motion .pass-aurora {
+  animation: none;
+}
