@@ -28,10 +28,11 @@ import { useCameraOrbit } from '../../hooks/useCameraOrbit';
 import { useIsMobile } from '../../hooks/useIsMobile';
 import { computeCameraPosition, CAMERA_DISTANCE } from '../../utils/cameraSpherical';
 import {
-  clampOrbScreenPosition,
+  clampOrbScreenPositionsGroup,
   fitCameraDistanceForMobile,
   MOBILE_DEFAULT_ELEVATION_RAD,
   MOBILE_GLOBE_DIAMETER_RATIO,
+  MOBILE_GLOBE_WORLD_SCALE,
   MOBILE_RING_RADIUS_RATIO,
 } from '../../utils/sceneProjection';
 
@@ -89,6 +90,9 @@ const SceneContainer: React.FC = () => {
   const orbs = useAppSelector((s) => s.orbs.list);
   const horizonViewMode = useAppSelector((s) => s.session.horizonViewMode);
   const themeMode = useAppSelector((s) => s.settings.themeMode);
+  const screenZoom = useAppSelector((s) => s.settings.screenZoom);
+  const screenZoomRef = useRef(screenZoom);
+  screenZoomRef.current = screenZoom;
 
   const { orbLabelData, updateScene, clusterHover, screenPositionsRef } =
     useSceneOrchestrator();
@@ -100,23 +104,35 @@ const SceneContainer: React.FC = () => {
 
   const plateData = useMemo(() => {
     const { width, height } = sceneSizeRef.current;
-    return orbs
+    const entries = orbs
       .map((o) => {
         const label = orbLabelData.get(o.id);
         if (!label) return undefined;
         const screenPos = screenPositionsRef.current.get(o.id);
         if (!screenPos) return undefined;
-        const clamped = isMobile
-          ? clampOrbScreenPosition(screenPos.x, screenPos.y, width, height)
-          : screenPos;
         return {
           ...label,
-          screenX: clamped.x,
-          screenY: clamped.y,
+          screenX: screenPos.x,
+          screenY: screenPos.y,
         };
       })
-      .filter((d): d is NonNullable<typeof d> => !!d)
-      .sort((a, b) => a.ringAngleDeg - b.ringAngleDeg);
+      .filter((d): d is NonNullable<typeof d> => !!d);
+
+    if (isMobile && entries.length > 0 && width > 0 && height > 0) {
+      const posMap = new Map(
+        entries.map((e) => [e.orbId, { x: e.screenX, y: e.screenY }]),
+      );
+      const clamped = clampOrbScreenPositionsGroup(posMap, width, height);
+      for (const entry of entries) {
+        const pos = clamped.get(entry.orbId);
+        if (pos) {
+          entry.screenX = pos.x;
+          entry.screenY = pos.y;
+        }
+      }
+    }
+
+    return entries.sort((a, b) => a.ringAngleDeg - b.ringAngleDeg);
   }, [orbs, orbLabelData, overlayTick, screenPositionsRef, isMobile]);
 
   const handleOrbActivate = useCallback(
@@ -157,16 +173,20 @@ const SceneContainer: React.FC = () => {
 
     sceneSizeRef.current = { width, height };
 
+    const zoom = screenZoomRef.current;
+    const zoomFactor = Math.max(0.5, zoom / 100);
+
     if (isMobileRef.current) {
-      const distance = fitCameraDistanceForMobile(width, height);
+      const distance = fitCameraDistanceForMobile(width, height, MOBILE_RING_RADIUS_RATIO, zoom);
       const pos = computeCameraPosition(0, DEFAULT_ELEVATION_RAD, distance);
       camera.position.set(pos.x, pos.y, pos.z);
     } else {
       const { azimuth, elevation } = store.getState().settings.cameraAngle;
+      const distance = CAMERA_DISTANCE / zoomFactor;
       const pos = computeCameraPosition(
         (azimuth * Math.PI) / 180,
         (elevation * Math.PI) / 180,
-        CAMERA_DISTANCE,
+        distance,
       );
       camera.position.set(pos.x, pos.y, pos.z);
     }
@@ -204,8 +224,12 @@ const SceneContainer: React.FC = () => {
     const deltaTime = Math.min((now - lastAnimTimeRef.current) / 1000, 0.1);
     lastAnimTimeRef.current = now;
 
-    const w = renderer.domElement.width;
-    const h = renderer.domElement.height;
+    // CSS pixels — must match overlay layer (not buffer width × devicePixelRatio).
+    const w = renderer.domElement.clientWidth;
+    const h = renderer.domElement.clientHeight;
+    if (w > 0 && h > 0) {
+      sceneSizeRef.current = { width: w, height: h };
+    }
 
     camera.updateMatrixWorld(true);
     updateSceneRef.current(deltaTime, renderersRef.current, w, h, camera);
@@ -271,6 +295,7 @@ const SceneContainer: React.FC = () => {
     sceneRef.current = scene;
 
     const globe = new WireframeGlobe();
+    globe.group.scale.setScalar(isMobileRef.current ? MOBILE_GLOBE_WORLD_SCALE : 1);
     globe.setTheme(themeMode);
     const horizonRing = new HorizonRing();
     horizonRing.setTheme(themeMode);
@@ -346,6 +371,13 @@ const SceneContainer: React.FC = () => {
     if (width > 0 && height > 0) {
       applyCameraFitRef.current(width, height);
     }
+  }, [isMobile, screenZoom]);
+
+  useEffect(() => {
+    const globe = renderersRef.current.globe;
+    if (!globe) return;
+    const scale = isMobile ? MOBILE_GLOBE_WORLD_SCALE : 1;
+    globe.group.scale.setScalar(scale);
   }, [isMobile]);
 
   useEffect(() => {

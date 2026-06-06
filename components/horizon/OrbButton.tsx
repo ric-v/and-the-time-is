@@ -62,7 +62,8 @@ export interface OrbButtonProps {
 // ---------------------------------------------------------------------------
 
 /** Hit area size in pixels (matches orb visual diameter). */
-const HIT_SIZE = 56;
+const HIT_SIZE_DESKTOP = 56;
+const HIT_SIZE_MOBILE = 52;
 
 /** Duration in ms the user must hold before activating Detail View on mobile. */
 const LONG_PRESS_DURATION = 350;
@@ -219,6 +220,8 @@ const OrbButton: React.FC<OrbButtonProps> = ({
 
   if (!visible) return null;
 
+  const hitSize = isMobile ? HIT_SIZE_MOBILE : HIT_SIZE_DESKTOP;
+
   // Accessible name: "{city label}, {displayed local time}"
   const accessibleName = `${cityLabel}, ${formattedTime}`;
 
@@ -238,10 +241,10 @@ const OrbButton: React.FC<OrbButtonProps> = ({
         onKeyDown={handleKeyDown}
         style={{
           position: 'absolute',
-          left: screenX - HIT_SIZE / 2,
-          top: screenY - HIT_SIZE / 2,
-          width: HIT_SIZE,
-          height: HIT_SIZE,
+          left: screenX - hitSize / 2,
+          top: screenY - hitSize / 2,
+          width: hitSize,
+          height: hitSize,
           borderRadius: '50%',
           background: 'transparent',
           border: 'none',
@@ -270,7 +273,7 @@ const OrbButton: React.FC<OrbButtonProps> = ({
           style={{
             position: 'absolute',
             left: screenX,
-            top: screenY - HIT_SIZE / 2 - 8,
+            top: screenY - hitSize / 2 - 8,
             transform: 'translate(-50%, -100%)',
             pointerEvents: 'none',
             zIndex: 10,

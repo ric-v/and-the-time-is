@@ -10,6 +10,10 @@ import {
   setRememberScrub,
   setAnchorOrb,
   setThemeMode,
+  setScreenZoom,
+  SCREEN_ZOOM_MIN,
+  SCREEN_ZOOM_MAX,
+  SCREEN_ZOOM_DEFAULT,
 } from '../../store/settingsSlice';
 import type { ReducedMotionOverride, ThemeMode } from '../../store/settingsSlice';
 import { clearAllHorizonData } from '../../utils/persistenceManager';
@@ -264,6 +268,11 @@ const SettingsPanel: React.FC = () => {
     [dispatch],
   );
 
+  const handleScreenZoomChange = useCallback(
+    (value: number) => dispatch(setScreenZoom(value)),
+    [dispatch],
+  );
+
   const handleResetAnchor = useCallback(() => {
     dispatch(setAnchorOrb(null));
     showToast('Anchor reset to local timezone');
@@ -398,6 +407,55 @@ const SettingsPanel: React.FC = () => {
             </SettingRow>
             <SettingRow label="Time format">
               <FormatControl compact />
+            </SettingRow>
+            <SettingRow
+              label="Screen zoom"
+              description={`${settings.screenZoom}% — scales text and scene`}
+            >
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 8,
+                  minWidth: 140,
+                }}
+              >
+                <input
+                  type="range"
+                  min={SCREEN_ZOOM_MIN}
+                  max={SCREEN_ZOOM_MAX}
+                  step={5}
+                  value={settings.screenZoom}
+                  onChange={(e) => handleScreenZoomChange(Number(e.target.value))}
+                  aria-label="Screen zoom"
+                  aria-valuemin={SCREEN_ZOOM_MIN}
+                  aria-valuemax={SCREEN_ZOOM_MAX}
+                  aria-valuenow={settings.screenZoom}
+                  style={{
+                    flex: 1,
+                    accentColor: 'var(--accent, #f4c572)',
+                    cursor: 'pointer',
+                  }}
+                />
+                <button
+                  type="button"
+                  onClick={() => handleScreenZoomChange(SCREEN_ZOOM_DEFAULT)}
+                  aria-label="Reset screen zoom to default"
+                  style={{
+                    padding: '4px 8px',
+                    fontSize: 11,
+                    lineHeight: 1.4,
+                    borderRadius: 8,
+                    border: '1px solid var(--chrome-border, rgba(255,255,255,0.10))',
+                    background: 'transparent',
+                    color: 'var(--chrome-text-secondary, rgba(255,255,255,0.62))',
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  Reset
+                </button>
+              </div>
             </SettingRow>
           </Section>
 

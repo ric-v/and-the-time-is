@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
  * Mobile breakpoint in pixels.
  * Below this width, the app switches to mobile layout:
  * - Locked isometric view (no camera orbit)
- * - Globe diameter = 28% of viewport width, Ring radius = 40%
+ * - Globe diameter ≈ 22% of viewport width, Ring radius = 44%
  * - Compressed chrome bars (TopBar 48px, BottomBar 52px, ScrubControl 64px)
  * - Tap-and-hold for Orb Detail View, short tap flashes time readout
  * - Full-screen overlays

@@ -14,9 +14,16 @@ export type DisplayFormat =
 export type ReducedMotionOverride = 'auto' | 'on' | 'off';
 export type ThemeMode = 'light' | 'dark';
 
+/** Screen zoom as a percentage (85–125). 100 = default. */
+export const SCREEN_ZOOM_MIN = 85;
+export const SCREEN_ZOOM_MAX = 125;
+export const SCREEN_ZOOM_DEFAULT = 100;
+
 export interface HorizonSettings {
   displayFormat: DisplayFormat;
   themeMode: ThemeMode;
+  /** UI + scene scale percentage (85–125). */
+  screenZoom: number;
   orbDrift: boolean;
   globeAutoRotation: boolean;                     // default true, disabled if reduced motion active
   rememberScrubPosition: boolean;
@@ -34,6 +41,7 @@ const MAX_RECENT_SEARCHES = 5;
 const initialState: HorizonSettings = {
   displayFormat: 'local',
   themeMode: 'dark',
+  screenZoom: SCREEN_ZOOM_DEFAULT,
   orbDrift: true,
   globeAutoRotation: true,
   rememberScrubPosition: false,
@@ -55,6 +63,12 @@ const settingsSlice = createSlice({
     },
     setThemeMode(state, action: PayloadAction<ThemeMode>) {
       state.themeMode = action.payload;
+    },
+    setScreenZoom(state, action: PayloadAction<number>) {
+      state.screenZoom = Math.min(
+        SCREEN_ZOOM_MAX,
+        Math.max(SCREEN_ZOOM_MIN, Math.round(action.payload)),
+      );
     },
     setOrbDrift(state, action: PayloadAction<boolean>) {
       state.orbDrift = action.payload;
@@ -97,6 +111,7 @@ const settingsSlice = createSlice({
 export const {
   setDisplayFormat,
   setThemeMode,
+  setScreenZoom,
   setOrbDrift,
   setGlobeAutoRotation,
   setReducedMotion,

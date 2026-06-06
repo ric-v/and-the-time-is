@@ -208,6 +208,30 @@ export function format12h(ianaName: string, displayedTime: Date): string {
 }
 
 /**
+ * Format the local calendar date for a timezone (DST-aware).
+ * Used alongside clock-only time readouts (local / 12h / 24h).
+ */
+export function formatLocalDate(
+  ianaName: string,
+  displayedTime: Date,
+  locale?: string | string[],
+): string {
+  const canonical = canonicalizeTimezoneId(ianaName);
+  try {
+    return new Intl.DateTimeFormat(locale, {
+      timeZone: canonical,
+      weekday: 'short',
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric',
+    }).format(displayedTime);
+  } catch {
+    const p = getLocalDateTimeParts(canonical, displayedTime);
+    return `${p.year}-${p.month}-${p.day}`;
+  }
+}
+
+/**
  * Format time as a Unix timestamp (integer seconds).
  * Zone-independent — same value for all orbs at the same Displayed Time
  * (fixes Requirement 16.4).

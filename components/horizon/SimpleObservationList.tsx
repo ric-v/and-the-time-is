@@ -7,6 +7,8 @@ import type { OrbLabelData } from '../../hooks/useSceneOrchestrator';
 import type { Orb } from '../../store/orbSlice';
 import { useDisplayedTime } from '../../hooks/useDisplayedTime';
 import {
+  formatLocalDate,
+  formatTime,
   getLocalHour,
   getLocalMinute,
   getUtcOffsetAtTime,
@@ -14,12 +16,6 @@ import {
 import { getSkyState } from '../../utils/skyPaletteEngine';
 import { SIX_STATE_PALETTE } from '../../utils/skyPaletteEngine';
 import type { DisplayFormat } from '../../store/settingsSlice';
-
-function regionLine(ianaName: string): string {
-  const parts = ianaName.split('/');
-  if (parts.length < 2) return ianaName.replace(/_/g, ' ');
-  return `${parts[0].replace(/_/g, ' ')} · ${parts.slice(1).join(' · ').replace(/_/g, ' ')}`;
-}
 
 function tzAbbrev(ianaName: string, time: Date): string {
   try {
@@ -46,9 +42,9 @@ function formatUtcOffsetLabel(ianaName: string, time: Date): string {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** HH:MM (+ optional sec) only — wide Fraunces column is safe. */
-function isClockOnlyFormat(fmt: DisplayFormat): boolean {
-  return fmt === '24h' || fmt === '12h';
+/** Clock time with date shown on a separate line in the list. */
+function isClockWithDateFormat(fmt: DisplayFormat): boolean {
+  return fmt === 'local' || fmt === '24h' || fmt === '12h';
 }
 
 interface SimpleObservationListProps {
@@ -82,10 +78,7 @@ const SimpleObservationList: React.FC<SimpleObservationListProps> = ({
     <div className="observatory-simple-list-wrap">
       <div className="observatory-simple-list-hdr">
         <div className="observatory-simple-hdr-cell">Local Time</div>
-        <div className="observatory-simple-hdr-cell">Location</div>
-        <div className="observatory-simple-hdr-cell observatory-simple-hdr-right">
-          Zone · Offset
-        </div>
+        <div className="observatory-simple-hdr-cell">Location · Zone</div>
       </div>
       <div className="observatory-simple-list">
         {rows.map(({ orb, d }) => (
@@ -147,7 +140,16 @@ const SimpleRow: React.FC<SimpleRowProps> = ({
   let timeSec: React.ReactNode;
   let timeAmpm: React.ReactNode;
 
-  if (displayFormat === '12h') {
+  const showDateLine = isClockWithDateFormat(displayFormat);
+  const dateLine = showDateLine
+    ? formatLocalDate(orb.ianaName, displayedTime)
+    : null;
+
+  if (displayFormat === 'local') {
+    timeMain = formatTime(orb.ianaName, displayedTime, 'local');
+    timeSec = null;
+    timeAmpm = null;
+  } else if (displayFormat === '12h') {
     const ap = h >= 12 ? 'PM' : 'AM';
     const hh = h % 12 || 12;
     timeMain = (
@@ -162,7 +164,6 @@ const SimpleRow: React.FC<SimpleRowProps> = ({
   } else if (
     displayFormat === 'iso' ||
     displayFormat === 'unix' ||
-    displayFormat === 'local' ||
     displayFormat === 'ymd24' ||
     displayFormat === 'ymd12' ||
     displayFormat === 'mdy24' ||
@@ -184,39 +185,48 @@ const SimpleRow: React.FC<SimpleRowProps> = ({
     timeAmpm = null;
   }
 
-  const offsetLine = orb.isLocal
-    ? 'Local'
-    : data.relativeOffset || 'Same';
-
-  const clockOnly = isClockOnlyFormat(displayFormat);
+  const clockWithDate = isClockWithDateFormat(displayFormat);
 
   return (
     <button
       type="button"
-      className={`observatory-simple-row${orb.isLocal ? ' is-local' : ''}${clockOnly ? '' : ' is-full-datetime'}`}
+      className={`observatory-simple-row${orb.isLocal ? ' is-local' : ''}${clockWithDate ? ' is-clock-with-date' : ' is-full-datetime'}`}
       onClick={onOpen}
     >
       <div className="observatory-simple-row-time">
-        <span className={`obs-simple-t-main${clockOnly ? '' : ' obs-simple-t-long'}`}>{timeMain}</span>
-        {timeSec}
-        {timeAmpm}
+        <div className="obs-simple-time-primary">
+          <span className="obs-simple-t-main">{timeMain}</span>
+          {timeSec}
+          {timeAmpm}
+        </div>
+        {dateLine ? (
+          <span className="obs-simple-t-date">{dateLine}</span>
+        ) : null}
       </div>
-      <div className="observatory-simple-row-city">
-        <span className="obs-simple-swatch" style={{ background: swatch }} aria-hidden />
-        <span className="observatory-simple-row-city-block">
-          <span className="obs-simple-row-name">
-            {data.cityLabel}
-            {orb.isLocal ? <span className="obs-simple-you">YOU</span> : null}
+      <div className="observatory-simple-row-details">
+        <div className="observatory-simple-row-city">
+          <span className="obs-simple-swatch" style={{ background: swatch }} aria-hidden />
+          <span className="observatory-simple-row-city-block">
+            <span className="obs-simple-row-name">
+              {data.cityLabel}
+              {orb.isLocal ? <span className="obs-simple-you">YOU</span> : null}
+            </span>
           </span>
-          <span className="obs-simple-row-country">{abbr || regionLine(orb.ianaName)}</span>
-        </span>
-      </div>
-      <div className="observatory-simple-row-meta">
-        <span className="obs-simple-abbr">{utcPart}</span>
-        <span className="obs-simple-offset">{offsetLine}</span>
-        <span className="obs-simple-state">
-          {state} · {orb.ianaName}
-        </span>
+        </div>
+        <div className="observatory-simple-row-meta">
+          <span className="obs-simple-meta-line">
+            {abbr ? `${abbr} · ` : ''}
+            {utcPart}
+            {orb.isLocal
+              ? ' · Local'
+              : data.relativeOffset
+                ? ` · ${data.relativeOffset}`
+                : ''}
+          </span>
+          <span className="obs-simple-state">
+            {state} · {orb.ianaName}
+          </span>
+        </div>
       </div>
     </button>
   );

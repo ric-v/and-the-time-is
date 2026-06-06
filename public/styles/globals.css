@@ -61,49 +61,49 @@
 
 .text-xs {
   font-family: var(--font-inter);
-  font-size: 11px;
+  font-size: calc(12px * var(--ui-scale, 1));
   line-height: 1.4;
   font-weight: 500;
 }
 
 .text-sm {
   font-family: var(--font-inter);
-  font-size: 13px;
+  font-size: calc(14px * var(--ui-scale, 1));
   line-height: 1.45;
   font-weight: 400;
 }
 
 .text-base {
   font-family: var(--font-inter);
-  font-size: 15px;
+  font-size: calc(16px * var(--ui-scale, 1));
   line-height: 1.5;
   font-weight: 400;
 }
 
 .text-md {
   font-family: var(--font-inter);
-  font-size: 18px;
+  font-size: calc(19px * var(--ui-scale, 1));
   line-height: 1.4;
   font-weight: 500;
 }
 
 .text-lg {
   font-family: var(--font-inter);
-  font-size: 22px;
+  font-size: calc(23px * var(--ui-scale, 1));
   line-height: 1.35;
   font-weight: 400;
 }
 
 .text-xl {
   font-family: var(--font-inter);
-  font-size: 32px;
+  font-size: calc(33px * var(--ui-scale, 1));
   line-height: 1.2;
   font-weight: 300;
 }
 
 .display-1 {
   font-family: var(--font-inter);
-  font-size: 56px;
+  font-size: calc(57px * var(--ui-scale, 1));
   line-height: 1.1;
   font-weight: 100;
   font-feature-settings: "tnum" 1;
@@ -112,7 +112,7 @@
 
 .display-2 {
   font-family: var(--font-inter);
-  font-size: 88px;
+  font-size: calc(89px * var(--ui-scale, 1));
   line-height: 1.05;
   font-weight: 100;
   font-feature-settings: "tnum" 1;
@@ -121,7 +121,7 @@
 
 .display-3 {
   font-family: var(--font-inter);
-  font-size: 120px;
+  font-size: calc(121px * var(--ui-scale, 1));
   line-height: 1.0;
   font-weight: 100;
   font-feature-settings: "tnum" 1;
@@ -154,10 +154,10 @@
 /* Mobile display scale overrides */
 @media (max-width: 767px) {
   .display-1 {
-    font-size: 40px;
+    font-size: calc(41px * var(--ui-scale, 1));
   }
   .display-2 {
-    font-size: 64px;
+    font-size: calc(65px * var(--ui-scale, 1));
   }
 }
 
@@ -542,7 +542,7 @@ a {
  * - TopBar compresses to 48px
  * - BottomBar compresses to 52px
  * - ScrubControl compresses to simplified 64px horizontal bar
- * - Globe diameter = 28% of viewport width, Ring radius = 40%
+ * - Globe diameter ≈ 22% of viewport width, Ring radius = 44%
  * - Full-screen overlays for Command Palette, Date Jump, Settings, Orb Detail
  * - No ambient particles
  * - Orientation change re-fit over 300ms
@@ -652,6 +652,8 @@ a {
  * ========================================================================== */
 
 .horizon-observatory {
+  --ui-scale: 1;
+  --font-bump: 1px;
   --serif: var(--font-cormorant, "Cormorant Garamond"), Georgia, serif;
   --ease: cubic-bezier(0.22, 0.61, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -1008,7 +1010,7 @@ body.observatory-theme-dark {
   display: grid;
   place-items: center;
   font-family: var(--serif);
-  font-size: 11px;
+  font-size: calc(12px * var(--ui-scale, 1));
   font-weight: 600;
   letter-spacing: 0.02em;
   color: var(--paper);
@@ -1763,7 +1765,7 @@ body.horizon-obs-root {
 
 .horizon-observatory .observatory-simple-list-hdr {
   display: grid;
-  grid-template-columns: minmax(120px, 130px) 1fr minmax(120px, 150px);
+  grid-template-columns: 1fr 1fr;
   gap: 18px;
   padding: 0 14px 10px;
   margin-bottom: 4px;
@@ -1780,10 +1782,6 @@ body.horizon-obs-root {
   color: var(--ink-faint, #a8a098);
 }
 
-.horizon-observatory .observatory-simple-hdr-right {
-  text-align: right;
-}
-
 .horizon-observatory .observatory-simple-list {
   display: flex;
   flex-direction: column;
@@ -1791,9 +1789,9 @@ body.horizon-obs-root {
 
 .horizon-observatory .observatory-simple-row {
   display: grid;
-  grid-template-columns: minmax(120px, 130px) 1fr minmax(120px, 150px);
+  grid-template-columns: 1fr 1fr;
   gap: 18px;
-  align-items: center;
+  align-items: start;
   padding: 16px 14px;
   border-bottom: 0.5px solid var(--rule-soft, rgba(20, 20, 20, 0.14));
   cursor: pointer;
@@ -1819,39 +1817,68 @@ body.horizon-obs-root {
   background: color-mix(in srgb, var(--terra) 6%, transparent);
 }
 
+.horizon-observatory .observatory-simple-row.is-local .obs-simple-t-main {
+  color: var(--ink);
+}
+
 .horizon-observatory .observatory-simple-row.is-local:hover {
   background: color-mix(in srgb, var(--terra) 10%, transparent);
 }
 
 .horizon-observatory .observatory-simple-row-time {
   display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.horizon-observatory .obs-simple-time-primary {
+  display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 8px;
   min-width: 0;
-  overflow: hidden;
+}
+
+.horizon-observatory .obs-simple-t-date {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: calc(12px * var(--ui-scale, 1));
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--ink-3);
+  line-height: 1.3;
+}
+
+.horizon-observatory .observatory-simple-row-details {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  min-width: 0;
 }
 
 .horizon-observatory .obs-simple-t-main {
   font-family: var(--font-mono), monospace;
-  font-weight: 400;
-  font-size: 15px;
+  font-weight: 500;
+  font-size: calc(22px * var(--ui-scale, 1));
   font-variant-numeric: tabular-nums;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.02em;
   color: var(--ink);
   line-height: 1;
 }
 
-/* Non 24h/12h formats: keep same column alignment, compact content in-place. */
+/* Date / ISO / readable formats — wrap inside the time column. */
 .horizon-observatory .obs-simple-t-main.obs-simple-t-long {
   font-family: var(--font-mono), monospace;
   font-weight: 450;
-  font-size: 13px;
+  font-size: calc(16px * var(--ui-scale, 1));
   letter-spacing: 0.02em;
-  line-height: 1.25;
-  white-space: nowrap;
-  max-width: 100%;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.35;
+  white-space: normal;
+  word-break: break-word;
+  flex: 1 1 100%;
+  min-width: 0;
 }
 
 .horizon-observatory .obs-simple-colon {
@@ -1860,21 +1887,23 @@ body.horizon-obs-root {
 
 .horizon-observatory .obs-simple-sec {
   font-family: var(--font-mono), monospace;
-  font-size: 12px;
+  font-size: calc(14px * var(--ui-scale, 1));
+  font-weight: 500;
   color: var(--terra);
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.03em;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
   min-width: 22px;
 }
 
 .horizon-observatory .obs-simple-ampm {
   font-family: var(--font-mono), monospace;
-  font-size: 11px;
+  font-size: calc(11px * var(--ui-scale, 1));
+  font-weight: 500;
   color: var(--ink-3);
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 
 .horizon-observatory .obs-simple-iso {
@@ -1891,8 +1920,8 @@ body.horizon-obs-root {
 }
 
 .horizon-observatory .obs-simple-swatch {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
   border: 0.5px solid var(--rule-soft, rgba(20, 20, 20, 0.14));
   flex-shrink: 0;
@@ -1913,12 +1942,12 @@ body.horizon-obs-root {
 }
 
 .horizon-observatory .obs-simple-row-name {
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: 26px;
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 500;
+  font-size: calc(14px * var(--ui-scale, 1));
   letter-spacing: 0.01em;
-  color: var(--ink);
-  line-height: 1.15;
+  color: var(--ink-3);
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -1938,39 +1967,27 @@ body.horizon-obs-root {
 }
 
 .horizon-observatory .obs-simple-row-country {
-  font-family: var(--font-ibm-mono), monospace;
-  font-size: 10px;
-  color: var(--ink-mid, #6b6660);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  display: none;
 }
 
 .horizon-observatory .observatory-simple-row-meta {
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
+  align-items: flex-start;
   gap: 3px;
-  text-align: right;
+  text-align: left;
   font-family: var(--font-ibm-mono), monospace;
 }
 
-.horizon-observatory .obs-simple-abbr {
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  color: var(--ink, #141414);
+.horizon-observatory .obs-simple-meta-line {
+  font-family: var(--font-ibm-mono), monospace;
+  font-size: calc(9px * var(--ui-scale, 1));
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--ink-faint, #a8a098);
   text-transform: uppercase;
-}
-
-.horizon-observatory .obs-simple-offset {
-  font-size: 10px;
-  color: var(--ink-mid, #6b6660);
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  white-space: normal;
+  word-break: break-word;
 }
 
 .horizon-observatory .obs-simple-state {
@@ -2065,26 +2082,26 @@ body.horizon-obs-root {
     display: none !important;
   }
 
-  /* Decorative ground rings: scale down to match fitted mobile ring */
+  /* Decorative ground rings: scale to match fitted mobile ring */
   .horizon-observatory .observatory-ground-rings {
-    transform: scale(0.82);
+    transform: scale(0.9);
     transform-origin: center center;
   }
 
-  /* Smaller disc on small ring; time sits in callout below */
+  /* Larger discs — globe is scaled down so ring orbs get more screen space */
   .horizon-observatory .obs-orb-body {
-    width: 36px;
-    height: 36px;
+    width: calc(44px * var(--ui-scale, 1));
+    height: calc(44px * var(--ui-scale, 1));
   }
 
   .horizon-observatory .obs-orb-pedestal {
-    width: 44px;
-    height: 22px;
+    width: calc(52px * var(--ui-scale, 1));
+    height: calc(26px * var(--ui-scale, 1));
   }
 
   .horizon-observatory .obs-orb-inner {
-    width: 30px;
-    height: 30px;
+    width: calc(38px * var(--ui-scale, 1));
+    height: calc(38px * var(--ui-scale, 1));
   }
 
   .horizon-observatory .obs-orb-time-callout {
@@ -2101,7 +2118,7 @@ body.horizon-obs-root {
     justify-content: center !important;
   }
 
-  /* ── Simple observation list: 2-column card layout ── */
+  /* ── Simple observation list: stacked rows (time, then location) ── */
   .horizon-observatory .observatory-simple-list-wrap {
     padding: 8px 12px 8px;
   }
@@ -2112,46 +2129,41 @@ body.horizon-obs-root {
   }
 
   .horizon-observatory .observatory-simple-row {
-    display: grid;
-    grid-template-columns: auto 1fr;
-    grid-template-rows: auto auto;
-    column-gap: 12px;
-    row-gap: 0;
-    padding: 12px 8px;
-    min-height: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 14px 10px;
+    min-height: 0;
     align-items: stretch;
     border-bottom: 0.5px solid var(--rule-soft, rgba(20, 20, 20, 0.14));
   }
 
-  /* Time: left column, spans both rows, centered vertically */
+  /* Line 1: full-width timestamp + date */
   .horizon-observatory .observatory-simple-row-time {
-    grid-column: 1;
-    grid-row: 1 / span 2;
-    align-self: center;
-    min-width: 0;
-    flex-wrap: nowrap;
-    gap: 4px;
+    width: 100%;
+    gap: 3px;
   }
 
-  /* City block: top of right column */
+  .horizon-observatory .obs-simple-t-date {
+    font-size: calc(11px * var(--ui-scale, 1));
+  }
+
+  /* Line 2: location + zone meta */
+  .horizon-observatory .observatory-simple-row-details {
+    width: 100%;
+    gap: 3px;
+  }
+
   .horizon-observatory .observatory-simple-row-city {
-    grid-column: 2;
-    grid-row: 1;
-    align-self: end;
-    padding-bottom: 3px;
-    gap: 8px;
+    gap: 6px;
   }
 
-  /* Meta: bottom of right column, horizontal, left-aligned */
   .horizon-observatory .observatory-simple-row-meta {
-    grid-column: 2;
-    grid-row: 2;
     flex-direction: row;
+    flex-wrap: wrap;
     align-items: center;
     text-align: left;
-    gap: 8px;
-    align-self: start;
-    padding-top: 2px;
+    gap: 6px;
   }
 
   /* Hide IANA path and sky-state label on mobile */
@@ -2164,39 +2176,49 @@ body.horizon-obs-root {
     display: none;
   }
 
-  /* Compact time size on mobile */
+  /* Time is the hero on mobile — full width, wraps when date is shown */
   .horizon-observatory .obs-simple-t-main {
-    font-size: 24px;
+    font-size: calc(34px * var(--ui-scale, 1));
+    font-weight: 500;
+    letter-spacing: 0.01em;
   }
 
-  /* City name slightly smaller on mobile */
-  .horizon-observatory .obs-simple-row-name {
-    font-size: 15px;
+  .horizon-observatory .obs-simple-t-main.obs-simple-t-long {
+    font-size: calc(18px * var(--ui-scale, 1));
+    line-height: 1.4;
     white-space: normal;
+    word-break: break-word;
+  }
+
+  .horizon-observatory .obs-simple-ampm {
+    font-size: calc(10px * var(--ui-scale, 1));
+    align-self: flex-end;
+    margin-bottom: 5px;
+  }
+
+  /* Location + tz: subdued */
+  .horizon-observatory .obs-simple-row-name {
+    font-size: calc(13px * var(--ui-scale, 1));
+    font-weight: 500;
+    color: var(--ink-3);
+    white-space: nowrap;
     line-height: 1.2;
   }
 
-  /* Sky swatch dot: smaller on mobile */
   .horizon-observatory .obs-simple-swatch {
-    width: 12px;
-    height: 12px;
+    width: 10px;
+    height: 10px;
     flex-shrink: 0;
+    opacity: 0.85;
   }
 
-  /* Abbr row (country/tz) slightly lighter */
-  .horizon-observatory .obs-simple-row-country {
-    font-size: 9px;
-    margin-top: 1px;
+  .horizon-observatory .obs-simple-meta-line {
+    font-size: calc(8px * var(--ui-scale, 1));
   }
 
-  /* UTC offset in meta: compact */
-  .horizon-observatory .obs-simple-abbr {
-    font-size: 10px;
-  }
-
-  /* Relative offset shorter */
-  .horizon-observatory .obs-simple-offset {
-    font-size: 9px;
+  .horizon-observatory .obs-simple-you {
+    font-size: calc(7px * var(--ui-scale, 1));
+    padding: 1px 5px;
   }
 
   /* Touch press feedback */

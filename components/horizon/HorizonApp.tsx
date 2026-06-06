@@ -25,6 +25,7 @@ const HorizonApp: React.FC = () => {
   const dateJumpOpen = useAppSelector((s) => s.session.dateJumpOpen);
   const horizonViewMode = useAppSelector((s) => s.session.horizonViewMode);
   const themeMode = useAppSelector((s) => s.settings.themeMode);
+  const screenZoom = useAppSelector((s) => s.settings.screenZoom);
   const rootRef = useRef<HTMLDivElement>(null);
 
   const displayedTime = useDisplayedTime();
@@ -83,6 +84,7 @@ const HorizonApp: React.FC = () => {
         height: '100vh',
         overflow: 'hidden',
         position: 'relative',
+        ['--ui-scale' as string]: String(screenZoom / 100),
       }}
     >
       <div className="horizon-sky-wash" aria-hidden />

@@ -5,11 +5,14 @@
 import { PerspectiveCamera } from './three-imports';
 import { computeCameraPosition, CAMERA_DISTANCE } from './cameraSpherical';
 
-/** PRD / UI-UX-Spec §12.2 — ring radius as a fraction of viewport width on mobile. */
-export const MOBILE_RING_RADIUS_RATIO = 0.4;
+/** Ring radius as a fraction of viewport width on mobile (larger = bigger orbs). */
+export const MOBILE_RING_RADIUS_RATIO = 0.44;
 
-/** PRD / UI-UX-Spec §12.2 — globe diameter as a fraction of viewport width on mobile. */
-export const MOBILE_GLOBE_DIAMETER_RATIO = 0.28;
+/** Target globe diameter as a fraction of viewport width on mobile (visual target). */
+export const MOBILE_GLOBE_DIAMETER_RATIO = 0.22;
+
+/** Wireframe globe world-scale on mobile — shrinks globe relative to the ring. */
+export const MOBILE_GLOBE_WORLD_SCALE = 0.68;
 
 /** Ring radius in world units (design spec). */
 export const RING_WORLD_RADIUS = 1.19;
@@ -83,6 +86,7 @@ export function fitCameraDistanceForMobile(
   canvasWidth: number,
   canvasHeight: number,
   ringRadiusRatio = MOBILE_RING_RADIUS_RATIO,
+  screenZoom = 100,
 ): number {
   if (canvasWidth <= 0 || canvasHeight <= 0) return CAMERA_DISTANCE;
 
@@ -121,7 +125,8 @@ export function fitCameraDistanceForMobile(
   const distHoriz = distanceForTarget(targetHorizPx, RING_WORLD_RADIUS, 0);
   const distVert = distanceForTarget(targetVertPx, 0, RING_WORLD_RADIUS);
 
-  return Math.max(distHoriz, distVert);
+  const zoomFactor = Math.max(0.5, screenZoom / 100);
+  return Math.max(distHoriz, distVert) / zoomFactor;
 }
 
 /** Clamp projected orb center so HTML discs stay inside the scene on narrow viewports. */
@@ -141,4 +146,49 @@ export function clampOrbScreenPosition(
     x: Math.max(insetX, Math.min(canvasWidth - insetX, x)),
     y: Math.max(insetY, Math.min(canvasHeight - insetY, y)),
   };
+}
+
+/**
+ * Scale all orb positions toward the scene center so the ring layout stays
+ * coherent — avoids per-orb clamping that scatters clustered orbs on mobile.
+ */
+export function clampOrbScreenPositionsGroup(
+  positions: Map<string, { x: number; y: number }>,
+  canvasWidth: number,
+  canvasHeight: number,
+  inset = MOBILE_ORB_SCREEN_INSET_PX,
+): Map<string, { x: number; y: number }> {
+  if (canvasWidth <= 0 || canvasHeight <= 0 || positions.size === 0) {
+    return positions;
+  }
+
+  const cx = canvasWidth / 2;
+  const cy = canvasHeight / 2;
+  const maxRx = cx - Math.max(inset, canvasWidth * 0.05);
+  const maxRy = cy - Math.max(inset, canvasHeight * 0.04);
+
+  let scale = 1;
+  for (const pos of positions.values()) {
+    const dx = Math.abs(pos.x - cx);
+    const dy = Math.abs(pos.y - cy);
+    if (dx > maxRx && maxRx > 0) {
+      scale = Math.min(scale, maxRx / dx);
+    }
+    if (dy > maxRy && maxRy > 0) {
+      scale = Math.min(scale, maxRy / dy);
+    }
+  }
+
+  if (scale >= 0.999) {
+    return positions;
+  }
+
+  const scaled = new Map<string, { x: number; y: number }>();
+  for (const [id, pos] of positions) {
+    scaled.set(id, {
+      x: cx + (pos.x - cx) * scale,
+      y: cy + (pos.y - cy) * scale,
+    });
+  }
+  return scaled;
 }
