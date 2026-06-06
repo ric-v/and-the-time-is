@@ -12,7 +12,7 @@ function AndTheTimeIs({ Component, pageProps }: AppProps) {
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="description" content="And the time is — live and scrubbed times across pinned timezones." />
-        <meta name="theme-color" content="#f2ece0" />
+        <meta name="theme-color" content="#0e1322" />
         <title>And the time is</title>
       </Head>
       <Provider store={store}>

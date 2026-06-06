@@ -1,8 +1,6 @@
 /**
- * Observatory wireframe globe — lat/long graticule + subtle icosphere fill,
- * matching horizon-observatory.html Three.js setup (r128-style).
- *
- * Replaces the textured photoreal Globe for the parchment instrument aesthetic.
+ * Observatory wireframe globe — lat/long graticule + subtle icosphere fill.
+ * Orrery aesthetic: brass instrument lines on parchment / night panel.
  */
 
 import {
@@ -17,11 +15,18 @@ import {
   Vector3,
   Color,
 } from '../../utils/three-imports';
+import type { Object3D } from 'three';
 import type { ThemeMode } from '../../store/settingsSlice';
 
 const GLOBE_CORE_RADIUS = 0.7;
 const LINE_RADIUS = 0.72;
-const ROTATION_SPEED = (2 * Math.PI) / 48; // one rev / 48s when live
+const ROTATION_SPEED = (2 * Math.PI) / 48;
+
+const BRASS_LIGHT = 0x9c7a3a;
+const BRASS_DARK = 0xcaa55d;
+const CORE_LIGHT = 0xf6f0e3;
+const CORE_DARK = 0x141b2e;
+const TERRA_AXIS = 0xc8502d;
 
 export class WireframeGlobe {
   public readonly group: Group;
@@ -38,7 +43,7 @@ export class WireframeGlobe {
 
     const geoCore = new IcosahedronGeometry(GLOBE_CORE_RADIUS, 2);
     const matCore = new MeshBasicMaterial({
-      color: new Color(0xf2ece0),
+      color: new Color(CORE_LIGHT),
       transparent: true,
       opacity: 0.55,
     });
@@ -49,12 +54,12 @@ export class WireframeGlobe {
       const angle = (i / 12) * Math.PI * 2;
       const curve = new EllipseCurve(0, 0, LINE_RADIUS, LINE_RADIUS, 0, Math.PI * 2, false, 0);
       const pts2 = curve.getPoints(48);
-      const pts = pts2.map((p) => new Vector3(p.x, p.y, 0));
+      const pts = pts2.map((p: { x: number; y: number }) => new Vector3(p.x, p.y, 0));
       const geo = new BufferGeometry().setFromPoints(pts);
       const mat = new LineBasicMaterial({
-        color: 0x141414,
+        color: new Color(BRASS_LIGHT),
         transparent: true,
-        opacity: 0.28,
+        opacity: 0.55,
       });
       this.lineMaterials.push(mat);
       const line = new Line(geo, mat);
@@ -68,11 +73,11 @@ export class WireframeGlobe {
       const y = Math.sin(lat) * LINE_RADIUS;
       const curve = new EllipseCurve(0, 0, r, r, 0, Math.PI * 2, false, 0);
       const pts2 = curve.getPoints(48);
-      const pts = pts2.map((p) => new Vector3(p.x, y, p.y));
+      const pts = pts2.map((p: { x: number; y: number }) => new Vector3(p.x, y, p.y));
       const geo = new BufferGeometry().setFromPoints(pts);
-      const opacity = i === 4 ? 0.45 : 0.18;
+      const opacity = i === 4 ? 0.65 : 0.35;
       const mat = new LineBasicMaterial({
-        color: 0x141414,
+        color: new Color(BRASS_LIGHT),
         transparent: true,
         opacity,
       });
@@ -87,28 +92,29 @@ export class WireframeGlobe {
       new Vector3(0, 0.85, 0),
     ]);
     const axisMat = new LineBasicMaterial({
-      color: 0xd4502c,
+      color: new Color(TERRA_AXIS),
       transparent: true,
-      opacity: 0.4,
+      opacity: 0.45,
     });
     this.axisMaterial = axisMat;
     this.group.add(new Line(axisGeo, axisMat));
-    this.setTheme('light');
+    this.setTheme('dark');
   }
 
   public setTheme(themeMode: ThemeMode): void {
     const isDark = themeMode === 'dark';
+    const brass = isDark ? BRASS_DARK : BRASS_LIGHT;
     const coreMaterial = this.coreMesh.material as MeshBasicMaterial;
-    coreMaterial.color.set(isDark ? 0x1a2338 : 0xf2ece0);
+    coreMaterial.color.set(isDark ? CORE_DARK : CORE_LIGHT);
     coreMaterial.opacity = isDark ? 0.7 : 0.55;
 
     for (const lineMaterial of this.lineMaterials) {
-      lineMaterial.color.set(isDark ? 0xe7edf8 : 0x141414);
+      lineMaterial.color.set(brass);
     }
 
     if (this.axisMaterial) {
-      this.axisMaterial.color.set(isDark ? 0xf59a8f : 0xf07f73);
-      this.axisMaterial.opacity = isDark ? 0.55 : 0.4;
+      this.axisMaterial.color.set(TERRA_AXIS);
+      this.axisMaterial.opacity = isDark ? 0.55 : 0.45;
     }
   }
 
@@ -137,7 +143,7 @@ export class WireframeGlobe {
   }
 
   public dispose(): void {
-    this.group.traverse((obj) => {
+    this.group.traverse((obj: Object3D) => {
       if (obj instanceof Mesh) {
         obj.geometry.dispose();
         (obj.material as MeshBasicMaterial).dispose();

@@ -182,9 +182,16 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
 }) => {
   const parts = parseFormattedTime(formattedTime, displayFormat);
 
-  // For ISO and Unix, use a slightly smaller font to accommodate length
-  const isMonoFormat = displayFormat === 'iso' || displayFormat === 'unix';
-  const effectiveFontSize = isMonoFormat
+  // Long / datetime string formats — compact mono, allow wrapping in detail panels
+  const isLongFormat =
+    displayFormat === 'iso'
+    || displayFormat === 'unix'
+    || displayFormat === 'ymd24'
+    || displayFormat === 'ymd12'
+    || displayFormat === 'mdy24'
+    || displayFormat === 'mdy12'
+    || displayFormat === 'readable';
+  const effectiveFontSize = isLongFormat
     ? Math.max(fontSize * 0.75, 10)
     : fontSize;
 
@@ -194,7 +201,7 @@ const TimeDisplay: React.FC<TimeDisplayProps> = ({
       style={{
         fontVariantNumeric: 'tabular-nums',
         letterSpacing: '0.02em',
-        fontFamily: isMonoFormat
+        fontFamily: isLongFormat
           ? 'var(--font-mono, ui-monospace, "SF Mono", Menlo, monospace)'
           : undefined,
         fontSize: effectiveFontSize,

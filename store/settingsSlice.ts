@@ -33,7 +33,7 @@ const MAX_RECENT_SEARCHES = 5;
 
 const initialState: HorizonSettings = {
   displayFormat: 'local',
-  themeMode: 'light',
+  themeMode: 'dark',
   orbDrift: true,
   globeAutoRotation: true,
   rememberScrubPosition: false,

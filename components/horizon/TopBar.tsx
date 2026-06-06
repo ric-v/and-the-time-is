@@ -46,14 +46,14 @@ const TopBar: React.FC = () => {
     <header data-horizon-topbar="" className="observatory-topbar">
       <div className="observatory-topbar-brand">
         <div className="observatory-brand-mark" aria-hidden>
-          <svg viewBox="0 0 28 28" width={28} height={28}>
+          <svg viewBox="0 0 28 28" width={30} height={30}>
             <circle cx="14" cy="14" r="11" fill="none" stroke="currentColor" strokeWidth={0.7} />
             <line x1="2" y1="14" x2="26" y2="14" stroke="currentColor" strokeWidth={0.7} />
-            <circle cx="14" cy="14" r="2.5" fill="var(--ember, #d4502c)" />
+            <circle cx="14" cy="14" r="2.5" fill="currentColor" />
           </svg>
         </div>
         <div className="observatory-brand-word">
-          <span className="observatory-brand-accent">A</span>
+          <span className="observatory-brand-amp">&</span>
           nd the time is
         </div>
       </div>

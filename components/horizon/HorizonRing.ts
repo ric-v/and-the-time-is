@@ -30,7 +30,10 @@ import {
   Vector3,
   Color,
 } from '../../utils/three-imports';
-import { SIX_STATE_PALETTE } from '../../utils/skyPaletteEngine';
+import type { ThemeMode } from '../../store/settingsSlice';
+
+const BRASS_LIGHT = 0x9c7a3a;
+const BRASS_DARK = 0xcaa55d;
 
 // ---------------------------------------------------------------------------
 // Constants
@@ -151,8 +154,10 @@ export class HorizonRing {
   /** Cardinal tick materials. */
   private tickMaterials: MeshBasicMaterial[] = [];
 
-  /** Current ring color (updated from sky palette). */
+  /** Current ring color (brass instrument line). */
   private ringColor: Color;
+
+  private themeMode: ThemeMode = 'dark';
 
   /** Current target opacity (for smooth transitions). */
   private targetOpacity: number = OPACITY_REST;
@@ -163,8 +168,8 @@ export class HorizonRing {
   constructor() {
     this.group = new Group();
 
-    // Default color from the sky palette's horizon color
-    this.ringColor = new Color(SIX_STATE_PALETTE.noon.horizon);
+    // Default brass instrument color (Orrery)
+    this.ringColor = new Color(BRASS_LIGHT);
 
     // --- Main ring ---
     this.ringMaterial = this.createRingMaterial(this.ringColor, OPACITY_REST);
@@ -245,12 +250,23 @@ export class HorizonRing {
   // -------------------------------------------------------------------------
 
   /**
-   * Update the ring color to match the current sky's horizon color.
-   *
-   * @param horizonColor - Hex color string from the sky palette (e.g. '#e8e0c8')
+   * Set light/dark brass palette for the ring.
    */
-  public setColor(horizonColor: string): void {
-    this.ringColor.set(horizonColor);
+  public setTheme(themeMode: ThemeMode): void {
+    this.themeMode = themeMode;
+    this.applyBrassColor();
+  }
+
+  /**
+   * Ring uses brass instrument color (Orrery), not sky horizon.
+   */
+  public setColor(_horizonColor: string): void {
+    this.applyBrassColor();
+  }
+
+  private applyBrassColor(): void {
+    const hex = this.themeMode === 'dark' ? BRASS_DARK : BRASS_LIGHT;
+    this.ringColor.set(hex);
     this.ringMaterial.color.copy(this.ringColor);
     for (const tickMaterial of this.tickMaterials) {
       tickMaterial.color.copy(this.ringColor);

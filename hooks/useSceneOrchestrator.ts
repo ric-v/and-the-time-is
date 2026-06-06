@@ -20,7 +20,7 @@
  * Requirements: 5.3, 3.6, 3.7, 4.4
  */
 
-import { useCallback, useRef, useMemo } from 'react';
+import { useCallback, useRef, useMemo, type MutableRefObject } from 'react';
 import { useAppSelector } from '../store/store';
 import {
   getDisplayedTime,
@@ -38,6 +38,8 @@ import { useClusterHover } from './useClusterHover';
 import type { ScreenPosition } from './useClusterHover';
 import { useDisplayedTime } from './useDisplayedTime';
 import { useReducedMotion } from './useReducedMotion';
+import { useIsMobile } from './useIsMobile';
+import { projectWorldToScreen } from '../utils/sceneProjection';
 
 import type { WireframeGlobe } from '../components/horizon/WireframeGlobe';
 import type { HorizonRing } from '../components/horizon/HorizonRing';
@@ -86,6 +88,8 @@ export interface SceneOrchestratorResult {
   displayedTime: Date;
   /** Label data for each orb, keyed by orb ID. */
   orbLabelData: Map<string, OrbLabelData>;
+  /** Screen positions updated each animation frame — read during render, not from useMemo. */
+  screenPositionsRef: MutableRefObject<Map<string, ScreenPosition>>;
   /** Cluster hover handlers to attach to the scene container. */
   clusterHover: {
     onMouseMove: (e: React.MouseEvent<HTMLElement>) => void;
@@ -150,7 +154,6 @@ function computeRelativeOffset(
 
 /**
  * Project a 3D position to screen coordinates.
- * Simplified version that works with Three.js Vector3.project() pattern.
  */
 function projectToScreen(
   worldX: number,
@@ -160,31 +163,14 @@ function projectToScreen(
   canvasWidth: number,
   canvasHeight: number,
 ): { x: number; y: number } {
-  // We need to multiply the world position by the camera's view-projection matrix.
-  // This is equivalent to what Three.js Vector3.project(camera) does.
-  const mvi = camera.matrixWorldInverse.elements;
-  const pm = camera.projectionMatrix.elements;
-
-  // Apply view matrix (matrixWorldInverse)
-  const vx = mvi[0] * worldX + mvi[4] * worldY + mvi[8] * worldZ + mvi[12];
-  const vy = mvi[1] * worldX + mvi[5] * worldY + mvi[9] * worldZ + mvi[13];
-  const vz = mvi[2] * worldX + mvi[6] * worldY + mvi[10] * worldZ + mvi[14];
-  const vw = mvi[3] * worldX + mvi[7] * worldY + mvi[11] * worldZ + mvi[15];
-
-  // Apply projection matrix
-  const px = pm[0] * vx + pm[4] * vy + pm[8] * vz + pm[12] * vw;
-  const py = pm[1] * vx + pm[5] * vy + pm[9] * vz + pm[13] * vw;
-  const pw = pm[3] * vx + pm[7] * vy + pm[11] * vz + pm[15] * vw;
-
-  // Perspective divide → NDC [-1, 1]
-  const ndcX = px / pw;
-  const ndcY = py / pw;
-
-  // Convert NDC to screen coordinates
-  const screenX = (ndcX * 0.5 + 0.5) * canvasWidth;
-  const screenY = (-ndcY * 0.5 + 0.5) * canvasHeight;
-
-  return { x: screenX, y: screenY };
+  return projectWorldToScreen(
+    worldX,
+    worldY,
+    worldZ,
+    camera,
+    canvasWidth,
+    canvasHeight,
+  );
 }
 
 // ---------------------------------------------------------------------------
@@ -203,6 +189,7 @@ export function useSceneOrchestrator(): SceneOrchestratorResult {
   const expandedOrbId = useAppSelector((s) => s.session.expandedOrbId);
   const cameraIsOrbiting = useAppSelector((s) => s.session.cameraIsOrbiting);
   const reducedMotion = useReducedMotion();
+  const isMobile = useIsMobile();
 
   // --- Displayed Time (ticks once/sec when live, immediate on scrub) ---
   const displayedTime = useDisplayedTime();
@@ -273,6 +260,7 @@ export function useSceneOrchestrator(): SceneOrchestratorResult {
     anchorIanaName,
     expandedOrbId,
     displayedTime,
+    isMobile,
   });
   stateRef.current = {
     scrubOffset,
@@ -286,6 +274,7 @@ export function useSceneOrchestrator(): SceneOrchestratorResult {
     anchorIanaName,
     expandedOrbId,
     displayedTime,
+    isMobile,
   };
 
   // --- Compute orb label data (React-side, for rendering) ---
@@ -306,9 +295,6 @@ export function useSceneOrchestrator(): SceneOrchestratorResult {
         ? orb.id === anchorOrbId
         : orb.isLocal;
 
-      // Get screen position from the ref (updated each frame)
-      const screenPos = screenPositionsRef.current.get(orb.id);
-
       // Get the final angle from cluster hover expansion
       const expandedPos = clusterHover.expandedPositions.get(orb.id);
       const ringAngleDeg = expandedPos?.finalAngle
@@ -320,8 +306,9 @@ export function useSceneOrchestrator(): SceneOrchestratorResult {
 
       data.set(orb.id, {
         orbId: orb.id,
-        screenX: screenPos?.x ?? 0,
-        screenY: screenPos?.y ?? 0,
+        // Screen coords are merged from screenPositionsRef at render time (SceneContainer).
+        screenX: 0,
+        screenY: 0,
         cityLabel: orb.label,
         formattedTime,
         displayFormat,
@@ -366,6 +353,7 @@ export function useSceneOrchestrator(): SceneOrchestratorResult {
         orbs: currentOrbs,
         anchorIanaName: anchor,
         expandedOrbId: expanded,
+        isMobile: mobile,
       } = stateRef.current;
 
       // Compute the real-time displayed time for this frame
@@ -429,8 +417,10 @@ export function useSceneOrchestrator(): SceneOrchestratorResult {
         // Set the orb's 3D position on the ring
         zoneOrb.setRingPosition(finalAngle, RING_RADIUS, liftOffset);
 
-        // Handle detail view opacity
-        if (expanded !== null) {
+        // Handle detail view opacity — hide 3D spheres on mobile (HTML discs only)
+        if (mobile) {
+          zoneOrb.setOpacity(0);
+        } else if (expanded !== null) {
           if (orb.id === expanded) {
             // The expanded orb stays visible
             zoneOrb.setOpacity(1);
@@ -470,6 +460,7 @@ export function useSceneOrchestrator(): SceneOrchestratorResult {
   return {
     displayedTime,
     orbLabelData,
+    screenPositionsRef,
     clusterHover: {
       onMouseMove: clusterHover.onMouseMove,
       onMouseLeave: clusterHover.onMouseLeave,

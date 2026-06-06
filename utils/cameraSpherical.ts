@@ -17,10 +17,12 @@ export interface CameraCartesian {
 /**
  * @param azimuthRad - rotation around Y, 0 = default forward
  * @param elevationRad - pitch, 0 = horizon, positive = above
+ * @param distance - camera distance from scene center (default desktop distance)
  */
 export function computeCameraPosition(
   azimuthRad: number,
   elevationRad: number,
+  distance: number = CAMERA_DISTANCE,
 ): CameraCartesian {
   const cosElev = Math.cos(elevationRad);
   const sinElev = Math.sin(elevationRad);
@@ -28,8 +30,8 @@ export function computeCameraPosition(
   const cosAz = Math.cos(azimuthRad);
 
   return {
-    x: CAMERA_DISTANCE * sinAz * cosElev,
-    y: CAMERA_DISTANCE * sinElev + BASE_Y_OFFSET,
-    z: CAMERA_DISTANCE * cosAz * cosElev,
+    x: distance * sinAz * cosElev,
+    y: distance * sinElev + BASE_Y_OFFSET,
+    z: distance * cosAz * cosElev,
   };
 }

@@ -59,7 +59,7 @@ const ObservationDome: React.FC = () => {
       <div className="observatory-dome-marker observatory-dome-marker-c">{markCenter}</div>
       <div className="observatory-dome-marker observatory-dome-marker-r">East · sunrise</div>
       <svg className="observatory-dome-svg" viewBox="0 0 1200 140" preserveAspectRatio="none" aria-hidden>
-        <g fill="none" stroke="#141414" strokeWidth={0.5}>
+        <g fill="none" stroke="var(--brass-line)" strokeWidth={0.5}>
           <line x1={0} y1={90} x2={1200} y2={90} opacity={0.25} />
           <path d="M 0 90 Q 600 0 1200 90" opacity={0.7} strokeWidth={0.6} />
           <path d="M 0 90 Q 600 25 1200 90" opacity={0.2} strokeDasharray="2 4" />

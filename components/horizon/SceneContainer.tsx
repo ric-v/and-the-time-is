@@ -25,7 +25,15 @@ import { SceneLighting } from './SceneLighting';
 import { ZoneOrb } from './ZoneOrb';
 import { useSceneOrchestrator, type SceneRenderers } from '../../hooks/useSceneOrchestrator';
 import { useCameraOrbit } from '../../hooks/useCameraOrbit';
-import { computeCameraPosition } from '../../utils/cameraSpherical';
+import { useIsMobile } from '../../hooks/useIsMobile';
+import { computeCameraPosition, CAMERA_DISTANCE } from '../../utils/cameraSpherical';
+import {
+  clampOrbScreenPosition,
+  fitCameraDistanceForMobile,
+  MOBILE_DEFAULT_ELEVATION_RAD,
+  MOBILE_GLOBE_DIAMETER_RATIO,
+  MOBILE_RING_RADIUS_RATIO,
+} from '../../utils/sceneProjection';
 
 /** Camera field of view in degrees (tight, reduces ring distortion). */
 const CAMERA_FOV = 35;
@@ -34,6 +42,9 @@ const CAMERA_FAR = 100;
 
 const GLOBE_DIAMETER_RATIO = 0.18;
 const RING_RADIUS_RATIO = 0.34;
+
+/** Default locked isometric elevation (12°). */
+const DEFAULT_ELEVATION_RAD = MOBILE_DEFAULT_ELEVATION_RAD;
 
 /** Globe radius in world units (design spec: 0.63). */
 export const GLOBE_RADIUS = 0.63;
@@ -68,25 +79,45 @@ const SceneContainer: React.FC = () => {
   const isRunningRef = useRef(false);
   const rafIdRef = useRef<number>(0);
   const lastAnimTimeRef = useRef<number>(performance.now());
+  const sceneSizeRef = useRef({ width: 0, height: 0 });
+
+  const isMobile = useIsMobile();
+  const isMobileRef = useRef(isMobile);
+  isMobileRef.current = isMobile;
 
   const dispatch = useAppDispatch();
   const orbs = useAppSelector((s) => s.orbs.list);
   const horizonViewMode = useAppSelector((s) => s.session.horizonViewMode);
   const themeMode = useAppSelector((s) => s.settings.themeMode);
 
-  const { orbLabelData, updateScene, clusterHover } = useSceneOrchestrator();
+  const { orbLabelData, updateScene, clusterHover, screenPositionsRef } =
+    useSceneOrchestrator();
 
   /** Forces React overlay reprojection every animation frame (camera orbit / drift). */
-  const [, setOverlayTick] = useState(0);
+  const [overlayTick, setOverlayTick] = useState(0);
 
   useCameraOrbit(canvasRef, cameraRef);
 
   const plateData = useMemo(() => {
+    const { width, height } = sceneSizeRef.current;
     return orbs
-      .map((o) => orbLabelData.get(o.id))
+      .map((o) => {
+        const label = orbLabelData.get(o.id);
+        if (!label) return undefined;
+        const screenPos = screenPositionsRef.current.get(o.id);
+        if (!screenPos) return undefined;
+        const clamped = isMobile
+          ? clampOrbScreenPosition(screenPos.x, screenPos.y, width, height)
+          : screenPos;
+        return {
+          ...label,
+          screenX: clamped.x,
+          screenY: clamped.y,
+        };
+      })
       .filter((d): d is NonNullable<typeof d> => !!d)
       .sort((a, b) => a.ringAngleDeg - b.ringAngleDeg);
-  }, [orbs, orbLabelData]);
+  }, [orbs, orbLabelData, overlayTick, screenPositionsRef, isMobile]);
 
   const handleOrbActivate = useCallback(
     (orbId: string) => {
@@ -120,6 +151,33 @@ const SceneContainer: React.FC = () => {
     [plateData],
   );
 
+  const applyCameraFit = useCallback((width: number, height: number) => {
+    const camera = cameraRef.current;
+    if (!camera || width <= 0 || height <= 0) return;
+
+    sceneSizeRef.current = { width, height };
+
+    if (isMobileRef.current) {
+      const distance = fitCameraDistanceForMobile(width, height);
+      const pos = computeCameraPosition(0, DEFAULT_ELEVATION_RAD, distance);
+      camera.position.set(pos.x, pos.y, pos.z);
+    } else {
+      const { azimuth, elevation } = store.getState().settings.cameraAngle;
+      const pos = computeCameraPosition(
+        (azimuth * Math.PI) / 180,
+        (elevation * Math.PI) / 180,
+        CAMERA_DISTANCE,
+      );
+      camera.position.set(pos.x, pos.y, pos.z);
+    }
+
+    camera.lookAt(0, 0, 0);
+    camera.updateMatrixWorld(true);
+  }, []);
+
+  const applyCameraFitRef = useRef(applyCameraFit);
+  applyCameraFitRef.current = applyCameraFit;
+
   const handleResize = useCallback((width: number, height: number) => {
     const renderer = rendererRef.current;
     const camera = cameraRef.current;
@@ -128,6 +186,7 @@ const SceneContainer: React.FC = () => {
     renderer.setSize(width, height);
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
+    applyCameraFitRef.current(width, height);
   }, []);
 
   const updateSceneRef = useRef(updateScene);
@@ -202,6 +261,7 @@ const SceneContainer: React.FC = () => {
     const pos = computeCameraPosition(
       (azimuth * Math.PI) / 180,
       (elevation * Math.PI) / 180,
+      CAMERA_DISTANCE,
     );
     camera.position.set(pos.x, pos.y, pos.z);
     camera.lookAt(0, 0, 0);
@@ -213,6 +273,7 @@ const SceneContainer: React.FC = () => {
     const globe = new WireframeGlobe();
     globe.setTheme(themeMode);
     const horizonRing = new HorizonRing();
+    horizonRing.setTheme(themeMode);
     const sceneLighting = new SceneLighting();
     scene.add(sceneLighting.group);
     scene.add(globe.group);
@@ -279,6 +340,15 @@ const SceneContainer: React.FC = () => {
   }, [animate, handleResize, handleVisibilityChange, themeMode]);
 
   useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    const { width, height } = container.getBoundingClientRect();
+    if (width > 0 && height > 0) {
+      applyCameraFitRef.current(width, height);
+    }
+  }, [isMobile]);
+
+  useEffect(() => {
     const scene = sceneRef.current;
     if (!scene) return;
 
@@ -303,8 +373,10 @@ const SceneContainer: React.FC = () => {
 
   useEffect(() => {
     const globe = renderersRef.current.globe;
+    const ring = renderersRef.current.horizonRing;
     if (!globe) return;
     globe.setTheme(themeMode);
+    ring?.setTheme(themeMode);
   }, [themeMode]);
 
   useEffect(() => {
@@ -336,13 +408,13 @@ const SceneContainer: React.FC = () => {
     >
       <div className="observatory-ground-rings" aria-hidden>
         <svg viewBox="0 0 1000 1000" preserveAspectRatio="xMidYMid meet" className="observatory-ground-svg">
-          <g fill="none" stroke="var(--ink, #141414)" opacity={0.14} strokeWidth={0.5}>
+          <g fill="none" stroke="var(--brass-line)" opacity={0.55} strokeWidth={0.5}>
             <circle cx={500} cy={500} r={120} />
             <circle cx={500} cy={500} r={200} strokeDasharray="2 4" />
             <circle cx={500} cy={500} r={320} />
             <circle cx={500} cy={500} r={430} strokeDasharray="2 4" />
           </g>
-          <g fill="var(--ink, #141414)" opacity={0.35} fontSize={10} letterSpacing="1.2" style={{ fontFamily: 'var(--font-ibm-mono), monospace' }}>
+          <g fill="var(--brass-line)" opacity={0.7} fontSize={10} letterSpacing="1.2" style={{ fontFamily: 'var(--font-mono), monospace' }}>
             <text x={500} y={65} textAnchor="middle">
               00
             </text>
@@ -356,7 +428,7 @@ const SceneContainer: React.FC = () => {
               18
             </text>
           </g>
-          <g stroke="var(--ink, #141414)" opacity={0.25} strokeWidth={0.5}>
+          <g stroke="var(--brass-line)" opacity={0.45} strokeWidth={0.5}>
             <line x1={500} y1={65} x2={500} y2={80} />
             <line x1={925} y1={500} x2={940} y2={500} />
             <line x1={500} y1={935} x2={500} y2={920} />
@@ -445,9 +517,10 @@ export default SceneContainer;
 
 export function computeSceneDimensions(containerWidth: number, containerHeight: number) {
   const minDim = Math.min(containerWidth, containerHeight);
+  const isNarrow = containerWidth < 768;
   return {
-    globeDiameterPx: minDim * GLOBE_DIAMETER_RATIO,
-    ringRadiusPx: minDim * RING_RADIUS_RATIO,
+    globeDiameterPx: minDim * (isNarrow ? MOBILE_GLOBE_DIAMETER_RATIO : GLOBE_DIAMETER_RATIO),
+    ringRadiusPx: (isNarrow ? containerWidth : minDim) * (isNarrow ? MOBILE_RING_RADIUS_RATIO : RING_RADIUS_RATIO),
     minDimension: minDim,
   };
 }

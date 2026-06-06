@@ -17,7 +17,7 @@ import { setCommandPaletteOpen, setDateJumpOpen } from '../../store/sessionSlice
 import { useFirstRunSeeding } from '../../hooks/useFirstRunSeeding';
 import { useDisplayedTime } from '../../hooks/useDisplayedTime';
 import { useObservatorySkyWash } from '../../hooks/useObservatorySkyWash';
-import { inter, jetbrainsMono, fraunces, ibmPlexMono } from '../../utils/fonts';
+import { inter, jetbrainsMono, cormorant } from '../../utils/fonts';
 
 const HorizonApp: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -34,7 +34,7 @@ const HorizonApp: React.FC = () => {
   );
 
   useFirstRunSeeding();
-  useObservatorySkyWash(rootRef, displayedTime, localIana, themeMode);
+  useObservatorySkyWash(rootRef, displayedTime, localIana);
 
   const handleGlobalKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -61,21 +61,23 @@ const HorizonApp: React.FC = () => {
     return () => {
       document.documentElement.classList.remove('horizon-obs-root');
       document.body.classList.remove('horizon-obs-root');
-      document.documentElement.classList.remove('horizon-obs-dark');
-      document.body.classList.remove('horizon-obs-dark');
+      document.documentElement.classList.remove('observatory-theme-light', 'observatory-theme-dark');
+      document.body.classList.remove('observatory-theme-light', 'observatory-theme-dark');
     };
   }, []);
 
   useEffect(() => {
     const isDark = themeMode === 'dark';
-    document.documentElement.classList.toggle('horizon-obs-dark', isDark);
-    document.body.classList.toggle('horizon-obs-dark', isDark);
+    document.documentElement.classList.toggle('observatory-theme-dark', isDark);
+    document.documentElement.classList.toggle('observatory-theme-light', !isDark);
+    document.body.classList.toggle('observatory-theme-dark', isDark);
+    document.body.classList.toggle('observatory-theme-light', !isDark);
   }, [themeMode]);
 
   return (
     <div
       ref={rootRef}
-      className={`horizon-observatory ${horizonViewMode === 'simple' ? 'observatory-simple-mode' : ''} ${themeMode === 'dark' ? 'observatory-theme-dark' : 'observatory-theme-light'} ${inter.variable} ${jetbrainsMono.variable} ${fraunces.variable} ${ibmPlexMono.variable}`}
+      className={`horizon-observatory ${horizonViewMode === 'simple' ? 'observatory-simple-mode' : ''} ${themeMode === 'dark' ? 'observatory-theme-dark' : 'observatory-theme-light'} ${inter.variable} ${jetbrainsMono.variable} ${cormorant.variable}`}
       style={{
         width: '100vw',
         height: '100vh',
@@ -84,7 +86,6 @@ const HorizonApp: React.FC = () => {
       }}
     >
       <div className="horizon-sky-wash" aria-hidden />
-      <div className="horizon-paper-grain" aria-hidden />
       <div className="horizon-app-stack">
         <TopBar />
         <SceneContainer />

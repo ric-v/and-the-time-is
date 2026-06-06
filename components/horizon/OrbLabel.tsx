@@ -82,7 +82,7 @@ const OrbLabel: React.FC<OrbLabelProps> = ({
   relativeOffset,
   skyState,
   isLocal,
-  isAnchor: _isAnchor,
+  isAnchor,
   ringAngleDeg,
   visible,
   totalOrbs,
@@ -102,7 +102,7 @@ const OrbLabel: React.FC<OrbLabelProps> = ({
     return (
       <div
         data-orb-label={orbId}
-        className={`obs-orb ${isDay ? 'is-day' : ''} ${isLocal ? 'is-local' : ''}`}
+        className={`obs-orb ${isDay ? 'is-day' : ''} ${isLocal ? 'is-local' : ''} ${isAnchor ? 'is-anchor' : ''}`}
         style={{
           position: 'absolute',
           left: screenX,
@@ -112,7 +112,7 @@ const OrbLabel: React.FC<OrbLabelProps> = ({
           zIndex: 1,
         }}
       >
-        <div className="obs-orb-connector" aria-hidden />
+        <div className="obs-orb-pedestal" aria-hidden />
         <div className="obs-orb-body">
           <div
             className="obs-orb-inner"
@@ -120,7 +120,7 @@ const OrbLabel: React.FC<OrbLabelProps> = ({
               background: `radial-gradient(ellipse at 35% 28%, ${pal.horizon} 0%, ${pal.zenith} 80%)`,
             }}
           />
-          <div className={`obs-orb-state-mark ${isDay ? 'is-day' : ''}`}>
+          <div className={`obs-orb-state-mark orb-roman ${isDay ? 'is-day' : ''}`}>
             {SKY_ROMAN[skyState]}
           </div>
         </div>

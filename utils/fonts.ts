@@ -13,7 +13,7 @@
  *   <code className={jetbrainsMono.variable}>  // sets --font-mono
  */
 
-import { Inter, JetBrains_Mono, Fraunces, IBM_Plex_Mono } from 'next/font/google';
+import { Inter, JetBrains_Mono, Fraunces, IBM_Plex_Mono, Cormorant_Garamond } from 'next/font/google';
 
 export const inter = Inter({
   subsets: ['latin', 'latin-ext'],
@@ -29,7 +29,16 @@ export const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
 });
 
-/** Observatory display serif — matches horizon-observatory.html */
+/** Orrery display serif — Cormorant Garamond */
+export const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['500', '600'],
+  style: ['normal', 'italic'],
+  display: 'swap',
+  variable: '--font-cormorant',
+});
+
+/** Legacy Fraunces (kept for non-observatory surfaces) */
 export const fraunces = Fraunces({
   subsets: ['latin'],
   weight: ['300', '400', '500'],

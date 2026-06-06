@@ -210,7 +210,7 @@ export class Globe {
     const loader = new TextureLoader();
     loader.load(
       CONTINENT_TEXTURE_PATH,
-      (texture) => {
+      (texture: Texture) => {
         this.continentTexture = texture;
         this.globeMaterial.uniforms.uContinentTexture.value = texture;
         this.globeMaterial.uniforms.uHasContinentTexture.value = 1.0;
